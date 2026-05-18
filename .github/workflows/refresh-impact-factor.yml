@@ -24,38 +24,22 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r scripts/requirements.txt
 
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: '4.3'
-          use-public-rspm: true
-
-      - name: Install R packages
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            any::rmarkdown
-            any::jsonlite
-            any::ggplot2
-            any::scales
-            any::patchwork
-            any::mgcv
-            any::pROC
-            any::lme4
-          needs: |
-
-      - name: Install Pandoc
-        uses: r-lib/actions/setup-pandoc@v2
-
       - name: Refresh FLoRA snapshot
         run: python scripts/refresh_flora.py
 
       - name: Enrich with OpenAlex Mean Citedness
+        continue-on-error: true
         env:
           MY_EMAIL: ${{ secrets.MY_EMAIL }}
         run: python scripts/compute_omc.py
 
-      - name: Render Mean Citedness analysis
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3'
+      - name: Install R packages
+        run: Rscript -e "install.packages(c('jsonlite', 'mgcv'), repos='https://cloud.r-project.org')"
+      - name: Compute Mean Citedness analysis
         run: Rscript scripts/render_impact_factor.R
 
       - name: Commit results
@@ -64,8 +48,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/flora.csv data/flora_meta.json \
                   data/flora_with_omc.csv data/flora_with_omc_meta.json \
-                  data/impact_factor.html data/impact_factor_meta.json \
-                  data/impact_factor_figs/ \
+                  data/impact_factor_data.json data/impact_factor_meta.json \
                   cache/openalex_venues.json || true
           if git diff --cached --quiet; then
             echo "No changes to commit."
