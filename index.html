@@ -590,13 +590,8 @@
                             <div class="mc-chart-wrap"><canvas id="mc-gam-chart"></canvas></div>
                         </div>
                         <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
-                            The analysis has not been generated yet. Run the pipeline once to produce it:
-                            <ol style="margin-top: 0.5rem;">
-                                <li><code>python scripts/compute_omc.py</code> — enriches FLoRA with OpenAlex Mean Citedness</li>
-                                <li><code>Rscript scripts/render_impact_factor.R</code> — computes GAM and writes <code>data/impact_factor_data.json</code></li>
-                                <li>Commit and push <code>data/impact_factor_data.json</code></li>
-                            </ol>
-                            After the first run, the GitHub Actions workflow keeps it updated weekly.
+                            Failed to load analysis data.
+                            <code id="mc-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
                         </div>
                     </div>
                 </div>
