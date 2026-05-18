@@ -4,7 +4,7 @@ output:
   html_fragment:
     self_contained: false
     fig_width: 8
-    fig_height: 5
+    fig_height: 4.5
 editor_options:
   markdown:
     wrap: sentence
@@ -22,16 +22,12 @@ suppressPackageStartupMessages({
   library(jsonlite)
   library(ggplot2)
   library(scales)
-  library(patchwork)
   library(mgcv)
-  library(pROC)
-  library(lme4)
 })
 
-FLoRA_studies <- read.csv("../data/flora_with_omc.csv",
-                         stringsAsFactors = FALSE, na.strings = c("", "NA"))
+raw <- read.csv("../data/flora_with_omc.csv",
+                stringsAsFactors = FALSE, na.strings = c("", "NA"))
 
-# Disciplines lookup from data/disciplines.json — single source of truth
 DISCIPLINES <- fromJSON("../data/disciplines.json", simplifyVector = FALSE)
 normalize <- function(x) {
   x <- tolower(x)
@@ -43,171 +39,128 @@ lookup <- do.call(rbind, lapply(names(DISCIPLINES), function(disc) {
   data.frame(journal_norm = normalize(unlist(DISCIPLINES[[disc]])),
              discipline   = disc, stringsAsFactors = FALSE)
 }))
-FLoRA_studies$journal_norm <- normalize(FLoRA_studies$journal_o)
-FLoRA_studies$discipline   <- lookup$discipline[match(FLoRA_studies$journal_norm, lookup$journal_norm)]
-FLoRA_studies$discipline   <- factor(ifelse(is.na(FLoRA_studies$discipline),
-                                            "Uncategorized", FLoRA_studies$discipline))
+raw$journal_norm <- normalize(raw$journal_o)
+raw$discipline   <- lookup$discipline[match(raw$journal_norm, lookup$journal_norm)]
+raw$discipline   <- factor(ifelse(is.na(raw$discipline), "Uncategorized", raw$discipline))
 ```
 
 ```{r filter}
-# Restrict to replications with binary outcomes, drop extreme OMC > 35
-FLoRA_studies$impact_factor <- suppressWarnings(as.numeric(FLoRA_studies$impact_factor))
-FLoRA_studies <- FLoRA_studies[!is.na(FLoRA_studies$impact_factor) & FLoRA_studies$impact_factor < 35, ]
-FLoRA_studies <- FLoRA_studies[tolower(FLoRA_studies$outcome) %in% c("successful", "failed"), ]
-FLoRA_studies$outcome_binary <- ifelse(tolower(FLoRA_studies$outcome) == "failed", 0, 1)
-FLoRA_studies$omc_log <- log(FLoRA_studies$impact_factor + 1)
-FLoRA_studies$outcome_fac <- factor(tolower(FLoRA_studies$outcome),
-                                    levels = c("failed", "successful"))
+raw$impact_factor <- suppressWarnings(as.numeric(raw$impact_factor))
+
+# All studies with OMC — for distribution plot (keep mixed/inconclusive)
+df_all <- raw[!is.na(raw$impact_factor) & raw$impact_factor < 35, ]
+df_all$outcome_fac <- factor(tolower(df_all$outcome),
+                             levels = c("successful", "mixed", "failed", "inconclusive"))
+
+# Binary subset for modelling
+df <- df_all[tolower(df_all$outcome) %in% c("successful", "failed"), ]
+df$outcome_binary <- ifelse(tolower(df$outcome) == "failed", 0, 1)
+df$omc_log        <- log(df$impact_factor + 1)
+df$outcome_fac2   <- factor(tolower(df$outcome), levels = c("failed", "successful"))
 ```
 
 ```{r empty-bail, results="asis"}
-if (nrow(FLoRA_studies) < 30) {
-  cat("<p><em>Not enough studies with both a binary outcome and a journal-level OMC available yet. ",
+if (nrow(df) < 30) {
+  cat("<p><em>Not enough studies with both a binary outcome and a journal-level OMC value yet. ",
       "This analysis will populate as more journals are matched to OpenAlex sources.</em></p>\n")
   knitr::knit_exit()
 }
 ```
 
-```{r bt-check}
-FLoRA_bt <- FLoRA_studies[FLoRA_studies$omc_log > 0, ]
-FLoRA_bt$bt_log <- FLoRA_bt$omc_log * log(FLoRA_bt$omc_log)
-bt_log_FLoRA <- glm(outcome_binary ~ omc_log + bt_log,
-                    family = binomial, data = FLoRA_bt)
-bt_FLoRA_sig <- summary(bt_log_FLoRA)$coefficients["bt_log", "Pr(>|z|)"] < 0.05
+```{r overview, results="asis"}
+n_total    <- nrow(df_all)
+n_success  <- sum(tolower(df_all$outcome) == "successful", na.rm = TRUE)
+n_failed   <- sum(tolower(df_all$outcome) == "failed",     na.rm = TRUE)
+n_mixed    <- sum(tolower(df_all$outcome) == "mixed",      na.rm = TRUE)
+n_journals <- length(unique(df_all$journal_o[!is.na(df_all$journal_o) & df_all$journal_o != ""]))
+n_discs    <- length(unique(as.character(df_all$discipline[df_all$discipline != "Uncategorized"])))
+
+cat(sprintf(
+'<div class="mc-overview-grid">
+  <div class="mc-stat"><span class="mc-stat-value">%d</span><span class="mc-stat-label">Studies with OMC</span></div>
+  <div class="mc-stat"><span class="mc-stat-value" style="color:#2f8f4f">%d</span><span class="mc-stat-label">Successful</span></div>
+  <div class="mc-stat"><span class="mc-stat-value" style="color:#b3331e">%d</span><span class="mc-stat-label">Failed</span></div>
+  <div class="mc-stat"><span class="mc-stat-value" style="color:#d49b1d">%d</span><span class="mc-stat-label">Mixed</span></div>
+  <div class="mc-stat"><span class="mc-stat-value">%d</span><span class="mc-stat-label">Journals matched</span></div>
+  <div class="mc-stat"><span class="mc-stat-value">%d</span><span class="mc-stat-label">Disciplines</span></div>
+</div>\n',
+n_total, n_success, n_failed, n_mixed, n_journals, n_discs))
 ```
 
-```{r models}
-lr_FLoRA <- glm(outcome_binary ~ omc_log, family = binomial, data = FLoRA_studies)
-chi_FLoRA   <- lr_FLoRA$null.deviance - lr_FLoRA$deviance
-chidf_FLoRA <- lr_FLoRA$df.null - lr_FLoRA$df.residual
-chip_FLoRA  <- 1 - pchisq(chi_FLoRA, chidf_FLoRA)
+```{r dist-plot, fig.cap="Distribution of studies by journal Mean Citedness (OMC), coloured by replication outcome. Studies with OMC > 35 excluded."}
+outcome_colors <- c(
+  "successful"  = "#2f8f4f",
+  "failed"      = "#b3331e",
+  "mixed"       = "#d49b1d",
+  "inconclusive"= "#6f7686"
+)
+outcome_labels <- c(
+  "successful"  = "Successful",
+  "failed"      = "Failed",
+  "mixed"       = "Mixed",
+  "inconclusive"= "Inconclusive"
+)
 
-gam_FLoRA <- gam(outcome_binary ~ s(omc_log), family = binomial, data = FLoRA_studies)
+present <- intersect(levels(df_all$outcome_fac),
+                     unique(as.character(df_all$outcome_fac[!is.na(df_all$outcome_fac)])))
 
-null_FLoRA <- glm(outcome_binary ~ 1, family = binomial, data = FLoRA_studies)
-r2_lr_FLoRA  <- as.numeric(1 - logLik(lr_FLoRA)  / logLik(null_FLoRA))
-r2_gam_FLoRA <- as.numeric(1 - logLik(gam_FLoRA) / logLik(null_FLoRA))
-auc_lr_FLoRA <- as.numeric(auc(roc(lr_FLoRA$y,  fitted(lr_FLoRA),  quiet = TRUE)))
-auc_gam_FLoRA <- as.numeric(auc(roc(gam_FLoRA$y, predict(gam_FLoRA, type = "response"), quiet = TRUE)))
-
-b0_f <- coef(lr_FLoRA)[1]; b1_f <- coef(lr_FLoRA)[2]
-thr_FLoRA <- if (abs(b1_f) > 1e-9) exp(-b0_f / b1_f) - 1 else NA_real_
-```
-
-```{r multilevel, results="hide"}
-ml_null  <- tryCatch(glmer(outcome_binary ~ 1 + (1 | discipline),
-                           family = binomial, data = FLoRA_studies), error = function(e) NULL)
-ml_omc   <- tryCatch(glmer(outcome_binary ~ omc_log + (1 | discipline),
-                           family = binomial, data = FLoRA_studies), error = function(e) NULL)
-icc_f <- beta_f <- pval_f <- NA_real_
-if (!is.null(ml_omc)) {
-  tau2_f <- as.numeric(VarCorr(ml_omc)$discipline)
-  icc_f  <- tau2_f / (tau2_f + (pi^2 / 3))
-  beta_f <- fixef(ml_omc)["omc_log"]
-  pval_f <- summary(ml_omc)$coefficients["omc_log", "Pr(>|z|)"]
-}
-```
-
-## Descriptive Overview
-
-The distribution of OMC values for the FLoRA replications with binary
-outcomes is shown below (studies with `OMC > 35` are excluded).
-
-```{r hist, fig.cap="Absolute count of replication outcomes by OMC in the FLoRA database. Studies with OMC > 35 are excluded."}
-ggplot(FLoRA_studies, aes(x = impact_factor, fill = outcome_fac)) +
+ggplot(df_all[!is.na(df_all$outcome_fac), ],
+       aes(x = impact_factor, fill = outcome_fac)) +
   geom_histogram(position = "stack", binwidth = 0.5,
-                 alpha = 0.85, color = "white", linewidth = 0.1) +
-  scale_fill_manual(values = c("failed" = "#e05d5d", "successful" = "#48bb78"),
-                    labels = c("failed" = "Failed", "successful" = "Successful"),
-                    name = "Replication Outcome") +
+                 alpha = 0.88, color = "white", linewidth = 0.1) +
+  scale_fill_manual(values = outcome_colors[present],
+                    labels = outcome_labels[present],
+                    name   = "Outcome") +
   coord_cartesian(xlim = c(0, 20)) +
-  labs(x = "OpenAlex Mean Citedness (OMC)", y = "Study Count") +
-  theme_minimal(base_size = 11)
+  scale_x_continuous(breaks = seq(0, 20, 5)) +
+  labs(x = "OpenAlex Mean Citedness (OMC)", y = "Number of studies") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top",
+        panel.grid.minor = element_blank())
 ```
 
-## Results
+```{r gam-model}
+gam_fit <- gam(outcome_binary ~ s(omc_log), family = binomial, data = df)
+gam_sum <- summary(gam_fit)
+edf     <- round(gam_sum$edf, 2)
+chi_sq  <- round(gam_sum$chi.sq, 2)
+p_val   <- gam_sum$s.pv
+p_str   <- ifelse(p_val < 0.001, "p &lt; .001", sprintf("p = %.3f", p_val))
+r2_null <- as.numeric(logLik(glm(outcome_binary ~ 1, family = binomial, data = df)))
+r2_gam  <- round(as.numeric(1 - logLik(gam_fit) / r2_null), 3)
+```
 
-```{r results-table, results="asis"}
+```{r gam-note, results="asis"}
 cat(sprintf(
-"<p><strong>N = %d</strong> replications with both an outcome and an OMC value (%d successful, %d failed). Logistic regression with log-transformed OMC gave a statistically significant overall model fit, $\\chi^2$(%d) = %.2f, %s. The Box–Tidwell test of linearity-in-log-odds was %s after log-transformation.</p>",
-nrow(FLoRA_studies),
-sum(FLoRA_studies$outcome_binary == 1), sum(FLoRA_studies$outcome_binary == 0),
-chidf_FLoRA, chi_FLoRA,
-ifelse(chip_FLoRA < 0.001, "p < .001", sprintf("p = %.3f", chip_FLoRA)),
-ifelse(bt_FLoRA_sig, "violated (a GAM is preferred for inference)",
-                    "satisfied")
-))
-
-cat(sprintf(
-"<p>Model performance is modest: McFadden's $R^2$ = %.3f (logistic regression) and %.3f (GAM); AUC = %.2f and %.2f respectively. The OMC at which P(success) = 0.50 (logistic model) is %s.</p>",
-r2_lr_FLoRA, r2_gam_FLoRA, auc_lr_FLoRA, auc_gam_FLoRA,
-ifelse(is.na(thr_FLoRA), "not estimable", sprintf("%.2f", thr_FLoRA))
+  '<p class="mc-model-note">GAM (binomial, log-OMC smooth) &mdash; smooth term: edf&nbsp;=&nbsp;%.2f, &#967;<sup>2</sup>&nbsp;=&nbsp;%.2f, %s &mdash; McFadden R<sup>2</sup>&nbsp;=&nbsp;%.3f &mdash; N&nbsp;=&nbsp;%d (successful vs. failed only).</p>\n',
+  edf, chi_sq, p_str, r2_gam, nrow(df)
 ))
 ```
 
-```{r curves, fig.cap="Predicted probability of successful replication as a function of OMC. Left: logistic regression with log-transformed OMC. Right: GAM. Shaded bands represent 95% confidence intervals."}
-pred_f <- data.frame(
-  impact_factor = seq(min(FLoRA_studies$impact_factor, na.rm = TRUE),
-                      max(FLoRA_studies$impact_factor, na.rm = TRUE),
-                      length.out = 500))
-pred_f$omc_log <- log(pred_f$impact_factor + 1)
+```{r gam-plot, fig.cap="GAM-estimated probability of successful replication as a function of journal Mean Citedness (OMC). Shaded band: 95% CI. Points are jittered binary outcomes (0 = failed, 1 = successful)."}
+pred <- data.frame(
+  impact_factor = seq(min(df$impact_factor, na.rm = TRUE),
+                      min(max(df$impact_factor, na.rm = TRUE), 20),
+                      length.out = 400)
+)
+pred$omc_log <- log(pred$impact_factor + 1)
 
-lp_f <- predict(lr_FLoRA, newdata = pred_f, type = "link", se.fit = TRUE)
-pred_f$p_lr  <- plogis(lp_f$fit)
-pred_f$lo_lr <- plogis(lp_f$fit - 1.96 * lp_f$se.fit)
-pred_f$hi_lr <- plogis(lp_f$fit + 1.96 * lp_f$se.fit)
+gp       <- predict(gam_fit, newdata = pred, type = "link", se.fit = TRUE)
+pred$p    <- plogis(gp$fit)
+pred$p_lo <- plogis(gp$fit - 1.96 * gp$se.fit)
+pred$p_hi <- plogis(gp$fit + 1.96 * gp$se.fit)
 
-gp_f <- predict(gam_FLoRA, newdata = pred_f, type = "link", se.fit = TRUE)
-pred_f$p_gam  <- plogis(gp_f$fit)
-pred_f$lo_gam <- plogis(gp_f$fit - 1.96 * gp_f$se.fit)
-pred_f$hi_gam <- plogis(gp_f$fit + 1.96 * gp_f$se.fit)
-
-jitter_f <- geom_jitter(data = FLoRA_studies,
-                        aes(x = impact_factor, y = outcome_binary),
-                        alpha = 0.15, height = 0.03, width = 0, inherit.aes = FALSE)
-
-p_lr <- ggplot(pred_f, aes(x = impact_factor)) +
-  geom_ribbon(aes(ymin = lo_lr, ymax = hi_lr), fill = "#6b4582", alpha = 0.18) +
-  geom_line(aes(y = p_lr), color = "#6b4582", linewidth = 1) +
-  jitter_f +
-  geom_hline(yintercept = 0.5, linetype = "dashed", color = "gray40") +
-  { if (!is.na(thr_FLoRA))
-      list(geom_vline(xintercept = thr_FLoRA, linetype = "dashed",
-                      color = "#e05d5d", linewidth = 0.8),
-           annotate("text", x = thr_FLoRA + 0.4, y = 0.43,
-                    label = sprintf("OMC = %.2f", thr_FLoRA),
-                    color = "#e05d5d", hjust = 0, size = 3))
-    else NULL } +
+ggplot(pred, aes(x = impact_factor)) +
+  geom_ribbon(aes(ymin = p_lo, ymax = p_hi), fill = "#8b1a4a", alpha = 0.18) +
+  geom_line(aes(y = p), color = "#8b1a4a", linewidth = 1.2) +
+  geom_jitter(data = df, aes(x = impact_factor, y = outcome_binary),
+              alpha = 0.13, height = 0.03, width = 0, color = "#6f7686", size = 1) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "gray55", linewidth = 0.5) +
   scale_y_continuous(limits = c(0, 1), labels = percent_format()) +
-  labs(title = "Logistic Regression", x = "OMC",
-       y = "P(successful replication)", caption = "shaded: 95% CI") +
-  theme_minimal(base_size = 11)
-
-p_gam <- ggplot(pred_f, aes(x = impact_factor)) +
-  geom_ribbon(aes(ymin = lo_gam, ymax = hi_gam), fill = "#6b4582", alpha = 0.18) +
-  geom_line(aes(y = p_gam), color = "#6b4582", linewidth = 1) +
-  jitter_f +
-  geom_hline(yintercept = 0.5, linetype = "dashed", color = "gray40") +
-  scale_y_continuous(limits = c(0, 1), labels = percent_format()) +
-  labs(title = "GAM", x = "OMC", y = NULL, caption = "shaded: 95% CI") +
-  theme_minimal(base_size = 11)
-
-p_lr | p_gam
+  scale_x_continuous(breaks = seq(0, 20, 5)) +
+  labs(x = "OpenAlex Mean Citedness (OMC)",
+       y = "P(successful replication)",
+       caption = "Shaded band: 95% CI") +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid.minor = element_blank())
 ```
-
-```{r discipline, results="asis"}
-if (!is.na(icc_f)) {
-  cat(sprintf(
-"<p><strong>Role of scientific discipline.</strong> A multilevel logistic regression with a random intercept for discipline yields ICC = %.3f, meaning %.1f%% of the variance in replication outcomes lies between disciplines. After accounting for that clustering, log-OMC retains a fixed effect of $\\hat\\beta$ = %.2f (%s).</p>",
-icc_f, 100 * icc_f, beta_f,
-ifelse(pval_f < 0.001, "p < .001", sprintf("p = %.3f", pval_f))))
-}
-```
-
-## Discussion
-
-Across model specifications, higher OMC is weakly negatively associated
-with replication success. The effect is small in magnitude and the
-explanatory power is too limited for journal-level citation metrics to
-serve as a meaningful heuristic for judging the replicability of
-individual studies.

@@ -453,6 +453,10 @@
 
                 <div class="ci-intro">
                     <h2 class="ci-h2">How do replications change citation behaviour?</h2>
+                    <span class="scope-note">
+                        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
+                        Replications only — reproductions are not included in this analysis
+                    </span>
                     <p class="ci-lede">
                         This tab combines the FLoRA dataset with citation data from
                         <a href="https://opencitations.net" target="_blank">OpenCitations</a> to
@@ -564,13 +568,16 @@
                 <div class="card">
                     <div class="card-header">Journal-Level Citation Metrics and Replicability</div>
                     <div class="card-body">
-                        <p class="muted" style="margin-bottom: 1rem;">
+                        <p class="muted" style="margin-bottom: 0.75rem;">
                             This tab presents a statistical analysis of whether the
                             <strong>OpenAlex Mean Citedness</strong> (OMC) of an original study's journal
                             predicts replication success. The analysis is rendered weekly by an R pipeline
-                            (logistic regression, GAM, and multilevel modelling with discipline as a
-                            random effect).
+                            (GAM with discipline as context).
                         </p>
+                        <span class="scope-note">
+                            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
+                            Replications only — reproductions are not included in this analysis
+                        </span>
                         <div id="mc-loading" style="color: var(--flora-muted); font-size: 0.9rem; padding: 1rem 0;">Loading analysis…</div>
                         <div id="mc-content"></div>
                         <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
