@@ -562,6 +562,8 @@ function initDataTable(data) {
         createdRow: (row, d, dataIndex) => { $(row).attr('data-index', dataIndex); }
     });
 
+    dataTable.on('search.dt', renderBrowseOutcomeChart);
+
     $('#flora-table tbody').on('click', 'td.details-control', function() {
         const tr = $(this).closest('tr');
         const row = dataTable.row(tr);
@@ -652,8 +654,17 @@ let browseOutcomeChart = null;
 function browseFilteredData() { return filterByKind(fullRowData, browseKind); }
 function bmDataSource() { return browseFilteredData(); }
 
+// Returns rows that pass both the kind filter AND the current DataTables search.
+function getChartData() {
+    if (dataTable) {
+        const indices = dataTable.rows({ search: 'applied' }).indexes().toArray();
+        return filterByKind(indices.map(i => fullRowData[i]), browseKind);
+    }
+    return browseFilteredData();
+}
+
 function renderBrowseOutcomeChart() {
-    const data = browseFilteredData();
+    const data = getChartData();
     const eligible = data.filter(r => classifyKind(r) === 'replication' && hasMatchedOutcome(r));
     const counts = { successful: 0, mixed: 0, failed: 0, inconclusive: 0 };
     eligible.forEach(row => { counts[classifyOutcome(row.outcome)]++; });
