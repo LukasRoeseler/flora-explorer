@@ -1036,6 +1036,8 @@ async function loadMeanCitedness() {
         console.warn('Mean Citedness load failed:', err);
         loadingEl.style.display = 'none';
         errorEl.style.display   = 'block';
+        const det = document.getElementById('mc-error-detail');
+        if (det) det.textContent = String(err);
     }
 }
 document.getElementById('mc-tab').addEventListener('shown.bs.tab', loadMeanCitedness);
