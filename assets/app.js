@@ -1,4 +1,4 @@
-/* FLoRA Explorer — main application logic
+﻿/* FLoRA Explorer — main application logic
    Overview · Browse Studies · Years & Disciplines tabs */
 
 // ----- Theme (light/dark) -----
@@ -911,17 +911,26 @@ window._rerenderAllCharts = function() {
         if (trendsInitialized) renderAllTrends();
     }
     renderBrowseOutcomeChart();
-    if (mcDistChart || mcGamChart) renderMcCharts(window._mcData);
+    if (window._mcData) renderMcCharts(window._mcData);
 };
 
 // ===== Mean Citedness tab =====
-let mcDistChart = null, mcGamChart = null;
 window._mcData = null;
+
+function mcPlotlyTheme() {
+    const dark = currentTheme() === 'dark';
+    return {
+        paper: dark ? '#1d1e29' : '#ffffff',
+        plot:  dark ? '#1d1e29' : '#ffffff',
+        grid:  dark ? '#2d2e3d' : '#eeeaef',
+        font:  dark ? '#e8e6ee' : '#2a2330',
+    };
+}
 
 function renderMcCharts(d) {
     if (!d) return;
     window._mcData = d;
-    const ac = themeAxisColors();
+    const t = mcPlotlyTheme();
     const primary = getComputedStyle(document.documentElement)
         .getPropertyValue('--flora-primary').trim() || '#8b1a4a';
 
@@ -937,98 +946,75 @@ function renderMcCharts(d) {
         <div class="mc-stat"><span class="mc-stat-value">${ov.n_journals.toLocaleString()}</span><span class="mc-stat-label">Journals matched</span></div>
         <div class="mc-stat"><span class="mc-stat-value">${ov.n_disciplines}</span><span class="mc-stat-label">Disciplines</span></div>`;
 
-    // ── GAM stats note ────────────────────────────────────────────────────
-    const st = d.stats;
-    const pStr = st.p_val < 0.001 ? 'p < .001' : `p = ${st.p_val.toFixed(3)}`;
-    document.getElementById('mc-gam-stats').innerHTML =
-        `GAM smooth — edf = ${st.edf}, χ² = ${st.chi_sq}, ${pStr} — ` +
-        `McFadden R² = ${st.r2} — N = ${st.n_model} (successful vs. failed)`;
+    // ── Distribution chart (Plotly stacked bar) ───────────────────────────
+    const bins  = d.histogram || [];
+    const xMids = bins.map(b => +((b.bin_lo + b.bin_hi) / 2).toFixed(2));
+    const hTpl  = 'OMC %{x:.2f}<br>%{y} studies<extra>%{fullData.name}</extra>';
+    Plotly.newPlot('mc-dist-chart', [
+        { x: xMids, y: bins.map(b => b.successful),   name: 'Successful',   type: 'bar', marker: { color: OUTCOME_COLORS.successful },   hovertemplate: hTpl },
+        { x: xMids, y: bins.map(b => b.failed),       name: 'Failed',       type: 'bar', marker: { color: OUTCOME_COLORS.failed },       hovertemplate: hTpl },
+        { x: xMids, y: bins.map(b => b.mixed),        name: 'Mixed',        type: 'bar', marker: { color: OUTCOME_COLORS.mixed },        hovertemplate: hTpl },
+        { x: xMids, y: bins.map(b => b.inconclusive), name: 'Inconclusive', type: 'bar', marker: { color: OUTCOME_COLORS.inconclusive }, hovertemplate: hTpl },
+    ], {
+        barmode: 'stack', bargap: 0.05,
+        margin: { t: 10, r: 10, b: 50, l: 55 },
+        xaxis: { title: 'OpenAlex Mean Citedness (OMC)', gridcolor: t.grid, color: t.font, tickfont: { color: t.font } },
+        yaxis: { title: 'Number of studies',             gridcolor: t.grid, color: t.font, tickfont: { color: t.font } },
+        plot_bgcolor: t.plot, paper_bgcolor: t.paper,
+        font: { family: 'Inter, sans-serif', size: 12, color: t.font },
+        legend: { orientation: 'h', y: -0.2, font: { color: t.font } },
+    }, { displayModeBar: false, responsive: true });
 
-    // ── Distribution chart ────────────────────────────────────────────────
-    const bins  = d.histogram;
-    const xMids = bins.map(b => ((b.bin_lo + b.bin_hi) / 2).toFixed(2));
-    if (mcDistChart) mcDistChart.destroy();
-    mcDistChart = new Chart(document.getElementById('mc-dist-chart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: xMids,
-            datasets: [
-                { label: 'Successful',    data: bins.map(b => b.successful),    backgroundColor: OUTCOME_COLORS.successful },
-                { label: 'Failed',        data: bins.map(b => b.failed),        backgroundColor: OUTCOME_COLORS.failed },
-                { label: 'Mixed',         data: bins.map(b => b.mixed),         backgroundColor: OUTCOME_COLORS.mixed },
-                { label: 'Inconclusive',  data: bins.map(b => b.inconclusive),  backgroundColor: OUTCOME_COLORS.inconclusive }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top', labels: { color: ac.legend, boxWidth: 12, padding: 12, font: { size: 12 } } },
-                tooltip: { mode: 'index', intersect: false,
-                    callbacks: { title: items => `OMC ≈ ${items[0].label}` } }
-            },
-            scales: {
-                x: { stacked: true, title: { display: true, text: 'OpenAlex Mean Citedness (OMC)', color: ac.tick },
-                     grid: { color: ac.grid }, ticks: { color: ac.tick, maxTicksLimit: 10 } },
-                y: { stacked: true, title: { display: true, text: 'Number of studies', color: ac.tick },
-                     grid: { color: ac.grid }, ticks: { color: ac.tick } }
-            },
-            animation: false
-        }
-    });
-
-    // ── GAM curve chart ───────────────────────────────────────────────────
-    // Guard: jsonlite may serialise an empty list() as {} instead of []
+    const st = d.stats || {};
     const gc = Array.isArray(d.gam_curve) ? d.gam_curve : [];
     const isDark = currentTheme() === 'dark';
-    const bandColor = isDark ? 'rgba(224,165,192,0.18)' : 'rgba(139,26,74,0.15)';
     const lineColor = isDark ? '#e0a5c0' : primary;
-    const jitterPts = (Array.isArray(d.jitter) ? d.jitter : []).map(pt => ({
-        x: pt.omc + (Math.random() - 0.5) * 0.12,
-        y: pt.outcome + (Math.random() - 0.5) * 0.06
-    }));
 
-    if (mcGamChart) mcGamChart.destroy();
-    mcGamChart = new Chart(document.getElementById('mc-gam-chart').getContext('2d'), {
-        data: {
-            datasets: [
-                { type: 'line', label: '95% CI (upper)', data: gc.map(p => ({ x: p.omc, y: p.p_hi })),
-                  borderWidth: 0, pointRadius: 0, fill: '+1', backgroundColor: bandColor, tension: 0.4 },
-                { type: 'line', label: '95% CI (lower)', data: gc.map(p => ({ x: p.omc, y: p.p_lo })),
-                  borderWidth: 0, pointRadius: 0, fill: false, tension: 0.4 },
-                { type: 'line', label: 'GAM estimate',   data: gc.map(p => ({ x: p.omc, y: p.p })),
-                  borderColor: lineColor, borderWidth: 2, pointRadius: 0, fill: false, tension: 0.4 },
-                { type: 'scatter', label: 'Studies', data: jitterPts,
-                  pointRadius: 3, pointStyle: 'circle',
-                  backgroundColor: isDark ? 'rgba(200,200,200,0.18)' : 'rgba(100,100,100,0.15)',
-                  borderWidth: 0 }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top',
-                    labels: { color: ac.legend, boxWidth: 12, padding: 12, font: { size: 12 },
-                        filter: item => !item.text.startsWith('95%') } },
-                tooltip: { filter: item => item.datasetIndex >= 2,
-                    callbacks: {
-                        title: items => `OMC = ${Number(items[0].parsed.x).toFixed(2)}`,
-                        label: item => item.datasetIndex === 2
-                            ? `P(success) = ${(item.parsed.y * 100).toFixed(1)}%`
-                            : `Outcome = ${item.parsed.y === 1 ? 'Successful' : 'Failed'}`
-                    }
-                }
-            },
-            scales: {
-                x: { type: 'linear', title: { display: true, text: 'OpenAlex Mean Citedness (OMC)', color: ac.tick },
-                     grid: { color: ac.grid }, ticks: { color: ac.tick } },
-                y: { min: 0, max: 1,
-                     title: { display: true, text: 'P(successful replication)', color: ac.tick },
-                     grid: { color: ac.grid }, ticks: { color: ac.tick,
-                         callback: v => `${Math.round(v * 100)}%` } }
-            },
-            animation: false
-        }
-    });
+    // ── GAM chart (Plotly) ────────────────────────────────────────────────
+    const gamDiv = document.getElementById('mc-gam-chart');
+    const hasGam = gc.length > 0 && st && st.n_model >= 30;
+    if (!hasGam) {
+        gamDiv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:180px;color:var(--flora-muted);font-size:0.9rem;text-align:center;padding:2rem">Not enough data to fit a smooth model<br>(requires ≥30 studies with successful or failed outcomes that have OMC data)</div>';
+        return;
+    }
+    const jitter2 = (Array.isArray(d.jitter) ? d.jitter : []).map(pt => ({
+        x: pt.omc + (Math.random() - 0.5) * 0.15,
+        y: pt.outcome + (Math.random() - 0.5) * 0.06,
+        lbl: pt.outcome === 1 ? 'Successful' : 'Failed',
+    }));
+    const gamTraces = [
+        { x: gc.map(p => p.omc), y: gc.map(p => p.p_lo), type: 'scatter', mode: 'lines',
+          line: { width: 0 }, showlegend: false, hoverinfo: 'skip', name: '_lo' },
+        { x: gc.map(p => p.omc), y: gc.map(p => p.p_hi), type: 'scatter', mode: 'lines',
+          fill: 'tonexty', fillcolor: isDark ? 'rgba(224,165,192,0.18)' : 'rgba(139,26,74,0.12)',
+          line: { width: 0 }, showlegend: false, hoverinfo: 'skip', name: '_hi' },
+        { x: gc.map(p => p.omc), y: gc.map(p => p.p), type: 'scatter', mode: 'lines',
+          line: { color: lineColor, width: 2.5 }, name: 'Smooth fit',
+          hovertemplate: 'OMC = %{x:.2f}<br>P(success) = %{y:.1%}<extra>Smooth fit</extra>' },
+        { x: jitter2.map(p => p.x), y: jitter2.map(p => p.y), type: 'scatter', mode: 'markers',
+          marker: { color: isDark ? 'rgba(210,210,220,0.20)' : 'rgba(80,80,80,0.15)', size: 5, line: { width: 0 } },
+          name: 'Studies', text: jitter2.map(p => p.lbl),
+          hovertemplate: 'OMC = %{x:.2f}<br>%{text}<extra></extra>' },
+    ];
+    const gamLayout = {
+        margin: { t: 10, r: 10, b: 50, l: 60 },
+        xaxis: { title: 'OpenAlex Mean Citedness (OMC)', gridcolor: t.grid, color: t.font, tickfont: { color: t.font } },
+        yaxis: { title: 'P(successful replication)', range: [-0.08, 1.08],
+                 tickformat: '.0%', gridcolor: t.grid, color: t.font, tickfont: { color: t.font } },
+        plot_bgcolor: t.plot, paper_bgcolor: t.paper,
+        font: { family: 'Inter, sans-serif', size: 12, color: t.font },
+        legend: { orientation: 'h', y: -0.2, font: { color: t.font } },
+    };
+    Plotly.newPlot('mc-gam-chart', gamTraces, gamLayout, { displayModeBar: false, responsive: true });
+    const pNote = (st.p_val !== null && st.p_val !== undefined)
+        ? (st.p_val < 0.001 ? 'p < .001' : 'p = ' + st.p_val.toFixed(3))
+        : '';
+    document.getElementById('mc-gam-stats').innerHTML =
+        'Logistic smooth — edf = ' + st.edf +
+        ', χ² = ' + st.chi_sq +
+        (pNote ? ', ' + pNote : '') +
+        ' — McFadden R² = ' + st.r2 +
+        ' — N = ' + st.n_model + ' (successful vs. failed)';
 }
 
 async function loadMeanCitedness() {

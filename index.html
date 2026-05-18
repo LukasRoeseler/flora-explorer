@@ -582,12 +582,12 @@
                         <div id="mc-overview" class="mc-overview-grid" style="display:none;"></div>
                         <div id="mc-dist-card" class="mc-chart-card" style="display:none;">
                             <div class="mc-chart-title">Distribution of studies by journal Mean Citedness</div>
-                            <div class="mc-chart-wrap"><canvas id="mc-dist-chart"></canvas></div>
+                            <div class="mc-chart-wrap"><div id="mc-dist-chart"></div></div>
                         </div>
                         <div id="mc-gam-card" class="mc-chart-card" style="display:none;">
-                            <div class="mc-chart-title">GAM — P(successful replication) vs OMC</div>
+                            <div class="mc-chart-title">P(successful replication) vs Mean Citedness — logistic smooth</div>
                             <p id="mc-gam-stats" class="mc-model-note"></p>
-                            <div class="mc-chart-wrap"><canvas id="mc-gam-chart"></canvas></div>
+                            <div class="mc-chart-wrap"><div id="mc-gam-chart"></div></div>
                         </div>
                         <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
                             Failed to load analysis data.
