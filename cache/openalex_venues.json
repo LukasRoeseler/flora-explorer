@@ -1,0 +1,3353 @@
+{
+  "2023 ieee visualization and visual analytics vis": null,
+  "29th international conference on software engineering icse07": null,
+  "acm transactions on information and system security": {
+    "id": "https://openalex.org/S2642811",
+    "display_name": "ACM Transactions on Information and System Security",
+    "impact_factor": 0.0
+  },
+  "acs central science": {
+    "id": "https://openalex.org/S2765035057",
+    "display_name": "ACS Central Science",
+    "impact_factor": 7.428794992175274
+  },
+  "academic medicine": {
+    "id": "https://openalex.org/S19793444",
+    "display_name": "Academic Medicine",
+    "impact_factor": 1.7248677248677249
+  },
+  "academy of management journal": {
+    "id": "https://openalex.org/S117778295",
+    "display_name": "Academy of Management Journal",
+    "impact_factor": 5.428571428571429
+  },
+  "accounting horizons": {
+    "id": "https://openalex.org/S181356434",
+    "display_name": "Accounting Horizons",
+    "impact_factor": 1.3051948051948052
+  },
+  "accounting, organizations and society": {
+    "id": "https://openalex.org/S198892436",
+    "display_name": "Accounting Organizations and Society",
+    "impact_factor": 7.0
+  },
+  "acta psychologica": {
+    "id": "https://openalex.org/S180067919",
+    "display_name": "Acta Psychologica",
+    "impact_factor": 2.7021723896285916
+  },
+  "addiction": {
+    "id": "https://openalex.org/S70513841",
+    "display_name": "Addiction",
+    "impact_factor": 3.2171945701357467
+  },
+  "administrative science quarterly": {
+    "id": "https://openalex.org/S143668711",
+    "display_name": "Administrative Science Quarterly",
+    "impact_factor": 3.5918367346938775
+  },
+  "adoption & fostering": {
+    "id": "https://openalex.org/S192886043",
+    "display_name": "Adoption & Fostering",
+    "impact_factor": 0.6304347826086957
+  },
+  "advances in experimental moral psychology": null,
+  "affective science": {
+    "id": "https://openalex.org/S4210212960",
+    "display_name": "Affective Science",
+    "impact_factor": 2.1631205673758864
+  },
+  "age and ageing": {
+    "id": "https://openalex.org/S31768639",
+    "display_name": "Age and Ageing",
+    "impact_factor": 2.1027629665535628
+  },
+  "aggressive behavior": {
+    "id": "https://openalex.org/S45897893",
+    "display_name": "Aggressive Behavior",
+    "impact_factor": 1.7761194029850746
+  },
+  "alcoholism: clinical and experimental research": {
+    "id": "https://openalex.org/S115510430",
+    "display_name": "Alcoholism Clinical and Experimental Research",
+    "impact_factor": 0.0
+  },
+  "american annals of the deaf": {
+    "id": "https://openalex.org/S167084610",
+    "display_name": "American annals of the deaf",
+    "impact_factor": 0.35135135135135137
+  },
+  "american economic journal: applied economics": {
+    "id": "https://openalex.org/S42893225",
+    "display_name": "American Economic Journal Applied Economics",
+    "impact_factor": 6.813559322033898
+  },
+  "american economic review": {
+    "id": "https://openalex.org/S23254222",
+    "display_name": "American Economic Review",
+    "impact_factor": 13.06060606060606
+  },
+  "american educational research journal": {
+    "id": "https://openalex.org/S185455288",
+    "display_name": "American Educational Research Journal",
+    "impact_factor": 4.237113402061856
+  },
+  "american journal of agricultural economics": {
+    "id": "https://openalex.org/S91754907",
+    "display_name": "American Journal of Agricultural Economics",
+    "impact_factor": 2.1132075471698113
+  },
+  "american journal of human biology": {
+    "id": "https://openalex.org/S179381287",
+    "display_name": "American Journal of Human Biology",
+    "impact_factor": 1.4405737704918034
+  },
+  "american journal of medical genetics part b: neuropsychiatric genetics": {
+    "id": "https://openalex.org/S2764647521",
+    "display_name": "American Journal of Medical Genetics Part B Neuropsychiatric Genetics",
+    "impact_factor": 1.103448275862069
+  },
+  "american journal of political science": {
+    "id": "https://openalex.org/S90314269",
+    "display_name": "American Journal of Political Science",
+    "impact_factor": 3.970954356846473
+  },
+  "american journal of psychiatry": {
+    "id": "https://openalex.org/S116025658",
+    "display_name": "American Journal of Psychiatry",
+    "impact_factor": 7.140350877192983
+  },
+  "american journal of sociology": {
+    "id": "https://openalex.org/S122471516",
+    "display_name": "American Journal of Sociology",
+    "impact_factor": 0.9149659863945578
+  },
+  "american political science review": {
+    "id": "https://openalex.org/S176007004",
+    "display_name": "American Political Science Review",
+    "impact_factor": 4.781818181818182
+  },
+  "american psychologist": {
+    "id": "https://openalex.org/S80146597",
+    "display_name": "American Psychologist",
+    "impact_factor": 2.940520446096654
+  },
+  "american sociological review": {
+    "id": "https://openalex.org/S157620343",
+    "display_name": "American Sociological Review",
+    "impact_factor": 5.197802197802198
+  },
+  "analysis": {
+    "id": "https://openalex.org/S199944782",
+    "display_name": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "impact_factor": 11.702902115100835
+  },
+  "animal cognition": {
+    "id": "https://openalex.org/S173545869",
+    "display_name": "Animal Cognition",
+    "impact_factor": 1.8986784140969164
+  },
+  "animal welfare": {
+    "id": "https://openalex.org/S144449874",
+    "display_name": "Animal Welfare",
+    "impact_factor": 2.1333333333333333
+  },
+  "annals of neurology": {
+    "id": "https://openalex.org/S114530997",
+    "display_name": "Annals of Neurology",
+    "impact_factor": 4.3732119635890765
+  },
+  "annals of the international communication association": {
+    "id": "https://openalex.org/S2764627845",
+    "display_name": "Annals of the International Communication Association",
+    "impact_factor": 3.6956521739130435
+  },
+  "annals of the rheumatic diseases": {
+    "id": "https://openalex.org/S25650217",
+    "display_name": "Annals of the Rheumatic Diseases",
+    "impact_factor": 1.1332958380202474
+  },
+  "annual review of cognitive linguistics": {
+    "id": "https://openalex.org/S4210178519",
+    "display_name": "Annual Review of Cognitive Linguistics",
+    "impact_factor": 0.0
+  },
+  "anxiety, stress, & coping": {
+    "id": "https://openalex.org/S121370243",
+    "display_name": "Anxiety Stress & Coping",
+    "impact_factor": 2.1491228070175437
+  },
+  "appetite": {
+    "id": "https://openalex.org/S126804734",
+    "display_name": "Appetite",
+    "impact_factor": 3.3095843935538594
+  },
+  "applied animal behaviour science": {
+    "id": "https://openalex.org/S179500637",
+    "display_name": "Applied Animal Behaviour Science",
+    "impact_factor": 2.116519174041298
+  },
+  "applied cognitive psychology": {
+    "id": "https://openalex.org/S91386000",
+    "display_name": "Applied Cognitive Psychology",
+    "impact_factor": 1.3768996960486322
+  },
+  "applied economics letters": {
+    "id": "https://openalex.org/S96544531",
+    "display_name": "Applied Economics Letters",
+    "impact_factor": 1.0603820086260012
+  },
+  "applied linguistics": {
+    "id": "https://openalex.org/S183798913",
+    "display_name": "Applied Linguistics",
+    "impact_factor": 3.1435185185185186
+  },
+  "applied neuropsychology": {
+    "id": "https://openalex.org/S4210172113",
+    "display_name": "Applied Neuropsychology",
+    "impact_factor": 0.0
+  },
+  "applied neuropsychology: adult": {
+    "id": "https://openalex.org/S4210220878",
+    "display_name": "Applied Neuropsychology Adult",
+    "impact_factor": 1.1771117166212535
+  },
+  "applied psycholinguistics": {
+    "id": "https://openalex.org/S38427009",
+    "display_name": "Applied Psycholinguistics",
+    "impact_factor": 1.4793388429752066
+  },
+  "archives of general psychiatry": {
+    "id": "https://openalex.org/S126359496",
+    "display_name": "Archives of General Psychiatry",
+    "impact_factor": 0.0
+  },
+  "archives of sexual behavior": {
+    "id": "https://openalex.org/S28964699",
+    "display_name": "Archives of Sexual Behavior",
+    "impact_factor": 2.168154761904762
+  },
+  "arguing about science": null,
+  "art therapy": {
+    "id": "https://openalex.org/S4210187226",
+    "display_name": "Art Therapy",
+    "impact_factor": 1.3653846153846154
+  },
+  "arthritis & rheumatism": {
+    "id": "https://openalex.org/S132787887",
+    "display_name": "Arthritis & Rheumatism",
+    "impact_factor": 0.0
+  },
+  "arthritis & rheumatology": {
+    "id": "https://openalex.org/S4210186158",
+    "display_name": "Arthritis & Rheumatology",
+    "impact_factor": 3.257270693512304
+  },
+  "arthritis research & therapy": {
+    "id": "https://openalex.org/S149170128",
+    "display_name": "Arthritis Research & Therapy",
+    "impact_factor": 4.383838383838384
+  },
+  "assessment": {
+    "id": "https://openalex.org/S35369596",
+    "display_name": "Psychological Assessment",
+    "impact_factor": 1.1059602649006623
+  },
+  "attention, perception, & psychophysics": {
+    "id": "https://openalex.org/S4210230012",
+    "display_name": "Attention Perception & Psychophysics",
+    "impact_factor": 1.5766590389016018
+  },
+  "australian & new zealand journal of psychiatry": {
+    "id": "https://openalex.org/S179943861",
+    "display_name": "Australian & New Zealand Journal of Psychiatry",
+    "impact_factor": 2.4837662337662336
+  },
+  "bmc geriatrics": {
+    "id": "https://openalex.org/S14643628",
+    "display_name": "BMC Geriatrics",
+    "impact_factor": 3.4575487281136437
+  },
+  "bmc health services research": {
+    "id": "https://openalex.org/S12898181",
+    "display_name": "BMC Health Services Research",
+    "impact_factor": 3.2569113441372735
+  },
+  "basic and applied social psychology": {
+    "id": "https://openalex.org/S207100277",
+    "display_name": "Basic and Applied Social Psychology",
+    "impact_factor": 1.4787234042553192
+  },
+  "behavior analysis in practice": {
+    "id": "https://openalex.org/S2764616832",
+    "display_name": "Behavior Analysis in Practice",
+    "impact_factor": 1.5586206896551724
+  },
+  "behavior analysis: research and practice": {
+    "id": "https://openalex.org/S4210228049",
+    "display_name": "Behavior Analysis Research and Practice",
+    "impact_factor": 0.3387096774193548
+  },
+  "behavior research methods": {
+    "id": "https://openalex.org/S137478622",
+    "display_name": "Behavior Research Methods",
+    "impact_factor": 3.718208092485549
+  },
+  "behavior therapy": {
+    "id": "https://openalex.org/S56240272",
+    "display_name": "Behavior Therapy",
+    "impact_factor": 3.6220095693779903
+  },
+  "behavior and social issues": {
+    "id": "https://openalex.org/S2764486203",
+    "display_name": "Behavior and Social Issues",
+    "impact_factor": 1.1274509803921569
+  },
+  "behavioral development bulletin": null,
+  "behavioral ecology and sociobiology": {
+    "id": "https://openalex.org/S136529485",
+    "display_name": "Behavioral Ecology and Sociobiology",
+    "impact_factor": 1.5736196319018405
+  },
+  "behavioral interventions": {
+    "id": "https://openalex.org/S203327754",
+    "display_name": "Behavioral Interventions",
+    "impact_factor": 0.7538461538461538
+  },
+  "behavioral neuroscience": {
+    "id": "https://openalex.org/S25269534",
+    "display_name": "Behavioral Neuroscience",
+    "impact_factor": 1.6979166666666667
+  },
+  "behavioral and brain sciences": {
+    "id": "https://openalex.org/S59628311",
+    "display_name": "Behavioral and Brain Sciences",
+    "impact_factor": 1.358910891089109
+  },
+  "behaviour change": {
+    "id": "https://openalex.org/S72584517",
+    "display_name": "Behaviour Change",
+    "impact_factor": 0.0
+  },
+  "behaviour research and therapy": {
+    "id": "https://openalex.org/S186589312",
+    "display_name": "Behaviour Research and Therapy",
+    "impact_factor": 2.3529411764705883
+  },
+  "behavioural processes": {
+    "id": "https://openalex.org/S128158437",
+    "display_name": "Behavioural Processes",
+    "impact_factor": 1.142322097378277
+  },
+  "bilingualism: language and cognition": {
+    "id": "https://openalex.org/S24095051",
+    "display_name": "Bilingualism Language and Cognition",
+    "impact_factor": 1.7939189189189189
+  },
+  "biological psychiatry": {
+    "id": "https://openalex.org/S205482884",
+    "display_name": "Biological Psychiatry",
+    "impact_factor": 1.0376497432972047
+  },
+  "biological psychology": {
+    "id": "https://openalex.org/S3694117",
+    "display_name": "Biological Psychology",
+    "impact_factor": 2.08816120906801
+  },
+  "biological and pharmaceutical bulletin": {
+    "id": "https://openalex.org/S165235614",
+    "display_name": "Biological and Pharmaceutical Bulletin",
+    "impact_factor": 1.5509181969949917
+  },
+  "biomedicines": {
+    "id": "https://openalex.org/S2737005842",
+    "display_name": "Biomedicines",
+    "impact_factor": 4.135280011285089
+  },
+  "brain": {
+    "id": "https://openalex.org/S96638545",
+    "display_name": "Brain Research",
+    "impact_factor": 2.7740549828178693
+  },
+  "brain injury": {
+    "id": "https://openalex.org/S166957603",
+    "display_name": "Brain Injury",
+    "impact_factor": 1.6178861788617886
+  },
+  "brain research": {
+    "id": "https://openalex.org/S96638545",
+    "display_name": "Brain Research",
+    "impact_factor": 2.7740549828178693
+  },
+  "brain sciences": {
+    "id": "https://openalex.org/S59628311",
+    "display_name": "Behavioral and Brain Sciences",
+    "impact_factor": 1.358910891089109
+  },
+  "brain stimulation": {
+    "id": "https://openalex.org/S177350161",
+    "display_name": "Brain stimulation",
+    "impact_factor": 1.5989276139410187
+  },
+  "british educational research journal": {
+    "id": "https://openalex.org/S60281869",
+    "display_name": "British Educational Research Journal",
+    "impact_factor": 2.8524590163934427
+  },
+  "british journal of clinical psychology": {
+    "id": "https://openalex.org/S36339387",
+    "display_name": "British Journal of Clinical Psychology",
+    "impact_factor": 1.7771739130434783
+  },
+  "british journal of developmental psychology": {
+    "id": "https://openalex.org/S98289679",
+    "display_name": "British Journal of Developmental Psychology",
+    "impact_factor": 1.6585365853658536
+  },
+  "british journal of educational psychology": {
+    "id": "https://openalex.org/S96095673",
+    "display_name": "British Journal of Educational Psychology",
+    "impact_factor": 3.4107883817427385
+  },
+  "british journal of health psychology": {
+    "id": "https://openalex.org/S52059345",
+    "display_name": "British Journal of Health Psychology",
+    "impact_factor": 2.0256410256410255
+  },
+  "british journal of political science": {
+    "id": "https://openalex.org/S95691132",
+    "display_name": "British Journal of Political Science",
+    "impact_factor": 2.667924528301887
+  },
+  "british journal of psychiatry": {
+    "id": "https://openalex.org/S127936299",
+    "display_name": "The British Journal of Psychiatry",
+    "impact_factor": 2.189516129032258
+  },
+  "british journal of psychology": {
+    "id": "https://openalex.org/S179213746",
+    "display_name": "British Journal of Psychology",
+    "impact_factor": 2.0146341463414634
+  },
+  "british journal of social psychology": {
+    "id": "https://openalex.org/S179906392",
+    "display_name": "British Journal of Social Psychology",
+    "impact_factor": 3.3
+  },
+  "cbelife sciences education": {
+    "id": "https://openalex.org/S94345546",
+    "display_name": "CBE\u2014Life Sciences Education",
+    "impact_factor": 4.220858895705521
+  },
+  "canadian journal of political science": {
+    "id": "https://openalex.org/S195680251",
+    "display_name": "Canadian Journal of Political Science",
+    "impact_factor": 0.6564102564102564
+  },
+  "canadian journal of psychology / revue canadienne de psychologie": {
+    "id": "https://openalex.org/S4210177808",
+    "display_name": "Canadian Journal of Psychology/Revue Canadienne de Psychologie",
+    "impact_factor": 0.0
+  },
+  "cancer cell": {
+    "id": "https://openalex.org/S25671836",
+    "display_name": "Cancer Cell",
+    "impact_factor": 28.40485829959514
+  },
+  "carcinogenesis": {
+    "id": "https://openalex.org/S184620562",
+    "display_name": "Carcinogenesis",
+    "impact_factor": 2.353233830845771
+  },
+  "cell": {
+    "id": "https://openalex.org/S110447773",
+    "display_name": "Cell",
+    "impact_factor": 35.206288343558285
+  },
+  "chemistry education research and practice": {
+    "id": "https://openalex.org/S165966090",
+    "display_name": "Chemistry Education Research and Practice",
+    "impact_factor": 3.2439024390243905
+  },
+  "child abuse & neglect": {
+    "id": "https://openalex.org/S53055215",
+    "display_name": "Child Abuse & Neglect",
+    "impact_factor": 2.819138755980861
+  },
+  "child development": {
+    "id": "https://openalex.org/S109723506",
+    "display_name": "Child Development",
+    "impact_factor": 2.14187643020595
+  },
+  "child maltreatment": {
+    "id": "https://openalex.org/S125441779",
+    "display_name": "Child Maltreatment",
+    "impact_factor": 1.5515151515151515
+  },
+  "child and adolescent mental health": {
+    "id": "https://openalex.org/S8329894",
+    "display_name": "Child and Adolescent Mental Health",
+    "impact_factor": 1.8542713567839195
+  },
+  "chinese medical journal": {
+    "id": "https://openalex.org/S22240167",
+    "display_name": "Chinese Medical Journal",
+    "impact_factor": 3.7517241379310344
+  },
+  "circulation research": {
+    "id": "https://openalex.org/S10652568",
+    "display_name": "Circulation Research",
+    "impact_factor": 4.4428918590522475
+  },
+  "civil wars": {
+    "id": "https://openalex.org/S186818105",
+    "display_name": "Civil Wars",
+    "impact_factor": 0.9358974358974359
+  },
+  "climate": {
+    "id": "https://openalex.org/S80591372",
+    "display_name": "Journal of Climate",
+    "impact_factor": 2.344344344344344
+  },
+  "clinical epigenetics": {
+    "id": "https://openalex.org/S200416800",
+    "display_name": "Clinical Epigenetics",
+    "impact_factor": 4.746691871455576
+  },
+  "clinical oral investigations": {
+    "id": "https://openalex.org/S103663982",
+    "display_name": "Clinical Oral Investigations",
+    "impact_factor": 3.442544459644323
+  },
+  "clinical psychological science": {
+    "id": "https://openalex.org/S2764897075",
+    "display_name": "Clinical Psychological Science",
+    "impact_factor": 3.5474452554744524
+  },
+  "cognition": {
+    "id": "https://openalex.org/S88198767",
+    "display_name": "Cognition",
+    "impact_factor": 2.563876651982379
+  },
+  "cognition & emotion": {
+    "id": "https://openalex.org/S150535073",
+    "display_name": "Cognition & Emotion",
+    "impact_factor": 2.075268817204301
+  },
+  "cognition and categorization": null,
+  "cognition and emotion": null,
+  "cognitive brain research": {
+    "id": "https://openalex.org/S88795315",
+    "display_name": "Cognitive Brain Research",
+    "impact_factor": 0.0
+  },
+  "cognitive development": {
+    "id": "https://openalex.org/S130413023",
+    "display_name": "Cognitive Development",
+    "impact_factor": 1.578723404255319
+  },
+  "cognitive psychology": {
+    "id": "https://openalex.org/S36783443",
+    "display_name": "Cognitive Psychology",
+    "impact_factor": 9.714285714285714
+  },
+  "cognitive science": {
+    "id": "https://openalex.org/S78735424",
+    "display_name": "Cognitive Science",
+    "impact_factor": 1.4093264248704662
+  },
+  "communication education": {
+    "id": "https://openalex.org/S68257882",
+    "display_name": "Communication Education",
+    "impact_factor": 2.150537634408602
+  },
+  "communication research": {
+    "id": "https://openalex.org/S28604305",
+    "display_name": "Communication Research",
+    "impact_factor": 4.125
+  },
+  "communication research reports": {
+    "id": "https://openalex.org/S91956071",
+    "display_name": "Communication Research Reports",
+    "impact_factor": 1.4029850746268657
+  },
+  "comparative education review": {
+    "id": "https://openalex.org/S168329810",
+    "display_name": "Comparative Education Review",
+    "impact_factor": 1.282758620689655
+  },
+  "comparative political studies": {
+    "id": "https://openalex.org/S105556297",
+    "display_name": "Comparative Political Studies",
+    "impact_factor": 3.342995169082126
+  },
+  "complementary therapies in medicine": {
+    "id": "https://openalex.org/S7715451",
+    "display_name": "Complementary Therapies in Medicine",
+    "impact_factor": 2.9532967032967035
+  },
+  "computers & education": {
+    "id": "https://openalex.org/S4210172634",
+    "display_name": "Computers & Education",
+    "impact_factor": 10.94088669950739
+  },
+  "computers in human behavior": {
+    "id": "https://openalex.org/S204030396",
+    "display_name": "Computers in Human Behavior",
+    "impact_factor": 9.883081155433288
+  },
+  "consciousness and cognition": {
+    "id": "https://openalex.org/S75102731",
+    "display_name": "Consciousness and Cognition",
+    "impact_factor": 2.028673835125448
+  },
+  "contemporary educational psychology": {
+    "id": "https://openalex.org/S64506217",
+    "display_name": "Contemporary Educational Psychology",
+    "impact_factor": 3.4313725490196076
+  },
+  "cortex": {
+    "id": "https://openalex.org/S117898428",
+    "display_name": "Cerebral Cortex",
+    "impact_factor": 3.601472134595163
+  },
+  "creativity research journal": {
+    "id": "https://openalex.org/S9211381",
+    "display_name": "Creativity Research Journal",
+    "impact_factor": 4.7368421052631575
+  },
+  "crime & delinquency": {
+    "id": "https://openalex.org/S75692751",
+    "display_name": "Crime & Delinquency",
+    "impact_factor": 1.274447949526814
+  },
+  "crime science": {
+    "id": "https://openalex.org/S2495265100",
+    "display_name": "Crime Science",
+    "impact_factor": 2.6597938144329896
+  },
+  "criminology": {
+    "id": "https://openalex.org/S67613863",
+    "display_name": "Criminology",
+    "impact_factor": 2.2
+  },
+  "cultural diversity & ethnic minority psychology": {
+    "id": "https://openalex.org/S13068289",
+    "display_name": "Cultural Diversity & Ethnic Minority Psychology",
+    "impact_factor": 1.2531120331950207
+  },
+  "current biology": {
+    "id": "https://openalex.org/S128425624",
+    "display_name": "Current Biology",
+    "impact_factor": 5.407735321528425
+  },
+  "current psychology": {
+    "id": "https://openalex.org/S203585231",
+    "display_name": "Current Psychology",
+    "impact_factor": 2.2834018499486124
+  },
+  "cyberpsychology, behavior, and social networking": {
+    "id": "https://openalex.org/S118036144",
+    "display_name": "Cyberpsychology Behavior and Social Networking",
+    "impact_factor": 3.823920265780731
+  },
+  "demographic research": {
+    "id": "https://openalex.org/S184793761",
+    "display_name": "Demographic Research",
+    "impact_factor": 2.2588832487309647
+  },
+  "demography": {
+    "id": "https://openalex.org/S30543418",
+    "display_name": "Demography",
+    "impact_factor": 2.1555555555555554
+  },
+  "development and psychopathology": {
+    "id": "https://openalex.org/S6115874",
+    "display_name": "Development and Psychopathology",
+    "impact_factor": 2.9328165374677004
+  },
+  "developmental brain research": {
+    "id": "https://openalex.org/S20757867",
+    "display_name": "Developmental Brain Research",
+    "impact_factor": 0.0
+  },
+  "developmental cognitive neuroscience": {
+    "id": "https://openalex.org/S176508836",
+    "display_name": "Developmental Cognitive Neuroscience",
+    "impact_factor": 4.5396825396825395
+  },
+  "developmental psychobiology": {
+    "id": "https://openalex.org/S119146558",
+    "display_name": "Developmental Psychobiology",
+    "impact_factor": 1.5649122807017544
+  },
+  "developmental psychology": {
+    "id": "https://openalex.org/S126635229",
+    "display_name": "Developmental Psychology",
+    "impact_factor": 1.4683972911963883
+  },
+  "developmental science": {
+    "id": "https://openalex.org/S154906575",
+    "display_name": "Developmental Science",
+    "impact_factor": 2.492424242424242
+  },
+  "deviant behavior": {
+    "id": "https://openalex.org/S113184965",
+    "display_name": "Deviant Behavior",
+    "impact_factor": 1.7417061611374407
+  },
+  "diabetes": {
+    "id": "https://openalex.org/S129060628",
+    "display_name": "Diabetes",
+    "impact_factor": 0.6219161184210527
+  },
+  "diabetes therapy": {
+    "id": "https://openalex.org/S16535137",
+    "display_name": "Diabetes Therapy",
+    "impact_factor": 4.710601719197708
+  },
+  "diagnostica": {
+    "id": "https://openalex.org/S191847413",
+    "display_name": "Diagnostica",
+    "impact_factor": 0.6097560975609756
+  },
+  "drug and alcohol dependence": {
+    "id": "https://openalex.org/S109998069",
+    "display_name": "Drug and Alcohol Dependence",
+    "impact_factor": 0.7535368577810871
+  },
+  "dysphagia": {
+    "id": "https://openalex.org/S152176358",
+    "display_name": "Dysphagia",
+    "impact_factor": 1.923780487804878
+  },
+  "ebiomedicine": {
+    "id": "https://openalex.org/S2531685872",
+    "display_name": "EBioMedicine",
+    "impact_factor": 8.553962264150943
+  },
+  "ear and hearing": {
+    "id": "https://openalex.org/S42775958",
+    "display_name": "Ear and Hearing",
+    "impact_factor": 2.5
+  },
+  "early child development and care": {
+    "id": "https://openalex.org/S145930022",
+    "display_name": "Early Child Development and Care",
+    "impact_factor": 1.4106280193236715
+  },
+  "early childhood education journal": {
+    "id": "https://openalex.org/S22313829",
+    "display_name": "Early Childhood Education Journal",
+    "impact_factor": 1.4950980392156863
+  },
+  "early childhood research quarterly": {
+    "id": "https://openalex.org/S114141255",
+    "display_name": "Early Childhood Research Quarterly",
+    "impact_factor": 1.9482758620689655
+  },
+  "early human development": {
+    "id": "https://openalex.org/S124424368",
+    "display_name": "Early Human Development",
+    "impact_factor": 1.7692307692307692
+  },
+  "econometrica": {
+    "id": "https://openalex.org/S95464858",
+    "display_name": "Econometrica",
+    "impact_factor": 6.714953271028038
+  },
+  "economic inquiry": {
+    "id": "https://openalex.org/S206615888",
+    "display_name": "Economic Inquiry",
+    "impact_factor": 2.061111111111111
+  },
+  "economics letters": {
+    "id": "https://openalex.org/S36178057",
+    "display_name": "Economics Letters",
+    "impact_factor": 1.9561875480399693
+  },
+  "economics of education review": {
+    "id": "https://openalex.org/S4888523",
+    "display_name": "Economics of Education Review",
+    "impact_factor": 1.6358974358974359
+  },
+  "education  training": {
+    "id": "https://openalex.org/S2764459744",
+    "display_name": "Education + Training",
+    "impact_factor": 2.9855072463768115
+  },
+  "education and training in developmental disabilities": {
+    "id": "https://openalex.org/S165167377",
+    "display_name": "Education and training in developmental disabilities",
+    "impact_factor": 0.0
+  },
+  "education and training in mental retardation and developmental disabilities": {
+    "id": "https://openalex.org/S105317937",
+    "display_name": "Education and training in mental retardation and developmental disabilities",
+    "impact_factor": 0.0
+  },
+  "education and treatment of children": {
+    "id": "https://openalex.org/S144739066",
+    "display_name": "Education and Treatment of Children",
+    "impact_factor": 1.1639344262295082
+  },
+  "educational evaluation and policy analysis": {
+    "id": "https://openalex.org/S138127711",
+    "display_name": "Educational Evaluation and Policy Analysis",
+    "impact_factor": 2.8461538461538463
+  },
+  "educational psychologist": {
+    "id": "https://openalex.org/S168863630",
+    "display_name": "Educational Psychologist",
+    "impact_factor": 8.023255813953488
+  },
+  "educational researcher": {
+    "id": "https://openalex.org/S55175622",
+    "display_name": "Educational Researcher",
+    "impact_factor": 2.9735099337748343
+  },
+  "educational studies in mathematics": {
+    "id": "https://openalex.org/S119483640",
+    "display_name": "Educational Studies in Mathematics",
+    "impact_factor": 1.8888888888888888
+  },
+  "emotion": {
+    "id": "https://openalex.org/S118198609",
+    "display_name": "Emotion",
+    "impact_factor": 1.5023923444976077
+  },
+  "emotion review": {
+    "id": "https://openalex.org/S47098207",
+    "display_name": "Emotion Review",
+    "impact_factor": 3.016949152542373
+  },
+  "episteme": {
+    "id": "https://openalex.org/S116734912",
+    "display_name": "Episteme",
+    "impact_factor": 0.8475609756097561
+  },
+  "ergonomics": {
+    "id": "https://openalex.org/S72159247",
+    "display_name": "Ergonomics",
+    "impact_factor": 2.3816964285714284
+  },
+  "european economic review": {
+    "id": "https://openalex.org/S69338747",
+    "display_name": "European Economic Review",
+    "impact_factor": 2.7074148296593186
+  },
+  "european journal of neuroscience": {
+    "id": "https://openalex.org/S171130801",
+    "display_name": "European Journal of Neuroscience",
+    "impact_factor": 2.2905027932960893
+  },
+  "european journal of pain": {
+    "id": "https://openalex.org/S143744428",
+    "display_name": "European Journal of Pain",
+    "impact_factor": 2.4375
+  },
+  "european journal of personality": {
+    "id": "https://openalex.org/S13823553",
+    "display_name": "European Journal of Personality",
+    "impact_factor": 2.8257575757575757
+  },
+  "european journal of psychotraumatology": {
+    "id": "https://openalex.org/S2737785665",
+    "display_name": "European journal of psychotraumatology",
+    "impact_factor": 3.2989214175654853
+  },
+  "european journal of social psychology": {
+    "id": "https://openalex.org/S10288104",
+    "display_name": "European Journal of Social Psychology",
+    "impact_factor": 1.8996138996138996
+  },
+  "european journal of sport science": {
+    "id": "https://openalex.org/S18135458",
+    "display_name": "European Journal of Sport Science",
+    "impact_factor": 2.468045112781955
+  },
+  "european review of agricultural economics": {
+    "id": "https://openalex.org/S32361082",
+    "display_name": "European Review of Agricultural Economics",
+    "impact_factor": 2.7818181818181817
+  },
+  "european sociological review": {
+    "id": "https://openalex.org/S159327246",
+    "display_name": "European Sociological Review",
+    "impact_factor": 2.4186046511627906
+  },
+  "evaluating second language education": null,
+  "evaluation and program planning": {
+    "id": "https://openalex.org/S1842953",
+    "display_name": "Evaluation and Program Planning",
+    "impact_factor": 1.8780487804878048
+  },
+  "evolution and human behavior": {
+    "id": "https://openalex.org/S148068116",
+    "display_name": "Evolution and Human Behavior",
+    "impact_factor": 1.9307692307692308
+  },
+  "evolutionary behavioral sciences": {
+    "id": "https://openalex.org/S2764473005",
+    "display_name": "Evolutionary Behavioral Sciences",
+    "impact_factor": 1.2191780821917808
+  },
+  "exceptional children": {
+    "id": "https://openalex.org/S93932044",
+    "display_name": "Exceptional Children",
+    "impact_factor": 1.9733333333333334
+  },
+  "experimental brain research": {
+    "id": "https://openalex.org/S45281609",
+    "display_name": "Experimental Brain Research",
+    "impact_factor": 1.9439421338155516
+  },
+  "experimental economics": {
+    "id": "https://openalex.org/S181493553",
+    "display_name": "Experimental Economics",
+    "impact_factor": 1.5714285714285714
+  },
+  "experimental philosophy": null,
+  "experimental physiology": {
+    "id": "https://openalex.org/S65894173",
+    "display_name": "Experimental Physiology",
+    "impact_factor": 2.174019607843137
+  },
+  "experimental psychology": {
+    "id": "https://openalex.org/S26008998",
+    "display_name": "Journal of Experimental Psychology Human Perception & Performance",
+    "impact_factor": 3.5161290322580645
+  },
+  "families in society: the journal of contemporary social services": {
+    "id": "https://openalex.org/S2764619794",
+    "display_name": "Families in Society The Journal of Contemporary Social Services",
+    "impact_factor": 0.9529914529914529
+  },
+  "financial accountability & management": {
+    "id": "https://openalex.org/S178634671",
+    "display_name": "Financial Accountability and Management",
+    "impact_factor": 1.9245283018867925
+  },
+  "findings of the association for computational linguistics: emnlp 2020": null,
+  "focus on autism and other developmental disabilities": {
+    "id": "https://openalex.org/S37614297",
+    "display_name": "Focus on Autism and Other Developmental Disabilities",
+    "impact_factor": 0.875
+  },
+  "foreign language annals": {
+    "id": "https://openalex.org/S134096877",
+    "display_name": "Foreign Language Annals",
+    "impact_factor": 1.3525179856115108
+  },
+  "frontiers in aging neuroscience": {
+    "id": "https://openalex.org/S118428158",
+    "display_name": "Frontiers in Aging Neuroscience",
+    "impact_factor": 4.028194361127775
+  },
+  "frontiers in human neuroscience": {
+    "id": "https://openalex.org/S146364893",
+    "display_name": "Frontiers in Human Neuroscience",
+    "impact_factor": 2.984536082474227
+  },
+  "frontiers in pediatrics": {
+    "id": "https://openalex.org/S2596117549",
+    "display_name": "Frontiers in Pediatrics",
+    "impact_factor": 1.5922303721814723
+  },
+  "frontiers in psychiatry": {
+    "id": "https://openalex.org/S92766711",
+    "display_name": "Frontiers in Psychiatry",
+    "impact_factor": 2.9109563942836205
+  },
+  "frontiers in psychology": {
+    "id": "https://openalex.org/S9692511",
+    "display_name": "Frontiers in Psychology",
+    "impact_factor": 3.023114706732158
+  },
+  "g3 genesgenomesgenetics": null,
+  "games and economic behavior": {
+    "id": "https://openalex.org/S94044085",
+    "display_name": "Games and Economic Behavior",
+    "impact_factor": 1.2282608695652173
+  },
+  "gaming law review and economics": {
+    "id": "https://openalex.org/S127778378",
+    "display_name": "Gaming Law Review and Economics",
+    "impact_factor": 0.0
+  },
+  "gastroenterology": {
+    "id": "https://openalex.org/S143352558",
+    "display_name": "Gastroenterology",
+    "impact_factor": 0.5006545620126359
+  },
+  "geburtshilfe und frauenheilkunde": {
+    "id": "https://openalex.org/S146294059",
+    "display_name": "Geburtshilfe und Frauenheilkunde",
+    "impact_factor": 0.30124223602484473
+  },
+  "generative adversarial networks for image-to-image translation": null,
+  "genes, brain and behavior": null,
+  "genome research": {
+    "id": "https://openalex.org/S43092948",
+    "display_name": "Genome Research",
+    "impact_factor": 7.385395537525355
+  },
+  "gesellschaft f\u00fcr informatik e.v.": {
+    "id": "https://openalex.org/S4306418877",
+    "display_name": "Informatik bewegt: Informatik - . Jahrestagung der Gesellschaft f\u00fcr Informatik e.v.",
+    "impact_factor": 0.0
+  },
+  "gut": {
+    "id": "https://openalex.org/S3251770",
+    "display_name": "Gut",
+    "impact_factor": 9.270520231213872
+  },
+  "harvard kennedy school misinformation review": {
+    "id": "https://openalex.org/S5407028046",
+    "display_name": "Harvard Kennedy School Misinformation Review",
+    "impact_factor": 4.318181818181818
+  },
+  "health affairs": {
+    "id": "https://openalex.org/S4210185023",
+    "display_name": "Health Affairs",
+    "impact_factor": 4.067615658362989
+  },
+  "health education journal": {
+    "id": "https://openalex.org/S96613078",
+    "display_name": "Health Education Journal",
+    "impact_factor": 1.6031746031746033
+  },
+  "health education research": {
+    "id": "https://openalex.org/S81330422",
+    "display_name": "Health Education Research",
+    "impact_factor": 1.5813953488372092
+  },
+  "health expectations": {
+    "id": "https://openalex.org/S134406477",
+    "display_name": "Health Expectations",
+    "impact_factor": 2.782561894510226
+  },
+  "health psychology": {
+    "id": "https://openalex.org/S34137071",
+    "display_name": "Health Psychology",
+    "impact_factor": 0.9791271347248577
+  },
+  "hearing research": {
+    "id": "https://openalex.org/S82774605",
+    "display_name": "Hearing Research",
+    "impact_factor": 2.1547861507128308
+  },
+  "hippocampus": {
+    "id": "https://openalex.org/S55111660",
+    "display_name": "Hippocampus",
+    "impact_factor": 2.7534246575342465
+  },
+  "human brain mapping": {
+    "id": "https://openalex.org/S121666818",
+    "display_name": "Human Brain Mapping",
+    "impact_factor": 4.189158016147635
+  },
+  "human genetics": {
+    "id": "https://openalex.org/S199832308",
+    "display_name": "Human Genetics",
+    "impact_factor": 3.4354066985645932
+  },
+  "human molecular genetics": {
+    "id": "https://openalex.org/S166515463",
+    "display_name": "Human Molecular Genetics",
+    "impact_factor": 2.612756264236902
+  },
+  "human nature": {
+    "id": "https://openalex.org/S67524285",
+    "display_name": "Human Nature",
+    "impact_factor": 1.6206896551724137
+  },
+  "human resource management": {
+    "id": "https://openalex.org/S134094273",
+    "display_name": "Human Resource Management",
+    "impact_factor": 5.003508771929824
+  },
+  "human-animal interaction bulletin": {
+    "id": "https://openalex.org/S4387283968",
+    "display_name": "Human-animal interaction bulletin",
+    "impact_factor": 0.0
+  },
+  "icpsr data holdings": {
+    "id": "https://openalex.org/S4363604084",
+    "display_name": "ICPSR Data Holdings",
+    "impact_factor": 0.02826315286928292
+  },
+  "ieee transactions on software engineering": {
+    "id": "https://openalex.org/S8351582",
+    "display_name": "IEEE Transactions on Software Engineering",
+    "impact_factor": 5.184410646387833
+  },
+  "ieee transactions on visualization and computer graphics": {
+    "id": "https://openalex.org/S84775595",
+    "display_name": "IEEE Transactions on Visualization and Computer Graphics",
+    "impact_factor": 3.337132573485303
+  },
+  "ipn - leibniz-institut f\u00fcr die p\u00e4dagogik der naturwissenschaften und mathematik : kiel": null,
+  "ibis": {
+    "id": "https://openalex.org/S4147745",
+    "display_name": "Ibis",
+    "impact_factor": 1.8408163265306123
+  },
+  "implementation science": {
+    "id": "https://openalex.org/S76880069",
+    "display_name": "Implementation Science",
+    "impact_factor": 9.39795918367347
+  },
+  "infant mental health journal": {
+    "id": "https://openalex.org/S4210187777",
+    "display_name": "Infant Mental Health Journal",
+    "impact_factor": 1.293193717277487
+  },
+  "inflammatory bowel diseases": {
+    "id": "https://openalex.org/S45123234",
+    "display_name": "Inflammatory Bowel Diseases",
+    "impact_factor": 2.1694117647058824
+  },
+  "information & management": {
+    "id": "https://openalex.org/S38883057",
+    "display_name": "Information & Management",
+    "impact_factor": 5.409230769230769
+  },
+  "injury prevention": {
+    "id": "https://openalex.org/S81674035",
+    "display_name": "Injury Prevention",
+    "impact_factor": 1.5714285714285714
+  },
+  "instructional science": {
+    "id": "https://openalex.org/S143778727",
+    "display_name": "Instructional Science",
+    "impact_factor": 2.0347222222222223
+  },
+  "intellectual and developmental disabilities": {
+    "id": "https://openalex.org/S38824448",
+    "display_name": "Intellectual and developmental disabilities",
+    "impact_factor": 1.3304347826086957
+  },
+  "intelligence": {
+    "id": "https://openalex.org/S199944782",
+    "display_name": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+    "impact_factor": 11.702902115100835
+  },
+  "international journal for the scholarship of teaching and learning": {
+    "id": "https://openalex.org/S4210214315",
+    "display_name": "International Journal for the Scholarship of Teaching and Learning",
+    "impact_factor": 0.4909090909090909
+  },
+  "international journal of behavioral development": {
+    "id": "https://openalex.org/S51102485",
+    "display_name": "International Journal of Behavioral Development",
+    "impact_factor": 1.4695652173913043
+  },
+  "international journal of bilingualism": {
+    "id": "https://openalex.org/S71689608",
+    "display_name": "International Journal of Bilingualism",
+    "impact_factor": 1.3955223880597014
+  },
+  "international journal of educational technology in higher education": {
+    "id": "https://openalex.org/S4210201537",
+    "display_name": "International Journal of Educational Technology in Higher Education",
+    "impact_factor": 34.9559748427673
+  },
+  "international journal of electronic commerce": {
+    "id": "https://openalex.org/S18436875",
+    "display_name": "International Journal of Electronic Commerce",
+    "impact_factor": 3.3125
+  },
+  "international journal of environment and waste management": {
+    "id": "https://openalex.org/S84339314",
+    "display_name": "International Journal of Environment and Waste Management",
+    "impact_factor": 0.2356687898089172
+  },
+  "international journal of epidemiology": {
+    "id": "https://openalex.org/S13389975",
+    "display_name": "International Journal of Epidemiology",
+    "impact_factor": 4.133056133056133
+  },
+  "international journal of geriatric psychiatry": {
+    "id": "https://openalex.org/S77085303",
+    "display_name": "International Journal of Geriatric Psychiatry",
+    "impact_factor": 2.514745308310992
+  },
+  "international journal of group psychotherapy": {
+    "id": "https://openalex.org/S186249623",
+    "display_name": "International Journal of Group Psychotherapy",
+    "impact_factor": 0.8714285714285714
+  },
+  "international journal of gynecology & obstetrics": {
+    "id": "https://openalex.org/S4210216427",
+    "display_name": "International Journal of Gynecology & Obstetrics",
+    "impact_factor": 1.7335747542679771
+  },
+  "international journal of human-computer interaction": {
+    "id": "https://openalex.org/S165559636",
+    "display_name": "International Journal of Human-Computer Interaction",
+    "impact_factor": 4.477016885553471
+  },
+  "international journal of information management": {
+    "id": "https://openalex.org/S189354248",
+    "display_name": "International Journal of Information Management",
+    "impact_factor": 13.584415584415584
+  },
+  "international journal of innovation management": {
+    "id": "https://openalex.org/S181388337",
+    "display_name": "International Journal of Innovation Management",
+    "impact_factor": 1.6890756302521008
+  },
+  "international journal of police science & management": {
+    "id": "https://openalex.org/S162188394",
+    "display_name": "International Journal of Police Science & Management",
+    "impact_factor": 1.0675675675675675
+  },
+  "international journal of public sector management": {
+    "id": "https://openalex.org/S90998793",
+    "display_name": "International Journal of Public Sector Management",
+    "impact_factor": 3.0
+  },
+  "international journal of research in marketing": {
+    "id": "https://openalex.org/S11810700",
+    "display_name": "International Journal of Research in Marketing",
+    "impact_factor": 5.322222222222222
+  },
+  "international journal of social robotics": {
+    "id": "https://openalex.org/S168738021",
+    "display_name": "International Journal of Social Robotics",
+    "impact_factor": 3.2426229508196722
+  },
+  "international journal of sports physiology and performance": {
+    "id": "https://openalex.org/S2502187214",
+    "display_name": "International Journal of Sports Physiology and Performance",
+    "impact_factor": 2.3815551537070525
+  },
+  "international social work": {
+    "id": "https://openalex.org/S163221538",
+    "display_name": "International Social Work",
+    "impact_factor": 1.0459183673469388
+  },
+  "international studies of management & organization": {
+    "id": "https://openalex.org/S55766468",
+    "display_name": "International Studies of Management and Organization",
+    "impact_factor": 2.5625
+  },
+  "investigative opthalmology & visual science": null,
+  "jama": {
+    "id": "https://openalex.org/S172573765",
+    "display_name": "JAMA",
+    "impact_factor": 7.708817498291182
+  },
+  "jama network open": {
+    "id": "https://openalex.org/S4210217848",
+    "display_name": "JAMA Network Open",
+    "impact_factor": 7.919663103336573
+  },
+  "jama psychiatry": {
+    "id": "https://openalex.org/S2495708506",
+    "display_name": "JAMA Psychiatry",
+    "impact_factor": 10.961467889908256
+  },
+  "jmir mental health": {
+    "id": "https://openalex.org/S2764449704",
+    "display_name": "JMIR Mental Health",
+    "impact_factor": 8.806451612903226
+  },
+  "jmir public health and surveillance": {
+    "id": "https://openalex.org/S2764507669",
+    "display_name": "JMIR Public Health and Surveillance",
+    "impact_factor": 4.071317829457365
+  },
+  "jmir research protocols": {
+    "id": "https://openalex.org/S2739058702",
+    "display_name": "JMIR Research Protocols",
+    "impact_factor": 1.2308429118773947
+  },
+  "japanese psychological research": {
+    "id": "https://openalex.org/S88884646",
+    "display_name": "Japanese Psychological Research",
+    "impact_factor": 0.7228915662650602
+  },
+  "journal for the scientific study of religion": {
+    "id": "https://openalex.org/S207420867",
+    "display_name": "Journal for the Scientific Study of Religion",
+    "impact_factor": 1.0536912751677852
+  },
+  "journal of abnormal psychology": {
+    "id": "https://openalex.org/S121947241",
+    "display_name": "Journal of Abnormal Psychology",
+    "impact_factor": 0.0
+  },
+  "journal of adolescence": {
+    "id": "https://openalex.org/S179289126",
+    "display_name": "Journal of Adolescence",
+    "impact_factor": 2.1415929203539825
+  },
+  "journal of advanced nursing": {
+    "id": "https://openalex.org/S137832324",
+    "display_name": "Journal of Advanced Nursing",
+    "impact_factor": 2.8614768174012593
+  },
+  "journal of advertising": {
+    "id": "https://openalex.org/S103311983",
+    "display_name": "Journal of Advertising",
+    "impact_factor": 6.804597701149425
+  },
+  "journal of advertising research": {
+    "id": "https://openalex.org/S61992289",
+    "display_name": "Journal of Advertising Research",
+    "impact_factor": 2.743119266055046
+  },
+  "journal of affective disorders": {
+    "id": "https://openalex.org/S113871862",
+    "display_name": "Journal of Affective Disorders",
+    "impact_factor": 4.115557370355247
+  },
+  "journal of alzheimers disease": {
+    "id": "https://openalex.org/S1037846118",
+    "display_name": "American Journal of Alzheimer s Disease & Other Dementias\u00ae",
+    "impact_factor": 1.9516129032258065
+  },
+  "journal of anxiety disorders": {
+    "id": "https://openalex.org/S110204754",
+    "display_name": "Journal of Anxiety Disorders",
+    "impact_factor": 3.183406113537118
+  },
+  "journal of applied behavior analysis": {
+    "id": "https://openalex.org/S125122479",
+    "display_name": "Journal of Applied Behavior Analysis",
+    "impact_factor": 2.3859649122807016
+  },
+  "journal of applied econometrics": {
+    "id": "https://openalex.org/S85739584",
+    "display_name": "Journal of Applied Econometrics",
+    "impact_factor": 2.9948453608247423
+  },
+  "journal of applied physiology": {
+    "id": "https://openalex.org/S140889577",
+    "display_name": "Journal of Applied Physiology",
+    "impact_factor": 2.6674698795180722
+  },
+  "journal of applied psychology": {
+    "id": "https://openalex.org/S166002381",
+    "display_name": "Journal of Applied Psychology",
+    "impact_factor": 3.889705882352941
+  },
+  "journal of applied research in memory and cognition": {
+    "id": "https://openalex.org/S2764634622",
+    "display_name": "Journal of Applied Research in Memory and Cognition",
+    "impact_factor": 0.9388888888888889
+  },
+  "journal of applied social psychology": {
+    "id": "https://openalex.org/S161350934",
+    "display_name": "Journal of Applied Social Psychology",
+    "impact_factor": 1.248730964467005
+  },
+  "journal of autism and developmental disorders": {
+    "id": "https://openalex.org/S181451930",
+    "display_name": "Journal of Autism and Developmental Disorders",
+    "impact_factor": 2.0729349736379614
+  },
+  "journal of behavior therapy and experimental psychiatry": {
+    "id": "https://openalex.org/S117021518",
+    "display_name": "Journal of Behavior Therapy and Experimental Psychiatry",
+    "impact_factor": 1.0272727272727273
+  },
+  "journal of behavioral decision making": {
+    "id": "https://openalex.org/S117214846",
+    "display_name": "Journal of Behavioral Decision Making",
+    "impact_factor": 1.1866666666666668
+  },
+  "journal of behavioral education": {
+    "id": "https://openalex.org/S90932718",
+    "display_name": "Journal of Behavioral Education",
+    "impact_factor": 1.3010752688172043
+  },
+  "journal of bone and mineral research": {
+    "id": "https://openalex.org/S128199769",
+    "display_name": "Journal of Bone and Mineral Research",
+    "impact_factor": 4.476653696498055
+  },
+  "journal of broadcasting & electronic media": {
+    "id": "https://openalex.org/S143982487",
+    "display_name": "Journal of Broadcasting & Electronic Media",
+    "impact_factor": 1.608695652173913
+  },
+  "journal of business & economic statistics": {
+    "id": "https://openalex.org/S18095783",
+    "display_name": "Journal of Business and Economic Statistics",
+    "impact_factor": 1.5780590717299579
+  },
+  "journal of business research": {
+    "id": "https://openalex.org/S93284759",
+    "display_name": "Journal of Business Research",
+    "impact_factor": 8.456343792633016
+  },
+  "journal of business venturing": {
+    "id": "https://openalex.org/S66201313",
+    "display_name": "Journal of Business Venturing",
+    "impact_factor": 6.044117647058823
+  },
+  "journal of child language": {
+    "id": "https://openalex.org/S31497010",
+    "display_name": "Journal of Child Language",
+    "impact_factor": 1.4385964912280702
+  },
+  "journal of child psychology and psychiatry": {
+    "id": "https://openalex.org/S177929781",
+    "display_name": "Journal of Child Psychology and Psychiatry",
+    "impact_factor": 3.660674157303371
+  },
+  "journal of clinical psychology": {
+    "id": "https://openalex.org/S640450",
+    "display_name": "Journal of Clinical Psychology",
+    "impact_factor": 1.9809782608695652
+  },
+  "journal of cognition": {
+    "id": "https://openalex.org/S18666220",
+    "display_name": "Journal of Experimental Psychology Learning Memory and Cognition",
+    "impact_factor": 0.9638297872340426
+  },
+  "journal of cognition and culture": {
+    "id": "https://openalex.org/S72721609",
+    "display_name": "Journal of Cognition and Culture",
+    "impact_factor": 0.48214285714285715
+  },
+  "journal of cognitive neuroscience": {
+    "id": "https://openalex.org/S123144817",
+    "display_name": "Journal of Cognitive Neuroscience",
+    "impact_factor": 2.930591259640103
+  },
+  "journal of cognitive psychotherapy": {
+    "id": "https://openalex.org/S18971317",
+    "display_name": "Journal of Cognitive Psychotherapy",
+    "impact_factor": 0.6666666666666666
+  },
+  "journal of communication": {
+    "id": "https://openalex.org/S107737141",
+    "display_name": "Journal of Communication",
+    "impact_factor": 3.9910714285714284
+  },
+  "journal of communication technology": {
+    "id": "https://openalex.org/S4210201094",
+    "display_name": "International Journal of Advanced Research in Science Communication and Technology",
+    "impact_factor": 0.38734306073973535
+  },
+  "journal of community psychology": {
+    "id": "https://openalex.org/S145410213",
+    "display_name": "American Journal of Community Psychology",
+    "impact_factor": 1.4065934065934067
+  },
+  "journal of computer-mediated communication": {
+    "id": "https://openalex.org/S30594836",
+    "display_name": "Journal of Computer-Mediated Communication",
+    "impact_factor": 6.396551724137931
+  },
+  "journal of conflict resolution": {
+    "id": "https://openalex.org/S20177303",
+    "display_name": "Journal of Conflict Resolution",
+    "impact_factor": 1.3006993006993006
+  },
+  "journal of consciousness studies": {
+    "id": "https://openalex.org/S187383566",
+    "display_name": "Journal of Consciousness Studies",
+    "impact_factor": 0.7875
+  },
+  "journal of consulting and clinical psychology": {
+    "id": "https://openalex.org/S118719888",
+    "display_name": "Journal of Consulting and Clinical Psychology",
+    "impact_factor": 2.045643153526971
+  },
+  "journal of consumer psychology": {
+    "id": "https://openalex.org/S163545350",
+    "display_name": "Journal of Consumer Psychology",
+    "impact_factor": 4.394230769230769
+  },
+  "journal of consumer research": {
+    "id": "https://openalex.org/S145429826",
+    "display_name": "Journal of Consumer Research",
+    "impact_factor": 6.1345029239766085
+  },
+  "journal of counseling psychology": {
+    "id": "https://openalex.org/S135831435",
+    "display_name": "Journal of Counseling Psychology",
+    "impact_factor": 1.4155844155844155
+  },
+  "journal of deaf studies and deaf education": {
+    "id": "https://openalex.org/S75150585",
+    "display_name": "The Journal of Deaf Studies and Deaf Education",
+    "impact_factor": 1.9655172413793103
+  },
+  "journal of developmental & behavioral pediatrics": {
+    "id": "https://openalex.org/S116305490",
+    "display_name": "Journal of Developmental & Behavioral Pediatrics",
+    "impact_factor": 1.08
+  },
+  "journal of early intervention": {
+    "id": "https://openalex.org/S114004174",
+    "display_name": "Journal of Early Intervention",
+    "impact_factor": 0.9743589743589743
+  },
+  "journal of economic behavior & organization": {
+    "id": "https://openalex.org/S62201805",
+    "display_name": "Journal of Economic Behavior & Organization",
+    "impact_factor": 2.390466531440162
+  },
+  "journal of economic theory": {
+    "id": "https://openalex.org/S149131268",
+    "display_name": "Journal of Economic Theory",
+    "impact_factor": 1.2985611510791366
+  },
+  "journal of educational administration": {
+    "id": "https://openalex.org/S88066655",
+    "display_name": "Journal of Educational Administration",
+    "impact_factor": 2.4482758620689653
+  },
+  "journal of educational psychology": {
+    "id": "https://openalex.org/S61703936",
+    "display_name": "Journal of Educational Psychology",
+    "impact_factor": 2.130841121495327
+  },
+  "journal of environmental psychology": {
+    "id": "https://openalex.org/S32271328",
+    "display_name": "Journal of Environmental Psychology",
+    "impact_factor": 4.4872521246458925
+  },
+  "journal of experimental child psychology": {
+    "id": "https://openalex.org/S201005279",
+    "display_name": "Journal of Experimental Child Psychology",
+    "impact_factor": 2.065868263473054
+  },
+  "journal of experimental political science": {
+    "id": "https://openalex.org/S4210184980",
+    "display_name": "Journal of Experimental Political Science",
+    "impact_factor": 2.0892857142857144
+  },
+  "journal of experimental psychology": {
+    "id": "https://openalex.org/S26008998",
+    "display_name": "Journal of Experimental Psychology Human Perception & Performance",
+    "impact_factor": 3.5161290322580645
+  },
+  "journal of experimental psychology: general": {
+    "id": "https://openalex.org/S62013203",
+    "display_name": "Journal of Experimental Psychology General",
+    "impact_factor": 1.8383838383838385
+  },
+  "journal of experimental psychology: human learning and memory": null,
+  "journal of experimental psychology: human perception and performance": {
+    "id": "https://openalex.org/S26008998",
+    "display_name": "Journal of Experimental Psychology Human Perception & Performance",
+    "impact_factor": 3.5161290322580645
+  },
+  "journal of experimental psychology: learning, memory, and cognition": {
+    "id": "https://openalex.org/S18666220",
+    "display_name": "Journal of Experimental Psychology Learning Memory and Cognition",
+    "impact_factor": 0.9638297872340426
+  },
+  "journal of experimental social psychology": {
+    "id": "https://openalex.org/S12410666",
+    "display_name": "Journal of Experimental Social Psychology",
+    "impact_factor": 1.4904214559386972
+  },
+  "journal of family business strategy": {
+    "id": "https://openalex.org/S118119388",
+    "display_name": "Journal of Family Business Strategy",
+    "impact_factor": 3.2653061224489797
+  },
+  "journal of financial economics": {
+    "id": "https://openalex.org/S149240962",
+    "display_name": "Journal of Financial Economics",
+    "impact_factor": 9.52887537993921
+  },
+  "journal of financial markets": {
+    "id": "https://openalex.org/S127646213",
+    "display_name": "Journal of Financial Markets",
+    "impact_factor": 1.6944444444444444
+  },
+  "journal of financial therapy": {
+    "id": "https://openalex.org/S2737115228",
+    "display_name": "Journal of Financial Therapy",
+    "impact_factor": 0.28125
+  },
+  "journal of gambling studies": {
+    "id": "https://openalex.org/S15335648",
+    "display_name": "Journal of Gambling Studies",
+    "impact_factor": 1.75
+  },
+  "journal of general internal medicine": {
+    "id": "https://openalex.org/S116608325",
+    "display_name": "Journal of General Internal Medicine",
+    "impact_factor": 1.8150289017341041
+  },
+  "journal of genetics": {
+    "id": "https://openalex.org/S115516119",
+    "display_name": "Journal of Genetics",
+    "impact_factor": 1.1388888888888888
+  },
+  "journal of health communication": {
+    "id": "https://openalex.org/S27931387",
+    "display_name": "Journal of Health Communication",
+    "impact_factor": 2.2378048780487805
+  },
+  "journal of interactive marketing": {
+    "id": "https://openalex.org/S92709572",
+    "display_name": "Journal of Interactive Marketing",
+    "impact_factor": 2.958904109589041
+  },
+  "journal of international business studies": {
+    "id": "https://openalex.org/S38024979",
+    "display_name": "Journal of International Business Studies",
+    "impact_factor": 6.763819095477387
+  },
+  "journal of interprofessional care": {
+    "id": "https://openalex.org/S40080443",
+    "display_name": "Journal of Interprofessional Care",
+    "impact_factor": 1.8657407407407407
+  },
+  "journal of investigative psychology and offender profiling": {
+    "id": "https://openalex.org/S177334458",
+    "display_name": "Journal of Investigative Psychology and Offender Profiling",
+    "impact_factor": 0.6274509803921569
+  },
+  "journal of labor economics": {
+    "id": "https://openalex.org/S8557221",
+    "display_name": "Journal of Labor Economics",
+    "impact_factor": 2.4927536231884058
+  },
+  "journal of language and social psychology": {
+    "id": "https://openalex.org/S111893742",
+    "display_name": "Journal of Language and Social Psychology",
+    "impact_factor": 1.577319587628866
+  },
+  "journal of learning disabilities": {
+    "id": "https://openalex.org/S26220619",
+    "display_name": "Journal of Learning Disabilities",
+    "impact_factor": 2.0952380952380953
+  },
+  "journal of mammalogy": {
+    "id": "https://openalex.org/S165569574",
+    "display_name": "Journal of Mammalogy",
+    "impact_factor": 1.8848684210526316
+  },
+  "journal of management": {
+    "id": "https://openalex.org/S122767448",
+    "display_name": "Journal of Management",
+    "impact_factor": 7.682008368200837
+  },
+  "journal of management information systems": {
+    "id": "https://openalex.org/S9954729",
+    "display_name": "Journal of Management Information Systems",
+    "impact_factor": 6.857142857142857
+  },
+  "journal of management studies": {
+    "id": "https://openalex.org/S151705444",
+    "display_name": "Journal of Management Studies",
+    "impact_factor": 5.547120418848167
+  },
+  "journal of marital and family therapy": {
+    "id": "https://openalex.org/S983763965",
+    "display_name": "Journal of Marital and Family Therapy",
+    "impact_factor": 0.9782608695652174
+  },
+  "journal of marketing": {
+    "id": "https://openalex.org/S142990027",
+    "display_name": "Journal of Marketing",
+    "impact_factor": 5.289308176100629
+  },
+  "journal of marketing research": {
+    "id": "https://openalex.org/S119950638",
+    "display_name": "Journal of Marketing Research",
+    "impact_factor": 2.5
+  },
+  "journal of marriage and family": {
+    "id": "https://openalex.org/S146344",
+    "display_name": "Journal of Marriage and the Family",
+    "impact_factor": 2.636704119850187
+  },
+  "journal of medical genetics": {
+    "id": "https://openalex.org/S4210224978",
+    "display_name": "American Journal of Medical Genetics",
+    "impact_factor": 0.0
+  },
+  "journal of medical internet research": {
+    "id": "https://openalex.org/S17147534",
+    "display_name": "Journal of Medical Internet Research",
+    "impact_factor": 6.759837601499063
+  },
+  "journal of memory and language": {
+    "id": "https://openalex.org/S53787413",
+    "display_name": "Journal of Memory and Language",
+    "impact_factor": 2.701657458563536
+  },
+  "journal of monetary economics": {
+    "id": "https://openalex.org/S6711363",
+    "display_name": "Journal of Monetary Economics",
+    "impact_factor": 4.320158102766799
+  },
+  "journal of motor learning and development": {
+    "id": "https://openalex.org/S2764553697",
+    "display_name": "Journal of Motor Learning and Development",
+    "impact_factor": 1.2
+  },
+  "journal of neurology, neurosurgery & psychiatry": {
+    "id": "https://openalex.org/S134773490",
+    "display_name": "Journal of Neurology Neurosurgery & Psychiatry",
+    "impact_factor": 5.808743169398907
+  },
+  "journal of neuroscience": {
+    "id": "https://openalex.org/S5555990",
+    "display_name": "Journal of Neuroscience",
+    "impact_factor": 3.55447247706422
+  },
+  "journal of obsessive-compulsive and related disorders": {
+    "id": "https://openalex.org/S2504628507",
+    "display_name": "Journal of Obsessive-Compulsive and Related Disorders",
+    "impact_factor": 1.6372549019607843
+  },
+  "journal of occupational & environmental medicine": {
+    "id": "https://openalex.org/S156862075",
+    "display_name": "Journal of Occupational and Environmental Medicine",
+    "impact_factor": 0.8813559322033898
+  },
+  "journal of occupational health psychology": {
+    "id": "https://openalex.org/S3481703",
+    "display_name": "Journal of Occupational Health Psychology",
+    "impact_factor": 4.304347826086956
+  },
+  "journal of occupational rehabilitation": {
+    "id": "https://openalex.org/S147243735",
+    "display_name": "Journal of Occupational Rehabilitation",
+    "impact_factor": 2.097560975609756
+  },
+  "journal of operations management": {
+    "id": "https://openalex.org/S142306484",
+    "display_name": "Journal of Operations Management",
+    "impact_factor": 5.5060975609756095
+  },
+  "journal of organizational behavior": {
+    "id": "https://openalex.org/S160573970",
+    "display_name": "Journal of Organizational Behavior",
+    "impact_factor": 5.063241106719367
+  },
+  "journal of pentecostal and charismatic christianity": {
+    "id": "https://openalex.org/S3207039989",
+    "display_name": "Journal of Pentecostal and Charismatic Christianity",
+    "impact_factor": 0.6379310344827587
+  },
+  "journal of personal selling & sales management": {
+    "id": "https://openalex.org/S968139600",
+    "display_name": "Journal of Personal Selling and Sales Management",
+    "impact_factor": 3.542372881355932
+  },
+  "journal of personality": {
+    "id": "https://openalex.org/S29984966",
+    "display_name": "Journal of Personality and Social Psychology",
+    "impact_factor": 2.511627906976744
+  },
+  "journal of personality assessment": {
+    "id": "https://openalex.org/S40137911",
+    "display_name": "Journal of Personality Assessment",
+    "impact_factor": 1.9661016949152543
+  },
+  "journal of personality disorders": {
+    "id": "https://openalex.org/S157766733",
+    "display_name": "Journal of Personality Disorders",
+    "impact_factor": 2.081081081081081
+  },
+  "journal of personality and social psychology": {
+    "id": "https://openalex.org/S29984966",
+    "display_name": "Journal of Personality and Social Psychology",
+    "impact_factor": 2.511627906976744
+  },
+  "journal of philosophy": {
+    "id": "https://openalex.org/S41650241",
+    "display_name": "The Journal of Philosophy",
+    "impact_factor": 1.6375
+  },
+  "journal of physiotherapy": {
+    "id": "https://openalex.org/S99546260",
+    "display_name": "Journal of physiotherapy",
+    "impact_factor": 1.6844106463878328
+  },
+  "journal of policy analysis and management": {
+    "id": "https://openalex.org/S25370267",
+    "display_name": "Journal of Policy Analysis and Management",
+    "impact_factor": 1.409282700421941
+  },
+  "journal of political economy": {
+    "id": "https://openalex.org/S95323914",
+    "display_name": "Journal of Political Economy",
+    "impact_factor": 5.604982206405694
+  },
+  "journal of positive behavior interventions": {
+    "id": "https://openalex.org/S27825752",
+    "display_name": "Journal of Positive Behavior Interventions",
+    "impact_factor": 1.25
+  },
+  "journal of product & brand management": {
+    "id": "https://openalex.org/S58171247",
+    "display_name": "Journal of Product & Brand Management",
+    "impact_factor": 6.746341463414634
+  },
+  "journal of proteome research": {
+    "id": "https://openalex.org/S74367812",
+    "display_name": "Journal of Proteome Research",
+    "impact_factor": 3.289087947882736
+  },
+  "journal of psychiatric research": {
+    "id": "https://openalex.org/S160879026",
+    "display_name": "Journal of Psychiatric Research",
+    "impact_factor": 2.8481575603557814
+  },
+  "journal of psychoeducational assessment": {
+    "id": "https://openalex.org/S126561628",
+    "display_name": "Journal of Psychoeducational Assessment",
+    "impact_factor": 1.6533333333333333
+  },
+  "journal of public administration research and theory": {
+    "id": "https://openalex.org/S169433491",
+    "display_name": "Journal of Public Administration Research and Theory",
+    "impact_factor": 4.551282051282051
+  },
+  "journal of public policy & marketing": {
+    "id": "https://openalex.org/S37376905",
+    "display_name": "Journal of Public Policy & Marketing",
+    "impact_factor": 4.928571428571429
+  },
+  "journal of quantitative criminology": {
+    "id": "https://openalex.org/S25809236",
+    "display_name": "Journal of Quantitative Criminology",
+    "impact_factor": 0.9239130434782609
+  },
+  "journal of rehabilitation research and development": {
+    "id": "https://openalex.org/S17998212",
+    "display_name": "The Journal of Rehabilitation Research and Development",
+    "impact_factor": 1575.0
+  },
+  "journal of research in personality": {
+    "id": "https://openalex.org/S156995526",
+    "display_name": "Journal of Research in Personality",
+    "impact_factor": 2.3351648351648353
+  },
+  "journal of research in reading": {
+    "id": "https://openalex.org/S46409772",
+    "display_name": "Journal of Research in Reading",
+    "impact_factor": 1.7162162162162162
+  },
+  "journal of research in science teaching": {
+    "id": "https://openalex.org/S171036940",
+    "display_name": "Journal of Research in Science Teaching",
+    "impact_factor": 3.882051282051282
+  },
+  "journal of retailing": {
+    "id": "https://openalex.org/S159120381",
+    "display_name": "Journal of Retailing",
+    "impact_factor": 4.401360544217687
+  },
+  "journal of retailing and consumer services": {
+    "id": "https://openalex.org/S25235501",
+    "display_name": "Journal of Retailing and Consumer Services",
+    "impact_factor": 12.369811320754717
+  },
+  "journal of risk research": {
+    "id": "https://openalex.org/S129686714",
+    "display_name": "Journal of Risk Research",
+    "impact_factor": 2.0080971659919027
+  },
+  "journal of risk and uncertainty": {
+    "id": "https://openalex.org/S106686155",
+    "display_name": "Journal of Risk and Uncertainty",
+    "impact_factor": 1.876923076923077
+  },
+  "journal of school psychology": {
+    "id": "https://openalex.org/S69627091",
+    "display_name": "Journal of School Psychology",
+    "impact_factor": 3.758793969849246
+  },
+  "journal of science education and technology": {
+    "id": "https://openalex.org/S158654976",
+    "display_name": "Journal of Science Education and Technology",
+    "impact_factor": 4.581196581196581
+  },
+  "journal of science and medicine in sport": {
+    "id": "https://openalex.org/S150894996",
+    "display_name": "Journal of science and medicine in sport",
+    "impact_factor": 1.7018469656992083
+  },
+  "journal of second language pronunciation": {
+    "id": "https://openalex.org/S4210220010",
+    "display_name": "Journal of Second Language Pronunciation",
+    "impact_factor": 0.8133333333333334
+  },
+  "journal of second language studies": {
+    "id": "https://openalex.org/S4210224100",
+    "display_name": "Journal of Second Language Studies",
+    "impact_factor": 0.813953488372093
+  },
+  "journal of second language writing": {
+    "id": "https://openalex.org/S192107914",
+    "display_name": "Journal of Second Language Writing",
+    "impact_factor": 4.967948717948718
+  },
+  "journal of semantics": {
+    "id": "https://openalex.org/S146447972",
+    "display_name": "Journal of Semantics",
+    "impact_factor": 0.9117647058823529
+  },
+  "journal of sex & marital therapy": {
+    "id": "https://openalex.org/S114289926",
+    "display_name": "Journal of Sex & Marital Therapy",
+    "impact_factor": 1.4817073170731707
+  },
+  "journal of small business management": {
+    "id": "https://openalex.org/S78792899",
+    "display_name": "Journal of Small Business Management",
+    "impact_factor": 5.453608247422681
+  },
+  "journal of social and personal relationships": {
+    "id": "https://openalex.org/S12430390",
+    "display_name": "Journal of Social and Personal Relationships",
+    "impact_factor": 1.836272040302267
+  },
+  "journal of software: evolution and process": {
+    "id": "https://openalex.org/S4210172359",
+    "display_name": "Journal of Software Evolution and Process",
+    "impact_factor": 1.0530035335689045
+  },
+  "journal of special education technology": {
+    "id": "https://openalex.org/S2764729928",
+    "display_name": "Journal of Special Education Technology",
+    "impact_factor": 3.0
+  },
+  "journal of speech, language, and hearing research": {
+    "id": "https://openalex.org/S110744938",
+    "display_name": "Journal of Speech Language and Hearing Research",
+    "impact_factor": 2.0186104218362284
+  },
+  "journal of sport and exercise psychology": {
+    "id": "https://openalex.org/S25288619",
+    "display_name": "Journal of Sport and Exercise Psychology",
+    "impact_factor": 1.4183673469387754
+  },
+  "journal of sport and social issues": {
+    "id": "https://openalex.org/S4723672",
+    "display_name": "Journal of Sport and Social Issues",
+    "impact_factor": 2.1052631578947367
+  },
+  "journal of sports sciences": {
+    "id": "https://openalex.org/S95965737",
+    "display_name": "Journal of Sports Sciences",
+    "impact_factor": 2.8917748917748916
+  },
+  "journal of strength & conditioning research": {
+    "id": "https://openalex.org/S150708336",
+    "display_name": "The Journal of Strength and Conditioning Research",
+    "impact_factor": 2.002677376171352
+  },
+  "journal of strength and conditioning research": {
+    "id": "https://openalex.org/S150708336",
+    "display_name": "The Journal of Strength and Conditioning Research",
+    "impact_factor": 2.002677376171352
+  },
+  "journal of studies on alcohol": {
+    "id": "https://openalex.org/S4210173431",
+    "display_name": "Journal of Studies on Alcohol",
+    "impact_factor": 0.0
+  },
+  "journal of substance use": {
+    "id": "https://openalex.org/S198818534",
+    "display_name": "Journal of Substance Use",
+    "impact_factor": 0.6186770428015564
+  },
+  "journal of systemic therapies": {
+    "id": "https://openalex.org/S109281061",
+    "display_name": "Journal of Systemic Therapies",
+    "impact_factor": 0.39344262295081966
+  },
+  "journal of teacher education": {
+    "id": "https://openalex.org/S89004459",
+    "display_name": "Journal of Teacher Education",
+    "impact_factor": 4.591549295774648
+  },
+  "journal of theoretical and philosophical psychology": {
+    "id": "https://openalex.org/S150427755",
+    "display_name": "Journal of Theoretical and Philosophical Psychology",
+    "impact_factor": 0.8349514563106796
+  },
+  "journal of urban economics": {
+    "id": "https://openalex.org/S147692640",
+    "display_name": "Journal of Urban Economics",
+    "impact_factor": 5.3671875
+  },
+  "journal of virology": {
+    "id": "https://openalex.org/S96615428",
+    "display_name": "Journal of Virology",
+    "impact_factor": 3.933291770573566
+  },
+  "journal of the academy of marketing science": {
+    "id": "https://openalex.org/S92522684",
+    "display_name": "Journal of the Academy of Marketing Science",
+    "impact_factor": 8.691358024691358
+  },
+  "journal of the american academy of child & adolescent psychiatry": {
+    "id": "https://openalex.org/S60711021",
+    "display_name": "Journal of the American Academy of Child & Adolescent Psychiatry",
+    "impact_factor": 0.501364049712034
+  },
+  "journal of the american geriatrics society": {
+    "id": "https://openalex.org/S204183829",
+    "display_name": "Journal of the American Geriatrics Society",
+    "impact_factor": 2.1818181818181817
+  },
+  "journal of the american medical informatics association": {
+    "id": "https://openalex.org/S129839026",
+    "display_name": "Journal of the American Medical Informatics Association",
+    "impact_factor": 9.73561430793157
+  },
+  "journal of the association for consumer research": {
+    "id": "https://openalex.org/S2735010472",
+    "display_name": "Journal of the Association for Consumer Research",
+    "impact_factor": 1.854368932038835
+  },
+  "journal of the association for information systems": {
+    "id": "https://openalex.org/S30879505",
+    "display_name": "Journal of the Association for Information Systems",
+    "impact_factor": 0.19058515854854527
+  },
+  "journal of the experimental analysis of behavior": {
+    "id": "https://openalex.org/S168850678",
+    "display_name": "Journal of the Experimental Analysis of Behavior",
+    "impact_factor": 1.1758793969849246
+  },
+  "journal of the learning sciences": {
+    "id": "https://openalex.org/S42640028",
+    "display_name": "Journal of the Learning Sciences",
+    "impact_factor": 4.724137931034483
+  },
+  "journal of the scholarship of teaching and learning": {
+    "id": "https://openalex.org/S2764481657",
+    "display_name": "Journal of the Scholarship of Teaching and Learning",
+    "impact_factor": 0.6024096385542169
+  },
+  "judgment and decision making": {
+    "id": "https://openalex.org/S179575189",
+    "display_name": "Judgment and Decision Making",
+    "impact_factor": 1.5408163265306123
+  },
+  "labour economics": {
+    "id": "https://openalex.org/S163774179",
+    "display_name": "Labour Economics",
+    "impact_factor": 1.9667774086378738
+  },
+  "language learning": {
+    "id": "https://openalex.org/S82334308",
+    "display_name": "Language Learning",
+    "impact_factor": 3.506666666666667
+  },
+  "language learning and development": {
+    "id": "https://openalex.org/S85680040",
+    "display_name": "Language Learning and Development",
+    "impact_factor": 0.78125
+  },
+  "language teaching research": {
+    "id": "https://openalex.org/S179605291",
+    "display_name": "Language Teaching Research",
+    "impact_factor": 2.778588807785888
+  },
+  "language testing": {
+    "id": "https://openalex.org/S10038439",
+    "display_name": "Language Testing",
+    "impact_factor": 3.25
+  },
+  "language and cognitive processes": {
+    "id": "https://openalex.org/S58535122",
+    "display_name": "Language and Cognitive Processes",
+    "impact_factor": 0.0
+  },
+  "language in mind": {
+    "id": "https://openalex.org/S4404676867",
+    "display_name": "Studies in language and mind.",
+    "impact_factor": 0.08333333333333333
+  },
+  "language in society": {
+    "id": "https://openalex.org/S123019783",
+    "display_name": "Language in Society",
+    "impact_factor": 0.58
+  },
+  "language, cognition and neuroscience": {
+    "id": "https://openalex.org/S2765072596",
+    "display_name": "Language Cognition and Neuroscience",
+    "impact_factor": 1.6684782608695652
+  },
+  "law and human behavior": {
+    "id": "https://openalex.org/S117927158",
+    "display_name": "Law and Human Behavior",
+    "impact_factor": 1.6666666666666667
+  },
+  "learning & behavior": {
+    "id": "https://openalex.org/S2945435",
+    "display_name": "Animal Learning & Behavior",
+    "impact_factor": 0.0
+  },
+  "learning & memory": {
+    "id": "https://openalex.org/S18666220",
+    "display_name": "Journal of Experimental Psychology Learning Memory and Cognition",
+    "impact_factor": 0.9638297872340426
+  },
+  "learning disability quarterly": {
+    "id": "https://openalex.org/S158069182",
+    "display_name": "Learning Disability Quarterly",
+    "impact_factor": 1.8823529411764706
+  },
+  "learning and individual differences": {
+    "id": "https://openalex.org/S9267903",
+    "display_name": "Learning and Individual Differences",
+    "impact_factor": 4.891959798994975
+  },
+  "learning and instruction": {
+    "id": "https://openalex.org/S78398831",
+    "display_name": "Learning and Instruction",
+    "impact_factor": 5.4052132701421804
+  },
+  "lecture notes in business information processing,agile processes in software engineering and extreme programming": null,
+  "linguistics": {
+    "id": "https://openalex.org/S183798913",
+    "display_name": "Applied Linguistics",
+    "impact_factor": 3.1435185185185186
+  },
+  "linguistics vanguard": {
+    "id": "https://openalex.org/S4210237318",
+    "display_name": "Linguistics Vanguard",
+    "impact_factor": 0.9139344262295082
+  },
+  "los angeles, ca: western psychological corporation": null,
+  "mis quarterly": {
+    "id": "https://openalex.org/S57293258",
+    "display_name": "MIS Quarterly",
+    "impact_factor": 5.348039215686274
+  },
+  "management international review": {
+    "id": "https://openalex.org/S128478731",
+    "display_name": "Management International Review",
+    "impact_factor": 3.1
+  },
+  "management science": {
+    "id": "https://openalex.org/S33323087",
+    "display_name": "Management Science",
+    "impact_factor": 5.059649122807017
+  },
+  "marine biology": {
+    "id": "https://openalex.org/S118082147",
+    "display_name": "Marine Biology",
+    "impact_factor": 2.0355648535564854
+  },
+  "marketing letters": {
+    "id": "https://openalex.org/S148909191",
+    "display_name": "Marketing Letters",
+    "impact_factor": 1.7117117117117118
+  },
+  "medical care": {
+    "id": "https://openalex.org/S79233773",
+    "display_name": "Medical Care",
+    "impact_factor": 1.4835164835164836
+  },
+  "medical image analysis": {
+    "id": "https://openalex.org/S116571295",
+    "display_name": "Medical Image Analysis",
+    "impact_factor": 9.344519015659955
+  },
+  "medical teacher": {
+    "id": "https://openalex.org/S135934248",
+    "display_name": "Medical Teacher",
+    "impact_factor": 3.463768115942029
+  },
+  "medicina sportiva": {
+    "id": "https://openalex.org/S74805302",
+    "display_name": "Medicina Sportiva",
+    "impact_factor": 0.0
+  },
+  "medicine & science in sports & exercise": {
+    "id": "https://openalex.org/S14544163",
+    "display_name": "Medicine & Science in Sports & Exercise",
+    "impact_factor": 0.3734350547730829
+  },
+  "memory & cognition": {
+    "id": "https://openalex.org/S114265899",
+    "display_name": "Memory & Cognition",
+    "impact_factor": 1.643979057591623
+  },
+  "mental health, religion & culture": {
+    "id": "https://openalex.org/S203405392",
+    "display_name": "Mental Health Religion & Culture",
+    "impact_factor": 0.7272727272727273
+  },
+  "midwest studies in philosophy": {
+    "id": "https://openalex.org/S194628308",
+    "display_name": "Midwest Studies in Philosophy",
+    "impact_factor": 0.55
+  },
+  "military medicine": {
+    "id": "https://openalex.org/S207859457",
+    "display_name": "Military Medicine",
+    "impact_factor": 1.0007225433526012
+  },
+  "mind & language": {
+    "id": "https://openalex.org/S13012152",
+    "display_name": "Mind & Language",
+    "impact_factor": 1.3916666666666666
+  },
+  "modelling and assessing vocabulary knowledge": null,
+  "molecular autism": {
+    "id": "https://openalex.org/S1216394",
+    "display_name": "Molecular Autism",
+    "impact_factor": 4.921985815602837
+  },
+  "molecular psychiatry": {
+    "id": "https://openalex.org/S71149355",
+    "display_name": "Molecular Psychiatry",
+    "impact_factor": 7.642072213500785
+  },
+  "molecular therapy nucleic acids": {
+    "id": "https://openalex.org/S2764969478",
+    "display_name": "Molecular Therapy \u2014 Nucleic Acids",
+    "impact_factor": 4.127848101265823
+  },
+  "monographs of the society for research in child development": {
+    "id": "https://openalex.org/S24859740",
+    "display_name": "Monographs of the Society for Research in Child Development",
+    "impact_factor": 112.5
+  },
+  "motivation science": {
+    "id": "https://openalex.org/S4210169014",
+    "display_name": "Motivation Science",
+    "impact_factor": 1.9441340782122905
+  },
+  "multilevel analysis of educational data": null,
+  "na": {
+    "id": "https://openalex.org/S4210222744",
+    "display_name": "Revista Engenharia na Agricultura - REVENG",
+    "impact_factor": 0.3333333333333333
+  },
+  "nations and households in economic growth": null,
+  "nature": {
+    "id": "https://openalex.org/S137773608",
+    "display_name": "Nature",
+    "impact_factor": 16.442163479565053
+  },
+  "nature cell biology": {
+    "id": "https://openalex.org/S151741590",
+    "display_name": "Nature Cell Biology",
+    "impact_factor": 14.575342465753424
+  },
+  "nature climate change": {
+    "id": "https://openalex.org/S183584863",
+    "display_name": "Nature Climate Change",
+    "impact_factor": 11.561569688768607
+  },
+  "nature communications": {
+    "id": "https://openalex.org/S64187185",
+    "display_name": "Nature Communications",
+    "impact_factor": 15.158200745047523
+  },
+  "nature genetics": {
+    "id": "https://openalex.org/S137905309",
+    "display_name": "Nature Genetics",
+    "impact_factor": 15.617554858934168
+  },
+  "nature geoscience": {
+    "id": "https://openalex.org/S48977010",
+    "display_name": "Nature Geoscience",
+    "impact_factor": 11.12199036918138
+  },
+  "nature human behaviour": {
+    "id": "https://openalex.org/S2764866340",
+    "display_name": "Nature Human Behaviour",
+    "impact_factor": 12.146412884333822
+  },
+  "nature medicine": {
+    "id": "https://openalex.org/S203256638",
+    "display_name": "Nature Medicine",
+    "impact_factor": 26.628348214285715
+  },
+  "nature neuroscience": {
+    "id": "https://openalex.org/S2298632",
+    "display_name": "Nature Neuroscience",
+    "impact_factor": 15.841352405721716
+  },
+  "neuro-ophthalmology": {
+    "id": "https://openalex.org/S195816289",
+    "display_name": "Journal of Neuro-Ophthalmology",
+    "impact_factor": 0.9624060150375939
+  },
+  "neuroimage": {
+    "id": "https://openalex.org/S103225281",
+    "display_name": "NeuroImage",
+    "impact_factor": 3.5733882030178328
+  },
+  "neuroimage: clinical": {
+    "id": "https://openalex.org/S2898194095",
+    "display_name": "NeuroImage Clinical",
+    "impact_factor": 2.993197278911565
+  },
+  "neuroreport": {
+    "id": "https://openalex.org/S121278948",
+    "display_name": "Neuroreport",
+    "impact_factor": 2.1007194244604315
+  },
+  "neurobiology of learning and memory": {
+    "id": "https://openalex.org/S78120914",
+    "display_name": "Neurobiology of Learning and Memory",
+    "impact_factor": 1.7309941520467835
+  },
+  "neuroethics": {
+    "id": "https://openalex.org/S112842941",
+    "display_name": "Neuroethics",
+    "impact_factor": 2.3445378151260505
+  },
+  "neurogastroenterology & motility": {
+    "id": "https://openalex.org/S84837402",
+    "display_name": "Neurogastroenterology & Motility",
+    "impact_factor": 2.311450381679389
+  },
+  "neurology": {
+    "id": "https://openalex.org/S79704628",
+    "display_name": "Neurology",
+    "impact_factor": 1.3086229391531254
+  },
+  "neurology bulletin": {
+    "id": "https://openalex.org/S4210169412",
+    "display_name": "Neurology Bulletin",
+    "impact_factor": 0.3409090909090909
+  },
+  "neuron": {
+    "id": "https://openalex.org/S45757444",
+    "display_name": "Neuron",
+    "impact_factor": 11.91255605381166
+  },
+  "neuropsychologia": {
+    "id": "https://openalex.org/S165368631",
+    "display_name": "Neuropsychologia",
+    "impact_factor": 2.0085653104925054
+  },
+  "neuropsychological rehabilitation": {
+    "id": "https://openalex.org/S79074319",
+    "display_name": "Neuropsychological Rehabilitation",
+    "impact_factor": 1.3882978723404256
+  },
+  "neuropsychopharmacology": {
+    "id": "https://openalex.org/S175030738",
+    "display_name": "Neuropsychopharmacology",
+    "impact_factor": 4.2465543644716695
+  },
+  "neuropsychopharmacology reports": {
+    "id": "https://openalex.org/S4210189692",
+    "display_name": "Neuropsychopharmacology Reports",
+    "impact_factor": 2.167300380228137
+  },
+  "neurorehabilitation and neural repair": {
+    "id": "https://openalex.org/S4873485",
+    "display_name": "Neurorehabilitation and neural repair",
+    "impact_factor": 2.977064220183486
+  },
+  "neuroscience letters": {
+    "id": "https://openalex.org/S203050076",
+    "display_name": "Neuroscience Letters",
+    "impact_factor": 1.7693498452012384
+  },
+  "neuroscience and behavioral physiology": {
+    "id": "https://openalex.org/S109304216",
+    "display_name": "Neuroscience and Behavioral Physiology",
+    "impact_factor": 0.5324384787472036
+  },
+  "neuroscience of consciousness": {
+    "id": "https://openalex.org/S2735251646",
+    "display_name": "Neuroscience of Consciousness",
+    "impact_factor": 3.5
+  },
+  "new england journal of medicine": {
+    "id": "https://openalex.org/S62468778",
+    "display_name": "New England Journal of Medicine",
+    "impact_factor": 26.72738486842105
+  },
+  "no\u00fbs": {
+    "id": "https://openalex.org/S170801797",
+    "display_name": "No\u00fbs",
+    "impact_factor": 1.3565891472868217
+  },
+  "nursing administration quarterly": {
+    "id": "https://openalex.org/S2754252760",
+    "display_name": "Nursing Administration Quarterly",
+    "impact_factor": 1.0303030303030303
+  },
+  "nursing ethics": {
+    "id": "https://openalex.org/S150985620",
+    "display_name": "Nursing Ethics",
+    "impact_factor": 2.937837837837838
+  },
+  "obesity research": {
+    "id": "https://openalex.org/S68541908",
+    "display_name": "Obesity Research",
+    "impact_factor": 0.0
+  },
+  "ophthalmic genetics": {
+    "id": "https://openalex.org/S12713009",
+    "display_name": "Ophthalmic Genetics",
+    "impact_factor": 0.7527675276752768
+  },
+  "organization science": {
+    "id": "https://openalex.org/S206124708",
+    "display_name": "Organization Science",
+    "impact_factor": 5.777777777777778
+  },
+  "organizational behavior and human decision processes": {
+    "id": "https://openalex.org/S64744539",
+    "display_name": "Organizational Behavior and Human Decision Processes",
+    "impact_factor": 4.848837209302325
+  },
+  "organizational behavior and human performance": {
+    "id": "https://openalex.org/S157779219",
+    "display_name": "Organizational Behavior and Human Performance",
+    "impact_factor": 0.0
+  },
+  "osteoarthritis and cartilage": {
+    "id": "https://openalex.org/S13054843",
+    "display_name": "Osteoarthritis and Cartilage",
+    "impact_factor": 0.9544969783149663
+  },
+  "oxford bulletin of economics and statistics": {
+    "id": "https://openalex.org/S92565720",
+    "display_name": "Oxford Bulletin of Economics and Statistics",
+    "impact_factor": 1.295
+  },
+  "oxford handbooks online": null,
+  "plos one": {
+    "id": "https://openalex.org/S202381698",
+    "display_name": "PLoS ONE",
+    "impact_factor": 2.626096042887647
+  },
+  "plos genetics": {
+    "id": "https://openalex.org/S103870658",
+    "display_name": "PLoS Genetics",
+    "impact_factor": 3.9004796163069546
+  },
+  "pain": {
+    "id": "https://openalex.org/S140848990",
+    "display_name": "Pain",
+    "impact_factor": 4.0262257696693275
+  },
+  "palgrave communications": {
+    "id": "https://openalex.org/S2737936280",
+    "display_name": "Palgrave Communications",
+    "impact_factor": 0.0
+  },
+  "pediatric rehabilitation": {
+    "id": "https://openalex.org/S32280480",
+    "display_name": "Pediatric Rehabilitation",
+    "impact_factor": 0.0
+  },
+  "peerj": {
+    "id": "https://openalex.org/S1983995261",
+    "display_name": "PeerJ",
+    "impact_factor": 2.783340717766947
+  },
+  "perception": {
+    "id": "https://openalex.org/S173952958",
+    "display_name": "Perception & Psychophysics",
+    "impact_factor": 0.0
+  },
+  "perception & psychophysics": {
+    "id": "https://openalex.org/S173952958",
+    "display_name": "Perception & Psychophysics",
+    "impact_factor": 0.0
+  },
+  "perceptual and motor skills": {
+    "id": "https://openalex.org/S110965136",
+    "display_name": "Perceptual and Motor Skills",
+    "impact_factor": 2.084639498432602
+  },
+  "personality disorders: theory, research, and treatment": {
+    "id": "https://openalex.org/S158413896",
+    "display_name": "Personality Disorders Theory Research and Treatment",
+    "impact_factor": 1.1822222222222223
+  },
+  "personality and individual differences": {
+    "id": "https://openalex.org/S151331055",
+    "display_name": "Personality and Individual Differences",
+    "impact_factor": 1.9281437125748504
+  },
+  "personality and social psychology bulletin": {
+    "id": "https://openalex.org/S187348256",
+    "display_name": "Personality and Social Psychology Bulletin",
+    "impact_factor": 2.501285347043702
+  },
+  "perspectives on psychological science": {
+    "id": "https://openalex.org/S27228949",
+    "display_name": "Perspectives on Psychological Science",
+    "impact_factor": 8.507246376811594
+  },
+  "pharmacogenetics and genomics": {
+    "id": "https://openalex.org/S192301155",
+    "display_name": "Pharmacogenetics and Genomics",
+    "impact_factor": 1.55
+  },
+  "philosophical explorations": {
+    "id": "https://openalex.org/S125458434",
+    "display_name": "Philosophical Explorations",
+    "impact_factor": 1.173913043478261
+  },
+  "philosophical psychology": {
+    "id": "https://openalex.org/S27428843",
+    "display_name": "Philosophical Psychology",
+    "impact_factor": 1.2373333333333334
+  },
+  "philosophical studies": {
+    "id": "https://openalex.org/S147022693",
+    "display_name": "Philosophical Studies",
+    "impact_factor": 1.476958525345622
+  },
+  "philosophical topics": {
+    "id": "https://openalex.org/S117069359",
+    "display_name": "Philosophical Topics",
+    "impact_factor": 0.2857142857142857
+  },
+  "philosophical transactions of the royal society a: mathematical, physical and engineering sciences": {
+    "id": "https://openalex.org/S99517592",
+    "display_name": "Philosophical Transactions of the Royal Society A Mathematical Physical and Engineering Sciences",
+    "impact_factor": 3.2054054054054055
+  },
+  "philosophy and phenomenological research": {
+    "id": "https://openalex.org/S204374153",
+    "display_name": "Philosophy and Phenomenological Research",
+    "impact_factor": 1.4979423868312758
+  },
+  "physical review physics education research": {
+    "id": "https://openalex.org/S4210190682",
+    "display_name": "Physical Review Physics Education Research",
+    "impact_factor": 3.3168316831683167
+  },
+  "physical therapy": {
+    "id": "https://openalex.org/S4210185354",
+    "display_name": "Physical Therapy",
+    "impact_factor": 2.6295336787564767
+  },
+  "planta medica": {
+    "id": "https://openalex.org/S39653451",
+    "display_name": "Planta Medica",
+    "impact_factor": 0.4789189189189189
+  },
+  "poetics": {
+    "id": "https://openalex.org/S79803084",
+    "display_name": "Poetics Today",
+    "impact_factor": 0.8023255813953488
+  },
+  "police quarterly": {
+    "id": "https://openalex.org/S167107504",
+    "display_name": "Police Quarterly",
+    "impact_factor": 3.4444444444444446
+  },
+  "political analysis": {
+    "id": "https://openalex.org/S29331042",
+    "display_name": "Political Analysis",
+    "impact_factor": 3.6956521739130435
+  },
+  "political behavior": {
+    "id": "https://openalex.org/S110036823",
+    "display_name": "Political Behavior",
+    "impact_factor": 3.1016949152542375
+  },
+  "political communication": {
+    "id": "https://openalex.org/S27211427",
+    "display_name": "Political Communication",
+    "impact_factor": 4.253623188405797
+  },
+  "political research quarterly": {
+    "id": "https://openalex.org/S108349823",
+    "display_name": "Political Research Quarterly",
+    "impact_factor": 1.6724890829694323
+  },
+  "political science research and methods": {
+    "id": "https://openalex.org/S2764571748",
+    "display_name": "Political Science Research and Methods",
+    "impact_factor": 2.424390243902439
+  },
+  "political science in history: research programs and political traditions": null,
+  "preventing school failure: alternative education for children and youth": {
+    "id": "https://openalex.org/S171182518",
+    "display_name": "Preventing School Failure Alternative Education for Children and Youth",
+    "impact_factor": 0.8
+  },
+  "prevention science": {
+    "id": "https://openalex.org/S183721526",
+    "display_name": "Prevention Science",
+    "impact_factor": 1.8639455782312926
+  },
+  "proceedings of sinn und bedeutung": {
+    "id": "https://openalex.org/S4306523482",
+    "display_name": "Proceedings of Sinn und Bedeutung",
+    "impact_factor": 0.0
+  },
+  "proceedings of the 17th international conference on mining software repositories": null,
+  "proceedings of the 19th acm sigsoft symposium and the 13th european conference on foundations of software engineering": null,
+  "proceedings of the 2017 acm conference on international computing education research": null,
+  "proceedings of the 2018 chi conference on human factors in computing systems": null,
+  "proceedings of the 2019 chi conference on human factors in computing systems": null,
+  "proceedings of the 21st annual acm symposium on user interface software and technology": null,
+  "proceedings of the 22nd acm internet measurement conference": null,
+  "proceedings of the 30th international conference on software engineering": null,
+  "proceedings of the 33rd annual acm conference on human factors in computing systems": null,
+  "proceedings of the 40th international conference on software engineering": null,
+  "proceedings of the 41st annual meeting of the cognitive science society": null,
+  "proceedings of the 4th annual acm web science conference": null,
+  "proceedings of the 51st acm technical symposium on computer science education": null,
+  "proceedings of the 54th annual meeting of the association for computational linguistics volume 2: short papers": null,
+  "proceedings of the fourth international workshop on computing education research": null,
+  "proceedings of the national academy of sciences": {
+    "id": "https://openalex.org/S125754415",
+    "display_name": "Proceedings of the National Academy of Sciences",
+    "impact_factor": 7.461151646618024
+  },
+  "proceedings of the royal society b: biological sciences": {
+    "id": "https://openalex.org/S3006207977",
+    "display_name": "Proceedings of the Royal Society B Biological Sciences",
+    "impact_factor": 3.4926315789473685
+  },
+  "proceedings of the sigchi conference on human factors in computing systems": null,
+  "professional school counseling": {
+    "id": "https://openalex.org/S2764603359",
+    "display_name": "Professional School Counseling",
+    "impact_factor": 1.2413793103448276
+  },
+  "professional and practice-based learning,human fallibility": null,
+  "psicologia: reflex\u00e3o e cr\u00edtica": {
+    "id": "https://openalex.org/S73564533",
+    "display_name": "Psicologia Reflex\u00e3o e Cr\u00edtica",
+    "impact_factor": 2.3333333333333335
+  },
+  "psicothema": {
+    "id": "https://openalex.org/S135026488",
+    "display_name": "Psicothema",
+    "impact_factor": 3.0987654320987654
+  },
+  "psycextra dataset": {
+    "id": "https://openalex.org/S4306524878",
+    "display_name": "PsycEXTRA Dataset",
+    "impact_factor": 0.013114754098360656
+  },
+  "psyctests dataset": {
+    "id": "https://openalex.org/S4306524922",
+    "display_name": "PsycTESTS Dataset",
+    "impact_factor": 0.06138975966562173
+  },
+  "psychiatric annals": {
+    "id": "https://openalex.org/S59157943",
+    "display_name": "Psychiatric Annals",
+    "impact_factor": 1.1923076923076923
+  },
+  "psychiatry research": {
+    "id": "https://openalex.org/S84074229",
+    "display_name": "Psychiatry Research",
+    "impact_factor": 3.944055944055944
+  },
+  "psychiatry research: neuroimaging": {
+    "id": "https://openalex.org/S4210222969",
+    "display_name": "Psychiatry Research Neuroimaging",
+    "impact_factor": 1.3846153846153846
+  },
+  "psycho-oncology": {
+    "id": "https://openalex.org/S13506822",
+    "display_name": "Psycho-Oncology",
+    "impact_factor": 2.1109375
+  },
+  "psychological assessment": {
+    "id": "https://openalex.org/S35369596",
+    "display_name": "Psychological Assessment",
+    "impact_factor": 1.1059602649006623
+  },
+  "psychological medicine": {
+    "id": "https://openalex.org/S71144982",
+    "display_name": "Psychological Medicine",
+    "impact_factor": 4.02844141069397
+  },
+  "psychological monographs: general and applied": null,
+  "psychological reports": {
+    "id": "https://openalex.org/S147670119",
+    "display_name": "Psychological Reports",
+    "impact_factor": 1.348111658456486
+  },
+  "psychological review": {
+    "id": "https://openalex.org/S35223124",
+    "display_name": "Psychological Review",
+    "impact_factor": 4.568720379146919
+  },
+  "psychological science": {
+    "id": "https://openalex.org/S58854535",
+    "display_name": "Psychological Science",
+    "impact_factor": 5.191256830601093
+  },
+  "psychological trauma: theory, research, practice, and policy": {
+    "id": "https://openalex.org/S135207330",
+    "display_name": "Psychological Trauma Theory Research Practice and Policy",
+    "impact_factor": 1.106024096385542
+  },
+  "psychology in the schools": {
+    "id": "https://openalex.org/S61821002",
+    "display_name": "Psychology in the Schools",
+    "impact_factor": 2.0589928057553957
+  },
+  "psychology of aesthetics, creativity, and the arts": {
+    "id": "https://openalex.org/S154849578",
+    "display_name": "Psychology of Aesthetics Creativity and the Arts",
+    "impact_factor": 1.1453488372093024
+  },
+  "psychology of music": {
+    "id": "https://openalex.org/S124362806",
+    "display_name": "Psychology of Music",
+    "impact_factor": 1.739884393063584
+  },
+  "psychology of sport and exercise": {
+    "id": "https://openalex.org/S131954271",
+    "display_name": "Psychology of sport and exercise",
+    "impact_factor": 3.133047210300429
+  },
+  "psychology of violence": {
+    "id": "https://openalex.org/S101245202",
+    "display_name": "Psychology of Violence",
+    "impact_factor": 1.1305970149253732
+  },
+  "psychology, crime & law": {
+    "id": "https://openalex.org/S46260470",
+    "display_name": "Psychology Crime and Law",
+    "impact_factor": 1.280612244897959
+  },
+  "psychoneuroendocrinology": {
+    "id": "https://openalex.org/S81924583",
+    "display_name": "Psychoneuroendocrinology",
+    "impact_factor": 1.715472481827622
+  },
+  "psychonomic bulletin & review": {
+    "id": "https://openalex.org/S138679565",
+    "display_name": "Psychonomic Bulletin & Review",
+    "impact_factor": 2.6479166666666667
+  },
+  "psychopharmacology": {
+    "id": "https://openalex.org/S80334769",
+    "display_name": "Psychopharmacology",
+    "impact_factor": 2.642361111111111
+  },
+  "psychophysiology": {
+    "id": "https://openalex.org/S167723465",
+    "display_name": "Psychophysiology",
+    "impact_factor": 2.9445350734094617
+  },
+  "psychosomatic medicine": {
+    "id": "https://openalex.org/S78750095",
+    "display_name": "Psychosomatic Medicine",
+    "impact_factor": 1.9634146341463414
+  },
+  "psychotherapy": {
+    "id": "https://openalex.org/S133322011",
+    "display_name": "Psychotherapy",
+    "impact_factor": 1.191358024691358
+  },
+  "psychotherapy research": {
+    "id": "https://openalex.org/S204777700",
+    "display_name": "Psychotherapy Research",
+    "impact_factor": 2.2218045112781954
+  },
+  "public administration review": {
+    "id": "https://openalex.org/S76877748",
+    "display_name": "Public Administration Review",
+    "impact_factor": 3.0
+  },
+  "public health in practice": {
+    "id": "https://openalex.org/S4210186739",
+    "display_name": "Public Health in Practice",
+    "impact_factor": 1.8672566371681416
+  },
+  "public management review": {
+    "id": "https://openalex.org/S37623806",
+    "display_name": "Public Management Review",
+    "impact_factor": 3.7953216374269005
+  },
+  "public opinion quarterly": {
+    "id": "https://openalex.org/S135539873",
+    "display_name": "Public Opinion Quarterly",
+    "impact_factor": 2.883720930232558
+  },
+  "public understanding of science": {
+    "id": "https://openalex.org/S124907306",
+    "display_name": "Public Understanding of Science",
+    "impact_factor": 2.9457831325301207
+  },
+  "qmss2 seminar, bolzano, italy": null,
+  "quarterly journal of experimental psychology": {
+    "id": "https://openalex.org/S4210181449",
+    "display_name": "The Quarterly Journal of Experimental Psychology Section A",
+    "impact_factor": 0.0
+  },
+  "ricyde. revista internacional de ciencias del deporte": {
+    "id": "https://openalex.org/S2737908203",
+    "display_name": "RICYDE Revista Internacional de Ciencias del Deporte",
+    "impact_factor": 0.0
+  },
+  "recall": {
+    "id": "https://openalex.org/S29746465",
+    "display_name": "ReCALL",
+    "impact_factor": 9.285714285714286
+  },
+  "reading and writing": {
+    "id": "https://openalex.org/S94640471",
+    "display_name": "Reading and Writing",
+    "impact_factor": 1.673780487804878
+  },
+  "reading in a foreign language": {
+    "id": "https://openalex.org/S5407051349",
+    "display_name": "Reading in a Foreign Language",
+    "impact_factor": 0.5584415584415584
+  },
+  "relay journal": {
+    "id": "https://openalex.org/S4210194493",
+    "display_name": "Relay Journal",
+    "impact_factor": 0.15
+  },
+  "remedial and special education": {
+    "id": "https://openalex.org/S193250556",
+    "display_name": "Remedial and Special Education",
+    "impact_factor": 2.1782178217821784
+  },
+  "remote sensing of environment": {
+    "id": "https://openalex.org/S141808269",
+    "display_name": "Remote Sensing of Environment",
+    "impact_factor": 9.311993517017829
+  },
+  "representation": {
+    "id": "https://openalex.org/S105424869",
+    "display_name": "Journal of Visual Communication and Image Representation",
+    "impact_factor": 2.433082706766917
+  },
+  "research quarterly for exercise and sport": {
+    "id": "https://openalex.org/S128968821",
+    "display_name": "Research Quarterly for Exercise and Sport",
+    "impact_factor": 1.3926940639269407
+  },
+  "research in developmental disabilities": {
+    "id": "https://openalex.org/S132320204",
+    "display_name": "Research in Developmental Disabilities",
+    "impact_factor": 2.623873873873874
+  },
+  "research in higher education": {
+    "id": "https://openalex.org/S130619902",
+    "display_name": "Research in Higher Education",
+    "impact_factor": 2.1911764705882355
+  },
+  "research in the teaching of english": {
+    "id": "https://openalex.org/S132167368",
+    "display_name": "Research in the Teaching of English",
+    "impact_factor": 0.5606060606060606
+  },
+  "research on child and adolescent psychopathology": {
+    "id": "https://openalex.org/S4210208661",
+    "display_name": "Research on Child and Adolescent Psychopathology",
+    "impact_factor": 2.231023102310231
+  },
+  "research on social work practice": {
+    "id": "https://openalex.org/S188440287",
+    "display_name": "Research on Social Work Practice",
+    "impact_factor": 1.2024922118380061
+  },
+  "resource and energy economics": {
+    "id": "https://openalex.org/S165058066",
+    "display_name": "Resource and Energy Economics",
+    "impact_factor": 2.2023809523809526
+  },
+  "review of economics and statistics": {
+    "id": "https://openalex.org/S180061323",
+    "display_name": "The Review of Economics and Statistics",
+    "impact_factor": 3.827814569536424
+  },
+  "review of economics of the household": {
+    "id": "https://openalex.org/S120253869",
+    "display_name": "Review of Economics of the Household",
+    "impact_factor": 1.120253164556962
+  },
+  "review of finance": {
+    "id": "https://openalex.org/S168273071",
+    "display_name": "International Review of Economics & Finance",
+    "impact_factor": 6.7640105078809105
+  },
+  "review of financial studies": {
+    "id": "https://openalex.org/S170137484",
+    "display_name": "Review of Financial Studies",
+    "impact_factor": 9.725
+  },
+  "review of philosophy and psychology": {
+    "id": "https://openalex.org/S47234696",
+    "display_name": "Review of Philosophy and Psychology",
+    "impact_factor": 1.3663366336633664
+  },
+  "review of religious research": {
+    "id": "https://openalex.org/S118554956",
+    "display_name": "Review of Religious Research",
+    "impact_factor": 0.9689922480620154
+  },
+  "revista espa\u00f1ola de ling\u00fc\u00edstica aplicada/spanish journal of applied linguistics": {
+    "id": "https://openalex.org/S1033826045",
+    "display_name": "Revista Espa\u00f1ola de Ling\u00fc\u00edstica Aplicada/Spanish Journal of Applied Linguistics",
+    "impact_factor": 0.7846153846153846
+  },
+  "royal society open science": {
+    "id": "https://openalex.org/S2737558550",
+    "display_name": "Royal Society Open Science",
+    "impact_factor": 3.410532994923858
+  },
+  "ssrn electronic journal": {
+    "id": "https://openalex.org/S4210172589",
+    "display_name": "SSRN Electronic Journal",
+    "impact_factor": 0.2044302154538375
+  },
+  "scandinavian journal of medicine & science in sports": {
+    "id": "https://openalex.org/S199863227",
+    "display_name": "Scandinavian Journal of Medicine and Science in Sports",
+    "impact_factor": 3.2998236331569664
+  },
+  "schizophrenia bulletin": {
+    "id": "https://openalex.org/S117485531",
+    "display_name": "Schizophrenia Bulletin",
+    "impact_factor": 2.101577909270217
+  },
+  "schizophrenia research": {
+    "id": "https://openalex.org/S144105592",
+    "display_name": "Schizophrenia Research",
+    "impact_factor": 2.696329254727475
+  },
+  "school psychology quarterly": {
+    "id": "https://openalex.org/S153441781",
+    "display_name": "School Psychology Quarterly",
+    "impact_factor": 0.0
+  },
+  "school psychology review": {
+    "id": "https://openalex.org/S117031645",
+    "display_name": "School Psychology Review",
+    "impact_factor": 2.780701754385965
+  },
+  "science": {
+    "id": "https://openalex.org/S3880285",
+    "display_name": "Science",
+    "impact_factor": 18.057617387738365
+  },
+  "science translational medicine": {
+    "id": "https://openalex.org/S24207032",
+    "display_name": "Science Translational Medicine",
+    "impact_factor": 13.594771241830065
+  },
+  "scientific reports": {
+    "id": "https://openalex.org/S196734849",
+    "display_name": "Scientific Reports",
+    "impact_factor": 4.267193411974182
+  },
+  "scientific studies of reading": {
+    "id": "https://openalex.org/S128978809",
+    "display_name": "Scientific Studies of Reading",
+    "impact_factor": 2.704225352112676
+  },
+  "second language research": {
+    "id": "https://openalex.org/S201294665",
+    "display_name": "Second language Research",
+    "impact_factor": 1.8591549295774648
+  },
+  "sex roles": {
+    "id": "https://openalex.org/S73388012",
+    "display_name": "Sex Roles",
+    "impact_factor": 3.0330188679245285
+  },
+  "single case in the social sciences": {
+    "id": "https://openalex.org/S5407048631",
+    "display_name": "Single Case in the Social Sciences",
+    "impact_factor": 0.7368421052631579
+  },
+  "social cognition": {
+    "id": "https://openalex.org/S177779441",
+    "display_name": "Social Cognition",
+    "impact_factor": 0.671875
+  },
+  "social cognitive and affective neuroscience": {
+    "id": "https://openalex.org/S107213193",
+    "display_name": "Social Cognitive and Affective Neuroscience",
+    "impact_factor": 2.857142857142857
+  },
+  "social forces": {
+    "id": "https://openalex.org/S130611943",
+    "display_name": "Social Forces",
+    "impact_factor": 0.9315352697095436
+  },
+  "social justice research": {
+    "id": "https://openalex.org/S83616544",
+    "display_name": "Social Justice Research",
+    "impact_factor": 1.5333333333333334
+  },
+  "social neuroscience": {
+    "id": "https://openalex.org/S15765371",
+    "display_name": "Social Neuroscience",
+    "impact_factor": 1.6056338028169015
+  },
+  "social psychiatry and psychiatric epidemiology": {
+    "id": "https://openalex.org/S189995291",
+    "display_name": "Social Psychiatry and Psychiatric Epidemiology",
+    "impact_factor": 2.5257936507936507
+  },
+  "social psychological and personality science": {
+    "id": "https://openalex.org/S138235560",
+    "display_name": "Social Psychological and Personality Science",
+    "impact_factor": 2.9297297297297296
+  },
+  "social psychology": {
+    "id": "https://openalex.org/S29984966",
+    "display_name": "Journal of Personality and Social Psychology",
+    "impact_factor": 2.511627906976744
+  },
+  "social psychology of education": {
+    "id": "https://openalex.org/S115248504",
+    "display_name": "Social Psychology of Education",
+    "impact_factor": 2.682926829268293
+  },
+  "social science & medicine": {
+    "id": "https://openalex.org/S106822843",
+    "display_name": "Social Science & Medicine",
+    "impact_factor": 3.053223712678494
+  },
+  "social science quarterly": {
+    "id": "https://openalex.org/S76728445",
+    "display_name": "Social Science Quarterly",
+    "impact_factor": 1.3163841807909604
+  },
+  "society & natural resources": {
+    "id": "https://openalex.org/S23642417",
+    "display_name": "Society & Natural Resources",
+    "impact_factor": 1.2690582959641257
+  },
+  "sociometry": {
+    "id": "https://openalex.org/S4210178811",
+    "display_name": "Sociometry",
+    "impact_factor": 0.0
+  },
+  "software testing, verification and reliability": {
+    "id": "https://openalex.org/S83624231",
+    "display_name": "Software Testing Verification and Reliability",
+    "impact_factor": 1.075
+  },
+  "southern economic journal": {
+    "id": "https://openalex.org/S16296580",
+    "display_name": "Southern Economic Journal",
+    "impact_factor": 0.9617486338797814
+  },
+  "spine": {
+    "id": "https://openalex.org/S4026894",
+    "display_name": "Spine",
+    "impact_factor": 2.170316301703163
+  },
+  "sport marketing quarterly": {
+    "id": "https://openalex.org/S2765057658",
+    "display_name": "Sport Marketing Quarterly",
+    "impact_factor": 1.0506329113924051
+  },
+  "strategic management journal": {
+    "id": "https://openalex.org/S102949365",
+    "display_name": "Strategic Management Journal",
+    "impact_factor": 6.483552631578948
+  },
+  "stress": {
+    "id": "https://openalex.org/S176794141",
+    "display_name": "Journal of Traumatic Stress",
+    "impact_factor": 2.7717391304347827
+  },
+  "studies in bilingualism,second language acquisition in a study abroad context": null,
+  "studies in second language acquisition": {
+    "id": "https://openalex.org/S84027950",
+    "display_name": "Studies in Second Language Acquisition",
+    "impact_factor": 3.625698324022346
+  },
+  "survey practice": {
+    "id": "https://openalex.org/S2764509879",
+    "display_name": "Survey Practice",
+    "impact_factor": 0.65625
+  },
+  "system": {
+    "id": "https://openalex.org/S202403813",
+    "display_name": "Reliability Engineering & System Safety",
+    "impact_factor": 9.42003046458492
+  },
+  "tesol quarterly": {
+    "id": "https://openalex.org/S177238307",
+    "display_name": "TESOL Quarterly",
+    "impact_factor": 3.2928571428571427
+  },
+  "teacher education and special education: the journal of the teacher education division of the council for exceptional children": {
+    "id": "https://openalex.org/S31634851",
+    "display_name": "Teacher Education and Special Education The Journal of the Teacher Education Division of the Council for Exceptional Children",
+    "impact_factor": 1.794871794871795
+  },
+  "teaching and teacher education": {
+    "id": "https://openalex.org/S94618750",
+    "display_name": "Teaching and Teacher Education",
+    "impact_factor": 4.0975336322869955
+  },
+  "teaching of psychology": {
+    "id": "https://openalex.org/S51499954",
+    "display_name": "Teaching of Psychology",
+    "impact_factor": 2.6020408163265305
+  },
+  "the accounting review": {
+    "id": "https://openalex.org/S160506855",
+    "display_name": "The Accounting Review",
+    "impact_factor": 4.365079365079365
+  },
+  "the american journal of human genetics": {
+    "id": "https://openalex.org/S134425043",
+    "display_name": "The American Journal of Human Genetics",
+    "impact_factor": 6.187732342007435
+  },
+  "the american journal of psychology": {
+    "id": "https://openalex.org/S206630335",
+    "display_name": "The American Journal of Psychology",
+    "impact_factor": 0.3225806451612903
+  },
+  "the british journal of aesthetics": {
+    "id": "https://openalex.org/S184888067",
+    "display_name": "The British Journal of Aesthetics",
+    "impact_factor": 1.0431654676258992
+  },
+  "the canadian modern language review": {
+    "id": "https://openalex.org/S4306532110",
+    "display_name": "The Canadian Modern Language Review / La revue canadienne des langues vivantes",
+    "impact_factor": 0.0
+  },
+  "the counseling psychologist": {
+    "id": "https://openalex.org/S104827148",
+    "display_name": "The Counseling Psychologist",
+    "impact_factor": 1.4754098360655739
+  },
+  "the economic journal": {
+    "id": "https://openalex.org/S45992627",
+    "display_name": "The Economic Journal",
+    "impact_factor": 3.7547169811320753
+  },
+  "the elementary school journal": {
+    "id": "https://openalex.org/S182159023",
+    "display_name": "The Elementary School Journal",
+    "impact_factor": 1.0512820512820513
+  },
+  "the faseb journal": {
+    "id": "https://openalex.org/S25293849",
+    "display_name": "The FASEB Journal",
+    "impact_factor": 2.7438423645320196
+  },
+  "the international journal of human resource management": {
+    "id": "https://openalex.org/S184846731",
+    "display_name": "The International Journal of Human Resource Management",
+    "impact_factor": 3.6371681415929205
+  },
+  "the japanese journal of psychology": {
+    "id": "https://openalex.org/S90721015",
+    "display_name": "The Japanese journal of psychology",
+    "impact_factor": 0.30851063829787234
+  },
+  "the journal of abnormal and social psychology": {
+    "id": "https://openalex.org/S188273073",
+    "display_name": "The Journal of Abnormal Psychology and Social Psychology",
+    "impact_factor": 0.0
+  },
+  "the journal of clinical endocrinology & metabolism": {
+    "id": "https://openalex.org/S205775358",
+    "display_name": "The Journal of Clinical Endocrinology & Metabolism",
+    "impact_factor": 4.573441734417345
+  },
+  "the journal of early adolescence": {
+    "id": "https://openalex.org/S87117105",
+    "display_name": "The Journal of Early Adolescence",
+    "impact_factor": 0.9191176470588235
+  },
+  "the journal of finance": {
+    "id": "https://openalex.org/S5353659",
+    "display_name": "The Journal of Finance",
+    "impact_factor": 11.026819923371647
+  },
+  "the journal of human resources": {
+    "id": "https://openalex.org/S62957338",
+    "display_name": "The Journal of Human Resources",
+    "impact_factor": 1.3257575757575757
+  },
+  "the journal of nervous and mental disease": {
+    "id": "https://openalex.org/S13566964",
+    "display_name": "The Journal of Nervous and Mental Disease",
+    "impact_factor": 2.08955223880597
+  },
+  "the journal of neuroscience": {
+    "id": "https://openalex.org/S3035086643",
+    "display_name": "The Journal of Mathematical Neuroscience",
+    "impact_factor": 0.0
+  },
+  "the journal of nutrition": {
+    "id": "https://openalex.org/S94854268",
+    "display_name": "The journal of nutrition health & aging",
+    "impact_factor": 4.2492012779552715
+  },
+  "the journal of politics": {
+    "id": "https://openalex.org/S95650557",
+    "display_name": "The Journal of Politics",
+    "impact_factor": 2.423887587822014
+  },
+  "the journal of social psychology": {
+    "id": "https://openalex.org/S75832472",
+    "display_name": "The Journal of Social Psychology",
+    "impact_factor": 1.9075630252100841
+  },
+  "the journal of special education": {
+    "id": "https://openalex.org/S89533336",
+    "display_name": "The Journal of Special Education",
+    "impact_factor": 1.3043478260869565
+  },
+  "the journal of the acoustical society of america": {
+    "id": "https://openalex.org/S11296630",
+    "display_name": "The Journal of the Acoustical Society of America",
+    "impact_factor": 0.663562478835083
+  },
+  "the journals of gerontology: series b": {
+    "id": "https://openalex.org/S2735447094",
+    "display_name": "The Journals of Gerontology Series B",
+    "impact_factor": 2.410344827586207
+  },
+  "the lancet": {
+    "id": "https://openalex.org/S49861241",
+    "display_name": "The Lancet",
+    "impact_factor": 17.535094742460636
+  },
+  "the lancet child & adolescent health": {
+    "id": "https://openalex.org/S2898345135",
+    "display_name": "The Lancet Child & Adolescent Health",
+    "impact_factor": 4.751619870410368
+  },
+  "the lancet diabetes & endocrinology": {
+    "id": "https://openalex.org/S2529869117",
+    "display_name": "The Lancet Diabetes & Endocrinology",
+    "impact_factor": 13.565130260521043
+  },
+  "the lancet psychiatry": {
+    "id": "https://openalex.org/S2531556786",
+    "display_name": "The Lancet Psychiatry",
+    "impact_factor": 7.012750455373406
+  },
+  "the leadership quarterly": {
+    "id": "https://openalex.org/S152304618",
+    "display_name": "The Leadership Quarterly",
+    "impact_factor": 5.693181818181818
+  },
+  "the modern language journal": {
+    "id": "https://openalex.org/S1010844019",
+    "display_name": "The Journal of the Midwest Modern Language Association",
+    "impact_factor": 0.07407407407407407
+  },
+  "the psychological record": {
+    "id": "https://openalex.org/S92682373",
+    "display_name": "The Psychological Record",
+    "impact_factor": 0.9906542056074766
+  },
+  "the quarterly journal of economics": {
+    "id": "https://openalex.org/S203860005",
+    "display_name": "The Quarterly Journal of Economics",
+    "impact_factor": 16.375
+  },
+  "the review of economic studies": {
+    "id": "https://openalex.org/S88935262",
+    "display_name": "The Review of Economic Studies",
+    "impact_factor": 14.852
+  },
+  "the review of financial studies": null,
+  "the science of giving": null,
+  "the tie that binds: identity and political attitudes in the post-civil rights generation": null,
+  "the world journal of biological psychiatry": {
+    "id": "https://openalex.org/S68933629",
+    "display_name": "The World Journal of Biological Psychiatry",
+    "impact_factor": 2.950980392156863
+  },
+  "tourism management": {
+    "id": "https://openalex.org/S6814119",
+    "display_name": "Tourism Management",
+    "impact_factor": 8.897916666666667
+  },
+  "translational psychiatry": {
+    "id": "https://openalex.org/S163345920",
+    "display_name": "Translational Psychiatry",
+    "impact_factor": 5.763808139534884
+  },
+  "twin research and human genetics": {
+    "id": "https://openalex.org/S197285354",
+    "display_name": "Twin Research and Human Genetics",
+    "impact_factor": 0.8790322580645161
+  },
+  "violence and victims": {
+    "id": "https://openalex.org/S91771295",
+    "display_name": "Violence and Victims",
+    "impact_factor": 0.5957446808510638
+  },
+  "virulence": {
+    "id": "https://openalex.org/S2484688887",
+    "display_name": "Virulence",
+    "impact_factor": 4.325542570951586
+  },
+  "vision research": {
+    "id": "https://openalex.org/S68719679",
+    "display_name": "Vision Research",
+    "impact_factor": 1.7033333333333334
+  },
+  "vocabulary learning and instruction": {
+    "id": "https://openalex.org/S5407040489",
+    "display_name": "Vocabulary Learning and Instruction",
+    "impact_factor": 0.41818181818181815
+  },
+  "vocational guidance quarterly": {
+    "id": "https://openalex.org/S2765022630",
+    "display_name": "Vocational Guidance Quarterly",
+    "impact_factor": 0.0
+  },
+  "work, aging and retirement": {
+    "id": "https://openalex.org/S4210193058",
+    "display_name": "Work Aging and Retirement",
+    "impact_factor": 2.9310344827586206
+  },
+  "world development": {
+    "id": "https://openalex.org/S85457386",
+    "display_name": "World Development",
+    "impact_factor": 4.450608930987821
+  },
+  "world politics": {
+    "id": "https://openalex.org/S143110675",
+    "display_name": "World Politics",
+    "impact_factor": 3.0941176470588236
+  },
+  "zdm": {
+    "id": "https://openalex.org/S4210211469",
+    "display_name": "ZDM",
+    "impact_factor": 3.2874015748031495
+  },
+  "zeitschrift f\u00fcr p\u00e4dagogische psychologie": {
+    "id": "https://openalex.org/S60495864",
+    "display_name": "Zeitschrift f\u00fcr P\u00e4dagogische Psychologie",
+    "impact_factor": 0.6060606060606061
+  },
+  "arxiv": {
+    "id": "https://openalex.org/S4306400194",
+    "display_name": "arXiv (Cornell University)",
+    "impact_factor": 0.3016908704257927
+  },
+  "elife": {
+    "id": "https://openalex.org/S1336409049",
+    "display_name": "eLife",
+    "impact_factor": 1.5514683389415724
+  },
+  "\u4e2d\u83ef\u5fc3\u7406\u5b78\u520a": {
+    "id": "https://openalex.org/S4306542696",
+    "display_name": "\u4e2d\u83ef\u5fc3\u7406\u5b78\u520a",
+    "impact_factor": 0.0
+  }
+}

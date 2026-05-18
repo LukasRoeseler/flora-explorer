@@ -1,0 +1,57 @@
+
+
+
+<div id="descriptive-overview" class="section level2">
+<h2>Descriptive Overview</h2>
+<p>The distribution of OMC values for the FLoRA replications with binary
+outcomes is shown below (studies with <code>OMC &gt; 35</code> are
+excluded).</p>
+<div class="figure">
+<img src="impact_factor_figs/hist-1.png" alt="Absolute count of replication outcomes by OMC in the FLoRA database. Studies with OMC &gt; 35 are excluded." width="880" />
+<p class="caption">
+Absolute count of replication outcomes by OMC in the FLoRA database.
+Studies with OMC &gt; 35 are excluded.
+</p>
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
+<p>
+<strong>N = 1634</strong> replications with both an outcome and an OMC
+value (860 successful, 774 failed). Logistic regression with
+log-transformed OMC gave a statistically significant overall model fit,
+<span class="math inline">\(\chi^2\)</span>(1) = 12.55, p &lt; .001. The
+Box–Tidwell test of linearity-in-log-odds was satisfied after
+log-transformation.
+</p>
+<p>
+Model performance is modest: McFadden’s <span
+class="math inline">\(R^2\)</span> = 0.006 (logistic regression) and
+0.007 (GAM); AUC = 0.55 and 0.55 respectively. The OMC at which
+P(success) = 0.50 (logistic model) is 5.31.
+</p>
+<div class="figure">
+<img src="impact_factor_figs/curves-1.png" alt="Predicted probability of successful replication as a function of OMC. Left: logistic regression with log-transformed OMC. Right: GAM. Shaded bands represent 95% confidence intervals." width="880" />
+<p class="caption">
+Predicted probability of successful replication as a function of OMC.
+Left: logistic regression with log-transformed OMC. Right: GAM. Shaded
+bands represent 95% confidence intervals.
+</p>
+</div>
+<p>
+<strong>Role of scientific discipline.</strong> A multilevel logistic
+regression with a random intercept for discipline yields ICC = 0.064,
+meaning 6.4% of the variance in replication outcomes lies between
+disciplines. After accounting for that clustering, log-OMC retains a
+fixed effect of <span class="math inline">\(\hat\beta\)</span> = -0.33
+(p &lt; .001).
+</p>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
+<p>Across model specifications, higher OMC is weakly negatively
+associated with replication success. The effect is small in magnitude
+and the explanatory power is too limited for journal-level citation
+metrics to serve as a meaningful heuristic for judging the replicability
+of individual studies.</p>
+</div>
