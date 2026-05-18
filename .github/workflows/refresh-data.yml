@@ -1,1 +1,53 @@
+name: Refresh citation data
 
+on:
+  schedule:
+    # Monday 04:00 UTC = 06:00 CEST (summer) / 05:00 CET (winter)
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run pipeline
+        id: pipeline
+        env:
+          OC_API_KEY: ${{ secrets.OC_API_KEY }}
+          MY_EMAIL:   ${{ secrets.MY_EMAIL }}
+          MAX_RUNTIME_SECONDS: '18000'   # 5 hours
+        continue-on-error: true
+        run: python scripts/refresh_data.py
+
+      - name: Commit refreshed data and cache
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ cache/ || true
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+          else
+            git commit -m "Citation data refresh: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
+
+      - name: Fail job if pipeline errored
+        if: steps.pipeline.outcome == 'failure'
+        run: |
+          echo "Pipeline failed but progress was committed. Will resume on next run."
+          exit 1

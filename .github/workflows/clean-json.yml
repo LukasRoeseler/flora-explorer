@@ -1,0 +1,55 @@
+name: Clean NaN from JSON
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Clean JSON files
+        run: |
+          python <<'EOF'
+          import re
+          from pathlib import Path
+
+          files = [
+              "data/meta.json",
+              "data/aggregate.json",
+              "data/originals.json",
+          ]
+          for f in files:
+              p = Path(f)
+              if not p.exists():
+                  print(f"skip {f} (missing)")
+                  continue
+              txt = p.read_text()
+              before = len(re.findall(r"\bNaN\b|\bInfinity\b|\b-Infinity\b", txt))
+              txt = re.sub(r"\bNaN\b", "null", txt)
+              txt = re.sub(r"\b-Infinity\b", "null", txt)
+              txt = re.sub(r"\bInfinity\b", "null", txt)
+              p.write_text(txt)
+              print(f"{f}: replaced {before} invalid tokens")
+          EOF
+
+      - name: Commit changes
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Clean invalid NaN/Infinity tokens from JSON"
+            git push
+          fi
