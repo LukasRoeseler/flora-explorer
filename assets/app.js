@@ -977,11 +977,12 @@ function renderMcCharts(d) {
     });
 
     // ── GAM curve chart ───────────────────────────────────────────────────
-    const gc = d.gam_curve;
+    // Guard: jsonlite may serialise an empty list() as {} instead of []
+    const gc = Array.isArray(d.gam_curve) ? d.gam_curve : [];
     const isDark = currentTheme() === 'dark';
     const bandColor = isDark ? 'rgba(224,165,192,0.18)' : 'rgba(139,26,74,0.15)';
     const lineColor = isDark ? '#e0a5c0' : primary;
-    const jitterPts = (d.jitter || []).map(pt => ({
+    const jitterPts = (Array.isArray(d.jitter) ? d.jitter : []).map(pt => ({
         x: pt.omc + (Math.random() - 0.5) * 0.12,
         y: pt.outcome + (Math.random() - 0.5) * 0.06
     }));

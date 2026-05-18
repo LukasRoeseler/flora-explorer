@@ -123,6 +123,10 @@ if (nrow(df) >= 30) {
 }
 
 # ── Write outputs ─────────────────────────────────────────────────────────────
+# jsonlite serialises list() as {} not [] — use numeric(0) for empty arrays
+if (length(gam_curve) == 0) gam_curve <- numeric(0)
+if (length(jitter)    == 0) jitter    <- numeric(0)
+
 result <- list(overview  = overview,
                stats     = stats_out,
                histogram = hist_data,
