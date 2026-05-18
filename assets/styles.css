@@ -558,3 +558,4 @@ tr.shown td.details-control::before { transform: rotate(90deg); }
 }
 [data-theme="dark"] .mc-chart-title { color: var(--flora-primary-dark-accent); }
 .mc-chart-wrap { position: relative; height: 320px; }
+#mc-gam-card .mc-chart-wrap { height: 640px; }
