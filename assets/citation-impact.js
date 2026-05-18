@@ -1,0 +1,344 @@
+/* FLoRA Explorer — Citation Impact tab
+   Loads weekly-refreshed OpenCitations data and renders KPIs, event-study
+   plots, and a browsable per-original table. Adapted from flora-citations. */
+
+(function() {
+    const CI = {
+        meta: null, agg: null, studies: null, index: null,
+        outcome: 'all', page: 1, perPage: 20,
+        loaded: false, loading: false
+    };
+
+    const OUTCOME_COLORS = {
+        failed: '#b3331e', successful: '#2f8f4f', mixed: '#d49b1d', all: '#8b1a4a'
+    };
+
+    function escapeHtml(s) {
+        if (s == null) return '';
+        return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function formatAuthors(raw, max = 3) {
+        if (!raw) return '';
+        if (typeof raw !== 'string') { try { raw = JSON.stringify(raw); } catch (e) { return ''; } }
+        const s = raw.trim(); if (!s) return '';
+        if (!s.startsWith('[') && !s.includes('"family"') && !s.includes("'family'")) return s.slice(0, 200);
+        let parsed = null;
+        try { parsed = JSON.parse(s.replace(/'/g, '"')); } catch (e) {}
+        let names = [];
+        if (Array.isArray(parsed)) names = parsed.map(extractName).filter(Boolean);
+        else {
+            const re = /"given"\s*:\s*"([^"]*)"[^}]*?"family"\s*:\s*"([^"]*)"|"family"\s*:\s*"([^"]*)"[^}]*?"given"\s*:\s*"([^"]*)"|"family"\s*:\s*"([^"]*)"/g;
+            let m;
+            while ((m = re.exec(s)) !== null) {
+                const given = m[1] || m[4] || '';
+                const family = m[2] || m[3] || m[5] || '';
+                const name = formatOne(family, given);
+                if (name) names.push(name);
+            }
+        }
+        if (names.length === 0) return s.slice(0, 200);
+        if (names.length <= max) return names.join('; ');
+        return names.slice(0, max).join('; ') + `, … (+${names.length - max})`;
+    }
+    function extractName(a) { if (!a || typeof a !== 'object') return ''; return formatOne(a.family || a.last || '', a.given || a.first || ''); }
+    function formatOne(family, given) {
+        family = (family || '').trim(); given = (given || '').trim();
+        if (!family) return '';
+        const initials = given.split(/\s+/).map(p => (p && p[0] ? p[0].toUpperCase() + '.' : '')).join(' ').trim();
+        return initials ? `${family}, ${initials}` : family;
+    }
+
+    function plotlyTheme() {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            paper: dark ? '#1d1e29' : '#ffffff',
+            plot:  dark ? '#1d1e29' : '#ffffff',
+            grid:  dark ? '#2d2e3d' : '#eeeaef',
+            font:  dark ? '#e8e6ee' : '#2a2330',
+            muted: dark ? '#9793a4' : '#6f7686'
+        };
+    }
+
+    async function init() {
+        if (CI.loaded || CI.loading) return;
+        CI.loading = true;
+        try {
+            const [metaRes, aggRes, origRes] = await Promise.all([
+                fetch('data/meta.json'),
+                fetch('data/aggregate.json'),
+                fetch('data/originals.json')
+            ]);
+            if (!metaRes.ok || !aggRes.ok || !origRes.ok) { showPlaceholder(); return; }
+            CI.meta = await metaRes.json();
+            CI.agg = await aggRes.json();
+            const originals = await origRes.json();
+            CI.studies = originals.studies;
+            CI.index = originals.index;
+
+            renderKPIs(); renderAggregate(); renderTable(); bindEvents();
+            CI.loaded = true;
+        } catch (e) {
+            console.error('Citation Impact load failed:', e);
+            showPlaceholder();
+        } finally {
+            CI.loading = false;
+        }
+    }
+
+    function showPlaceholder() {
+        const msg = `
+            <div style="padding:24px;background:var(--flora-card-bg);border:1px solid var(--flora-border);
+                        border-radius:8px;text-align:center;color:var(--flora-muted);grid-column:1 / -1">
+              ⏳ <strong>Citation data not yet available.</strong><br>
+              The first weekly refresh has not completed yet (or the workflow secrets are not set).
+              This panel will populate automatically once the GitHub Action
+              <code>refresh-data.yml</code> finishes.
+            </div>`;
+        const kpis = document.getElementById('kpis'); if (kpis) kpis.innerHTML = msg;
+        ['plot-cit', 'plot-cocit'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = '<div style="padding:80px 20px;text-align:center;color:var(--flora-muted)">No data yet</div>';
+        });
+        const tbody = document.querySelector('#originals-table tbody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--flora-muted)">No data yet — first refresh in progress.</td></tr>';
+    }
+
+    function renderKPIs() {
+        const c = (CI.meta && CI.meta.outcome_counts) || {};
+        const fmt = n => (n == null ? '—' : Number(n).toLocaleString());
+        document.getElementById('kpis').innerHTML = `
+            <div class="kpi"><div class="kpi-value">${fmt(CI.meta && CI.meta.n_originals)}</div><div class="kpi-label">Original studies</div></div>
+            <div class="kpi"><div class="kpi-value">${fmt(CI.meta && CI.meta.n_replications)}</div><div class="kpi-label">Replication attempts</div></div>
+            <div class="kpi"><div class="kpi-value">${fmt(c.failed)}</div><div class="kpi-label">Failed replications</div></div>
+            <div class="kpi"><div class="kpi-value">${fmt(c.successful)}</div><div class="kpi-label">Successful replications</div></div>`;
+    }
+
+    function renderAggregate() {
+        const data = CI.agg[CI.outcome]; if (!data) return;
+        drawAggregatePlot('plot-cit', data, 'mean_citations', 'citations_model', 'Mean citations per year', CI.outcome);
+        drawAggregatePlot('plot-cocit', data, 'mean_cocitations', 'cocitations_model', 'Mean co-citations per year', CI.outcome);
+
+        const model = data.citations_model || {}; const desc = data.descriptive || {};
+        let html;
+        const hasModel = model.att != null && Number.isFinite(model.att);
+        if (hasModel) {
+            const pct = ((Math.exp(model.att) - 1) * 100).toFixed(1);
+            const ci = (model.att_ci || []).filter(v => v != null && Number.isFinite(v));
+            const ciL = ci.length === 2 ? ((Math.exp(ci[0]) - 1) * 100).toFixed(1) : '?';
+            const ciH = ci.length === 2 ? ((Math.exp(ci[1]) - 1) * 100).toFixed(1) : '?';
+            html = `<strong>Average post-replication effect on citations:</strong>
+                ${pct}% (95% CI: ${ciL}%, ${ciH}%) · <span class="muted">based on ${model.n_units} originals</span>`;
+        } else if (desc.n_units && desc.n_units.length) {
+            const maxN = Math.max(...desc.n_units);
+            html = `<strong>Descriptive trajectory shown.</strong>
+                <span class="muted">${maxN.toLocaleString()} originals contribute at peak. Each line shows the average citation count by years relative to the first replication.</span>`;
+        } else {
+            html = `<strong>Insufficient data</strong> for the selected outcome group.`;
+        }
+        document.getElementById('att-callout').innerHTML = html;
+    }
+
+    function drawAggregatePlot(divId, data, descField, modelField, ylabel, outcome) {
+        const desc = data.descriptive || {}; const model = data[modelField] || {};
+        const color = OUTCOME_COLORS[outcome] || OUTCOME_COLORS.all;
+        const traces = [];
+
+        if (desc.event_time && desc.event_time.length) {
+            traces.push({
+                x: desc.event_time, y: desc[descField], type: 'scatter', mode: 'lines+markers',
+                line: { color, width: 2.5 }, marker: { color, size: 7 },
+                name: 'Mean (raw)', hovertemplate: 't=%{x} years: %{y:.2f}<extra></extra>'
+            });
+        }
+        if (desc.event_time && desc.n_units && desc.n_units.length) {
+            traces.push({
+                x: desc.event_time, y: desc.n_units, type: 'scatter', mode: 'lines',
+                line: { color: '#bbb', width: 1, dash: 'dot' },
+                name: 'N (right axis)', yaxis: 'y2',
+                hovertemplate: 't=%{x}: N=%{y}<extra></extra>'
+            });
+        }
+        if (model.event_time && model.estimate && model.estimate.some(v => v != null && Number.isFinite(v))) {
+            const refIdx = desc.event_time ? desc.event_time.indexOf(-1) : -1;
+            const baseline = refIdx >= 0 ? desc[descField][refIdx] : null;
+            if (baseline) {
+                traces.push({
+                    x: model.event_time,
+                    y: model.estimate.map(e => e == null || !Number.isFinite(e) ? null : Math.exp(e) * baseline),
+                    type: 'scatter', mode: 'lines',
+                    line: { color: plotlyTheme().font, width: 1.5, dash: 'dot' },
+                    name: 'Model fit', hoverinfo: 'skip'
+                });
+            }
+        }
+
+        if (traces.length === 0) {
+            document.getElementById(divId).innerHTML = '<div style="padding:60px;text-align:center;color:var(--flora-muted)">No data for this filter</div>';
+            return;
+        }
+
+        const t = plotlyTheme();
+        const layout = {
+            margin: { t: 30, r: 50, b: 50, l: 60 },
+            xaxis: { title: 'Years relative to first replication', zeroline: false, gridcolor: t.grid, color: t.font },
+            yaxis: { title: ylabel, gridcolor: t.grid, color: t.font, rangemode: 'tozero' },
+            yaxis2: {
+                title: 'N studies', overlaying: 'y', side: 'right', showgrid: false, rangemode: 'tozero',
+                tickfont: { color: t.muted, size: 10 }, titlefont: { color: t.muted, size: 10 }
+            },
+            shapes: [{ type: 'line', x0: 0, x1: 0, yref: 'paper', y0: 0, y1: 1, line: { color: '#8b1a4a', width: 1.5, dash: 'dash' } }],
+            annotations: [{ x: 0, yref: 'paper', y: 1.04, xref: 'x', yanchor: 'bottom', text: 'Replication published', showarrow: false, font: { size: 11, color: '#8b1a4a' } }],
+            plot_bgcolor: t.plot, paper_bgcolor: t.paper,
+            font: { family: 'Inter, sans-serif', size: 12, color: t.font },
+            legend: { orientation: 'h', y: -0.22, font: { color: t.font } }
+        };
+        Plotly.newPlot(divId, traces, layout, { displayModeBar: false, responsive: true });
+    }
+
+    function renderTable() {
+        const q = (document.getElementById('search-input').value || '').toLowerCase();
+        const outFilter = document.getElementById('filter-outcome').value;
+        const sortBy = document.getElementById('sort-by').value;
+
+        let rows = CI.index.filter(s => {
+            if (q) {
+                const hay = `${s.title} ${s.author} ${s.doi}`.toLowerCase();
+                if (!hay.includes(q)) return false;
+            }
+            if (outFilter && !(s.outcome_mix && s.outcome_mix[outFilter])) return false;
+            return true;
+        });
+        rows.sort((a, b) => {
+            if (sortBy === 'n_citations') return (b.n_citations || 0) - (a.n_citations || 0);
+            if (sortBy === 'n_replications') return (b.n_replications || 0) - (a.n_replications || 0);
+            if (sortBy === 'year_desc') return (b.year || 0) - (a.year || 0);
+            if (sortBy === 'year_asc') return (a.year || 0) - (b.year || 0);
+            return 0;
+        });
+
+        const total = rows.length;
+        const pages = Math.max(1, Math.ceil(total / CI.perPage));
+        if (CI.page > pages) CI.page = 1;
+        const start = (CI.page - 1) * CI.perPage;
+        const slice = rows.slice(start, start + CI.perPage);
+
+        const tbody = document.querySelector('#originals-table tbody');
+        tbody.innerHTML = slice.map(s => {
+            const badges = Object.entries(s.outcome_mix || {})
+                .map(([k, v]) => `<span class="outcome-badge ${k}">${v} ${k}</span>`).join(' ');
+            return `
+                <tr data-doi="${escapeHtml(s.doi)}">
+                    <td>
+                        <div class="title-cell">${escapeHtml(s.title || '(untitled)')}</div>
+                        <div class="author-cell">${escapeHtml(formatAuthors(s.author))} ${s.venue ? '· ' + escapeHtml(s.venue) : ''}</div>
+                    </td>
+                    <td>${s.year || '—'}</td>
+                    <td>${badges}</td>
+                    <td>${(s.n_citations || 0).toLocaleString()}</td>
+                    <td>›</td>
+                </tr>`;
+        }).join('');
+
+        const pag = document.getElementById('pagination');
+        const winSize = 5;
+        const winStart = Math.max(1, CI.page - Math.floor(winSize / 2));
+        const winEnd = Math.min(pages, winStart + winSize - 1);
+        let pHtml = '';
+        if (CI.page > 1) pHtml += `<button data-p="${CI.page - 1}">‹</button>`;
+        for (let i = winStart; i <= winEnd; i++) pHtml += `<button data-p="${i}" class="${i === CI.page ? 'active' : ''}">${i}</button>`;
+        if (CI.page < pages) pHtml += `<button data-p="${CI.page + 1}">›</button>`;
+        pag.innerHTML = pHtml;
+    }
+
+    function showStudy(doi) {
+        const s = CI.studies[doi]; if (!s) return;
+        const reps = (s.replications || []).map(r => `
+            <li>
+                <span class="outcome-badge ${r.outcome}">${r.outcome}</span>
+                <strong>${escapeHtml(formatAuthors(r.author, 2))} (${r.year || '?'})</strong>
+                ${r.title ? '— ' + escapeHtml(r.title) : ''}
+                ${r.doi ? `<br><a href="https://doi.org/${r.doi}" target="_blank" class="small">${r.doi}</a>` : ''}
+            </li>`).join('');
+        document.getElementById('ci-modal-body').innerHTML = `
+            <div class="modal-body">
+                <h2>${escapeHtml(s.title || '(untitled)')}</h2>
+                <p class="muted">${escapeHtml(formatAuthors(s.author))} · ${s.year || '?'}
+                    ${s.venue ? '· ' + escapeHtml(s.venue) : ''}<br>
+                    <a href="https://doi.org/${s.doi}" target="_blank">${s.doi}</a></p>
+                <h3 style="margin-top:18px">Citation timeline</h3>
+                <div id="study-plot" style="width:100%;height:380px"></div>
+                <h3 style="margin-top:18px">Replications (${s.n_replications})</h3>
+                <ul class="rep-list">${reps}</ul>
+            </div>`;
+        document.getElementById('ci-modal').hidden = false;
+        drawStudyTimeline(s);
+    }
+
+    function drawStudyTimeline(s) {
+        const tl = s.timeline || [];
+        if (tl.length === 0) {
+            document.getElementById('study-plot').innerHTML = '<div style="padding:80px;text-align:center;color:var(--flora-muted)">No citation data available</div>';
+            return;
+        }
+        const years = tl.map(t => t.year);
+        const traces = [
+            { x: years, y: tl.map(t => t.only),            name: 'Cites original only',    type: 'bar', marker: { color: '#9ca3af' } },
+            { x: years, y: tl.map(t => t.with_failed),     name: 'Co-cites failed rep',    type: 'bar', marker: { color: OUTCOME_COLORS.failed } },
+            { x: years, y: tl.map(t => t.with_mixed),      name: 'Co-cites mixed rep',     type: 'bar', marker: { color: OUTCOME_COLORS.mixed } },
+            { x: years, y: tl.map(t => t.with_successful), name: 'Co-cites successful rep',type: 'bar', marker: { color: OUTCOME_COLORS.successful } }
+        ];
+        const shapes = []; const annotations = [];
+        (s.replications || []).forEach((r, i) => {
+            if (!r.year) return;
+            shapes.push({ type: 'line', x0: r.year, x1: r.year, yref: 'paper', y0: 0, y1: 1, line: { color: OUTCOME_COLORS[r.outcome] || '#8b1a4a', width: 2, dash: 'dash' } });
+            annotations.push({ x: r.year, yref: 'paper', y: 1.02 - (i % 3) * 0.06, text: `${r.outcome} rep ${r.year}`, showarrow: false, font: { size: 10, color: OUTCOME_COLORS[r.outcome] || '#8b1a4a' }, bgcolor: 'rgba(255,255,255,0.85)' });
+        });
+        const t = plotlyTheme();
+        const layout = {
+            barmode: 'stack', margin: { t: 50, r: 10, b: 40, l: 50 },
+            xaxis: { title: 'Year', gridcolor: t.grid, color: t.font },
+            yaxis: { title: 'Citing preprints / papers', gridcolor: t.grid, color: t.font },
+            shapes, annotations,
+            plot_bgcolor: t.plot, paper_bgcolor: t.paper,
+            legend: { orientation: 'h', y: -0.18, font: { color: t.font } },
+            font: { family: 'Inter, sans-serif', size: 12, color: t.font }
+        };
+        Plotly.newPlot('study-plot', traces, layout, { displayModeBar: false, responsive: true });
+    }
+
+    function bindEvents() {
+        document.querySelectorAll('#outcome-chips .chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#outcome-chips .chip').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                CI.outcome = btn.dataset.value; renderAggregate();
+            });
+        });
+        document.getElementById('search-input').addEventListener('input', () => { CI.page = 1; renderTable(); });
+        document.getElementById('filter-outcome').addEventListener('change', () => { CI.page = 1; renderTable(); });
+        document.getElementById('sort-by').addEventListener('change', () => { CI.page = 1; renderTable(); });
+        document.querySelector('#originals-table tbody').addEventListener('click', e => {
+            const tr = e.target.closest('tr');
+            if (tr && tr.dataset.doi) showStudy(tr.dataset.doi);
+        });
+        document.getElementById('pagination').addEventListener('click', e => {
+            if (e.target.dataset.p) { CI.page = +e.target.dataset.p; renderTable(); }
+        });
+        document.getElementById('ci-modal-close').addEventListener('click', () => document.getElementById('ci-modal').hidden = true);
+        document.getElementById('ci-modal').addEventListener('click', e => {
+            if (e.target.id === 'ci-modal') document.getElementById('ci-modal').hidden = true;
+        });
+    }
+
+    // Lazy-load when the user opens the tab
+    document.getElementById('citation-tab').addEventListener('shown.bs.tab', init);
+
+    // Re-theme Plotly plots on dark-mode toggle
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        if (CI.loaded) {
+            // Tiny delay to let CSS variables update
+            setTimeout(() => { renderAggregate(); }, 50);
+        }
+    });
+})();

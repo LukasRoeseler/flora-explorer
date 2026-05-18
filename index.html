@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6b4582">
+    <title>FLoRA Explorer — FORRT Library of Replication Attempts</title>
+    <meta name="description" content="Explore the FORRT Library of Replication Attempts (FLoRA) — a comprehensive database tracking replication and reproduction studies across the sciences and humanities.">
+    <meta name="keywords" content="replication, reproduction, FLoRA, FORRT, open science, metascience, reproducibility">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="FLoRA Explorer — FORRT Library of Replication Attempts">
+    <meta property="og:description" content="Explore replication and reproduction studies across the sciences and humanities. Browse, filter, and analyze the FLoRA database.">
+    <meta property="og:site_name" content="FLoRA Explorer">
+
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+    <link rel="alternate icon" href="assets/logo.svg">
+    <link rel="apple-touch-icon" href="assets/logo.svg">
+
+    <!-- Vendor CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+    <!-- Dark top bar (FORRT-style) -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <a class="brand-mark" href="https://forrt.org/replication-hub/" target="_blank">
+                <span>FORRT Replication Hub</span>
+            </a>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-inner">
+                <div class="hero-logo"><img src="assets/logo.svg" alt="FLoRA logo"></div>
+                <h1>FLoRA Explorer</h1>
+                <hr class="hero-rule">
+                <p class="hero-subtitle">Tracking reproductions and replications across the sciences and humanities.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- WIP corner ribbon -->
+    <div class="wip-ribbon" id="wip-ribbon" aria-label="Work in progress">
+        <div class="wip-ribbon-inner">Work in Progress</div>
+    </div>
+    <div class="wip-ribbon-tip" id="wip-ribbon-tip" role="tooltip">
+        <strong>Work in progress.</strong> FLoRA Explorer and the underlying dataset are actively being expanded. Some entries may be incomplete, and features marked <em>experimental</em> may change.
+    </div>
+
+    <!-- Tabs -->
+    <div class="nav-tabs-wrapper">
+        <div class="container">
+            <ul class="nav nav-tabs" id="floraTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="browse-tab" data-bs-toggle="tab" data-bs-target="#browse" type="button" role="tab">Browse Studies</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="trends-tab" data-bs-toggle="tab" data-bs-target="#trends" type="button" role="tab">Years &amp; Disciplines</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="citation-tab" data-bs-toggle="tab" data-bs-target="#citation-impact" type="button" role="tab">Citation Impact</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="mc-tab" data-bs-toggle="tab" data-bs-target="#mean-citedness" type="button" role="tab">Mean Citedness</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="global-loading" class="loading-spinner">
+            <div class="spinner-border" role="status"></div>
+            <span class="ms-3">Loading FLoRA data…</span>
+        </div>
+
+        <div id="global-error" class="alert alert-danger" style="display:none;"></div>
+
+        <div class="tab-content" id="floraTabsContent" style="display:none;">
+
+            <!-- ============================ OVERVIEW ============================ -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+
+                <div class="data-stamp" data-stamp-source="flora"></div>
+
+                <div class="row mb-3">
+                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-total">-</div><div class="label">Total Studies</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-successful" style="color: var(--flora-success);">-</div><div class="label">Successful</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-failed" style="color: var(--flora-danger);">-</div><div class="label">Failed</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-mixed" style="color: var(--flora-warning);">-</div><div class="label">Mixed</div></div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
+                        <span>Outcome Distribution</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about outcome distribution">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span class="info-tip">Currently, this distribution covers <strong>replications only</strong>. Reproductions (computational and robustness checks) are coded along different dimensions and will be added in a future update.</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container-stack">
+                            <canvas id="overview-outcome-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header">About FLoRA</div>
+                            <div class="card-body intro-text">
+                                <h4>What is the aim of this project?</h4>
+                                <p>FLoRA tracks <strong>numerical reproductions</strong>, <strong>robustness reproductions</strong>, and <strong>replications</strong>, linking each one to the original publication it tests. The goal is to increase the findability of repetition attempts and to enable meta-research on the repeatability of scientific findings — across disciplines, journals, and time.</p>
+
+                                <p>FLoRA tracks attempts to repeatedly test published findings across the sciences and humanities. Unlike the <a href="https://forrt.org/FReD/" target="_blank" class="doi-link">FORRT Replication Database (FReD)</a>, FLoRA does not include statistical data — this lets it cover every field of research and allows much faster expansion.</p>
+
+                                <h4>What is a replication?</h4>
+                                <p>Replications intentionally repeat prior research to test whether the original findings hold. To be included in FLoRA, a study must:</p>
+                                <ul>
+                                    <li>Self-identify as a replication <em>before</em> reporting results — replication must be an aim, not just a result</li>
+                                    <li>Identify a specific target study (or studies)</li>
+                                    <li>Replicate a study or experiment — a central claim, not just any empirical pattern</li>
+                                </ul>
+                                <p>Replications range from <strong>close/direct</strong> (same methods, same population) to <strong>conceptual</strong> (same hypothesis, different methods). Outcomes are tagged <strong>Successful</strong>, <strong>Failed</strong>, or <strong>Mixed</strong> based on how the replication authors characterise their results.</p>
+
+                                <h4>What is a reproduction?</h4>
+                                <p>Reproductions verify whether reported results can be obtained from the original study's data and methods. They are coded on two dimensions:</p>
+                                <ul>
+                                    <li><strong>Computational success</strong> — were the original results obtained? (Computationally Successful vs Computational Issues)</li>
+                                    <li><strong>Robustness</strong> — do results hold under reasonable alternative specifications? (Robust, Robustness Challenges, or Robustness Not Checked)</li>
+                                </ul>
+
+                                <div class="key-distinction">
+                                    <strong>Key distinction:</strong> If new data are collected (e.g. an additional decade of observations), it's a <em>replication</em>. If the same data are re-analysed to verify the original results, it's a <em>reproduction</em>.
+                                </div>
+
+                                <h4>Structure of FLoRA</h4>
+                                <p>FLoRA links each repetition reference to its original, and assigns a standardized outcome based on the repetition report. This simple structure lets us track replication rates across time, disciplines, and journals — and powers tools like the FLoRA Annotator, which lists replication and reproduction attempts for any reference you provide.</p>
+
+                                <h4>Is FLoRA representative and comprehensive?</h4>
+                                <p>Honestly — neither. We are still working on a systematic literature search, and several structural factors limit coverage:</p>
+                                <ul>
+                                    <li>Some replications cannot be added because they do not self-identify as such in the metadata we can reach (e.g., the title and abstract).</li>
+                                    <li>In some areas of computational reproduction — for example, <a href="https://codecheck.org.uk/" target="_blank" class="doi-link">CODECHECK</a> certificates — the artefacts are typically only issued for <em>successful</em> numerical reproductions, which makes representative estimates of computational reproducibility difficult.</li>
+                                    <li>Coverage by discipline, language, and publication venue is uneven and reflects where contributors have focused so far.</li>
+                                </ul>
+                                <p>Treat aggregate statistics as exploratory rather than definitive, and please <a href="https://forrt.org/replication-hub/" target="_blank" class="doi-link">flag missing entries</a> when you spot them.</p>
+
+                                <p>FLoRA is the product of years of work by a large community of volunteers. If you'd like to contribute or use the data for your own research, <a href="https://forrt.org/replication-hub/" target="_blank" class="doi-link">please reach out</a>.</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">FAQs</div>
+                            <div class="card-body">
+                                <p style="color: var(--flora-text-soft); margin-bottom: 1rem;">
+                                    If anything is unclear, here is where we collect frequently asked questions.
+                                    The list is loaded live from the
+                                    <a href="https://github.com/forrtproject/fred-data/blob/main/output/flora_faq.md" target="_blank" class="doi-link">FLoRA FAQ document</a>
+                                    and grows as new questions come in.
+                                </p>
+                                <div id="faq-loading" style="color: var(--flora-muted); font-size: 0.9rem;">Loading FAQs…</div>
+                                <div id="faq-content" style="display: none;"></div>
+                                <div id="faq-error" style="display: none; color: var(--flora-muted); font-size: 0.9rem;">
+                                    Could not load FAQs at the moment. You can read them directly on
+                                    <a href="https://github.com/forrtproject/fred-data/blob/main/output/flora_faq.md" target="_blank" class="doi-link">GitHub</a>.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header">More Replication Tools</div>
+                            <div class="card-body">
+                                <a class="tool-tile" href="https://forrt.org/flora-replication-atlas/" target="_blank">
+                                    <div class="tool-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                    </div>
+                                    <div class="tool-body">
+                                        <div class="tool-title">Replication Atlas</div>
+                                        <div class="tool-desc">Look up a specific study by DOI, title, or author to see if it's been replicated.</div>
+                                    </div>
+                                </a>
+
+                                <a class="tool-tile" href="https://forrt.org/replication-hub/" target="_blank">
+                                    <div class="tool-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                    </div>
+                                    <div class="tool-body">
+                                        <div class="tool-title">FORRT Replication Hub</div>
+                                        <div class="tool-desc">The broader ecosystem of replication resources and projects at FORRT.</div>
+                                    </div>
+                                </a>
+
+                                <a class="tool-tile" href="https://replicationresearch.org" target="_blank">
+                                    <div class="tool-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h6M9 11h6"/></svg>
+                                    </div>
+                                    <div class="tool-body">
+                                        <div class="tool-title">Replication Research</div>
+                                        <div class="tool-desc">Our new Diamond Open Access journal publishing high-quality reproductions, replications, and conceptual articles.</div>
+                                    </div>
+                                </a>
+
+                                <a class="tool-tile" href="https://forrt.org/flora_zotero" target="_blank">
+                                    <div class="tool-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                    </div>
+                                    <div class="tool-body">
+                                        <div class="tool-title">FLoRA Zotero Plugin</div>
+                                        <div class="tool-desc">See replication attempts for references in your Zotero library, right in your reference manager.</div>
+                                    </div>
+                                </a>
+
+                                <a class="tool-tile" href="https://github.com/forrtproject/FReD-data" target="_blank">
+                                    <div class="tool-icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2c-3.34.72-4.04-1.6-4.04-1.6-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.48-1.33-5.48-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1-.32 3.28 1.23a11.42 11.42 0 0 1 6 0c2.28-1.55 3.28-1.23 3.28-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.9 1.23 3.22 0 4.6-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .31.22.69.83.57A12 12 0 0 0 12 .3"/></svg>
+                                    </div>
+                                    <div class="tool-body">
+                                        <div class="tool-title">Data on GitHub</div>
+                                        <div class="tool-desc">Raw FLoRA/FReD data, update history, and contribution guide.</div>
+                                    </div>
+                                </a>
+
+                                <a class="tool-tile" href="https://osf.io/9r62x/" target="_blank">
+                                    <div class="tool-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 12h10M7 17h6"/></svg>
+                                    </div>
+                                    <div class="tool-body">
+                                        <div class="tool-title">OSF Project Page</div>
+                                        <div class="tool-desc">Dataset DOI, versions, and supplementary materials on OSF.</div>
+                                    </div>
+                                </a>
+
+                                <a class="tool-tile" href="https://lukasroeseler.github.io/GuessTheReplication/" target="_blank">
+                                    <div class="tool-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="6"/><line x1="7" y1="12" x2="9" y2="12"/><line x1="8" y1="11" x2="8" y2="13"/><circle cx="15.5" cy="11" r="0.8" fill="currentColor"/><circle cx="17.5" cy="13" r="0.8" fill="currentColor"/></svg>
+                                    </div>
+                                    <div class="tool-body">
+                                        <div class="tool-title">Guess the Replication</div>
+                                        <div class="tool-desc">Can you predict replication outcomes? Play the game and find out.</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Random Examples</span>
+                                <button id="reshuffle-btn" class="refresh-btn" title="Shuffle examples">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                                    Shuffle
+                                </button>
+                            </div>
+                            <div class="card-body" id="random-examples"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Recommended Citation</div>
+                    <div class="card-body">
+                        <p class="mb-2" style="color: var(--flora-muted); font-size: 0.9rem;">If you use the underlying dataset, please cite it as:</p>
+                        <div class="citation-box" id="citation-box">
+                            <button class="copy-btn" id="citation-copy-btn">Copy</button>
+                            <div id="citation-text">Loading citation…</div>
+                        </div>
+
+                        <p class="mt-4 mb-2" style="color: var(--flora-muted); font-size: 0.9rem;">If you report results based on this website, please cite it as:</p>
+                        <div class="citation-box" id="website-citation-box">
+                            <button class="copy-btn" id="website-citation-copy-btn">Copy</button>
+                            <div id="website-citation-text">
+                                Wallrich, L., &amp; Röseler, L. (2026). <em>FLoRA Explorer</em> [Website]. <a href="https://forrt.org/flora-explorer/" target="_blank" class="doi-link">https://forrt.org/flora-explorer/</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================ BROWSE ============================ -->
+            <div class="tab-pane fade" id="browse" role="tabpanel">
+                <div class="data-stamp" data-stamp-source="flora"></div>
+
+                <div class="trend-filter" role="group" aria-label="Filter by study kind">
+                    <span class="trend-filter-label">Show:</span>
+                    <button type="button" class="trend-filter-btn browse-kind-btn active" data-kind="all">All studies</button>
+                    <button type="button" class="trend-filter-btn browse-kind-btn" data-kind="replication">Replications only</button>
+                    <button type="button" class="trend-filter-btn browse-kind-btn" data-kind="reproduction-numerical">Numerical Reproductions</button>
+                    <button type="button" class="trend-filter-btn browse-kind-btn" data-kind="reproduction-robustness">Robustness Reproductions</button>
+                    <span class="trend-filter-count" id="browse-kind-count"></span>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
+                        <span>Outcome Summary</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about outcome summary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span class="info-tip">Reflects the studies in the table below. Currently this breakdown covers <strong>replications only</strong>; reproductions are coded along different dimensions and will be added in a future update.</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container-stack">
+                            <canvas id="browse-outcome-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Replication Studies Database</div>
+                    <div class="card-body">
+                        <div class="browse-desktop">
+                            <table id="flora-table" class="table table-striped table-hover" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Original Study</th>
+                                        <th>Year</th>
+                                        <th>Replication Study</th>
+                                        <th>Year</th>
+                                        <th>Outcome</th>
+                                        <th>Type</th>
+                                        <th>Original DOI</th>
+                                        <th>Replication Report</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <div class="browse-mobile">
+                            <div class="browse-mobile-search">
+                                <input type="search" id="browse-mobile-input" class="form-control" placeholder="Search studies (title, author, journal, DOI)…" autocomplete="off">
+                            </div>
+                            <div id="browse-mobile-meta" class="browse-mobile-meta"></div>
+                            <div id="browse-mobile-list" class="browse-mobile-list"></div>
+                            <div class="browse-mobile-pager" id="browse-mobile-pager">
+                                <button class="bm-page-btn" id="bm-prev" type="button" aria-label="Previous page">‹ Prev</button>
+                                <span class="bm-page-info" id="bm-page-info"></span>
+                                <button class="bm-page-btn" id="bm-next" type="button" aria-label="Next page">Next ›</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================ TRENDS ============================ -->
+            <div class="tab-pane fade" id="trends" role="tabpanel">
+                <div class="data-stamp" data-stamp-source="flora"></div>
+
+                <div class="trend-filter" role="group" aria-label="Filter by study kind">
+                    <span class="trend-filter-label">Show:</span>
+                    <button type="button" class="trend-filter-btn active" data-kind="all">All studies</button>
+                    <button type="button" class="trend-filter-btn" data-kind="replication">Replications only</button>
+                    <button type="button" class="trend-filter-btn" data-kind="reproduction-numerical">Numerical Reproductions</button>
+                    <button type="button" class="trend-filter-btn" data-kind="reproduction-robustness">Robustness Reproductions</button>
+                    <span class="trend-filter-count" id="trend-filter-count"></span>
+                </div>
+
+                <div class="card"><div class="card-body"><div class="trend-block">
+                    <div class="trend-desc">
+                        <h5>Outcomes by original study year</h5>
+                        <p>How have the findings of studies from different eras fared when scientists have tried to replicate them? Each bar groups replication and reproduction attempts by the year the <strong>original</strong> study was published, split into Successful, Mixed, Failed, and other outcomes.</p>
+                        <p>Use this to see how findings from different historical periods have held up in subsequent replication efforts.</p>
+                        <p class="trend-note">Studies without a recorded original publication year are excluded.</p>
+                    </div>
+                    <div class="chart-container"><canvas id="trend-orig-year"></canvas></div>
+                </div></div></div>
+
+                <div class="card"><div class="card-body"><div class="trend-block">
+                    <div class="trend-desc">
+                        <h5>Outcomes by replication study year <span class="badge-wip">Experimental · WIP</span></h5>
+                        <p>Grouped by the year of the <strong>replication</strong> itself, this view shows the growth of FLoRA's coverage and how outcome profiles have shifted over time as replication practice has matured.</p>
+                        <p>The rightmost years may reflect ongoing data entry rather than a genuine decline in activity.</p>
+                        <p class="trend-note">Replications without a recorded year are excluded.</p>
+                    </div>
+                    <div class="chart-container"><canvas id="trend-rep-year"></canvas></div>
+                </div></div></div>
+
+                <div class="card"><div class="card-body"><div class="trend-block">
+                    <div class="trend-desc">
+                        <h5>Outcomes by original journal</h5>
+                        <p>The journals whose articles have most frequently been the target of replication attempts. For each journal, the bar shows the outcome breakdown of those attempts.</p>
+                        <p>Frequency here reflects where replication attention has been focused — not necessarily a journal's overall replicability.</p>
+                        <div class="mt-3">
+                            <label for="journal-top-n" style="font-weight:500; font-size:0.9rem; color: var(--flora-muted); margin-right: 0.5rem;">Show top:</label>
+                            <select id="journal-top-n" class="form-select d-inline-block" style="max-width: 160px; font-size: 0.9rem;">
+                                <option value="10">10 journals</option>
+                                <option value="15" selected>15 journals</option>
+                                <option value="25">25 journals</option>
+                                <option value="50">50 journals</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="trend-journal-container"><canvas id="trend-journal"></canvas></div>
+                </div></div></div>
+
+                <div class="card"><div class="card-body"><div class="trend-block">
+                    <div class="trend-desc">
+                        <h5>Outcomes by replication journal <span class="badge-wip">Experimental · WIP</span></h5>
+                        <p>Where replication studies are themselves being published. Each bar shows the outcome breakdown of replications appearing in a given journal.</p>
+                        <p>This view highlights the venues that publish replication research most actively — including journals dedicated to replications and registered reports.</p>
+                        <p class="trend-note">Annotation of replication-journal data is a work in progress; some journals may be missing or under-represented at the moment.</p>
+                        <div class="mt-3">
+                            <label for="rep-journal-top-n" style="font-weight:500; font-size:0.9rem; color: var(--flora-muted); margin-right: 0.5rem;">Show top:</label>
+                            <select id="rep-journal-top-n" class="form-select d-inline-block" style="max-width: 160px; font-size: 0.9rem;">
+                                <option value="10">10 journals</option>
+                                <option value="15" selected>15 journals</option>
+                                <option value="25">25 journals</option>
+                                <option value="50">50 journals</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="trend-rep-journal-container"><canvas id="trend-rep-journal"></canvas></div>
+                </div></div></div>
+
+                <div class="card"><div class="card-body"><div class="trend-block">
+                    <div class="trend-desc">
+                        <h5>Outcomes by field <span class="badge-wip">Experimental · WIP</span></h5>
+                        <p>A bird's-eye view grouping studies by research discipline. Each bar shows the outcome breakdown of replication and reproduction attempts targeting work originally published in journals from that field.</p>
+                        <p>Disciplines are inferred from the original study's journal name using a hand-curated dictionary (<a href="data/disciplines.json" target="_blank" class="doi-link">data/disciplines.json</a>). Journals that have not been mapped yet are collected under <em>Uncategorized</em>.</p>
+                        <p class="trend-note">Coverage is still growing — many journals are not yet classified, so some fields may be under-represented and <em>Uncategorized</em> may dominate. The dictionary is straightforward to extend.</p>
+                    </div>
+                    <div class="chart-container" id="trend-field-container"><canvas id="trend-field"></canvas></div>
+                </div></div></div>
+
+            </div>
+
+            <!-- ============================ CITATION IMPACT ============================ -->
+            <div class="tab-pane fade" id="citation-impact" role="tabpanel">
+                <div class="data-stamp" data-stamp-source="citations"></div>
+
+                <div class="ci-intro">
+                    <h2 class="ci-h2">How do replications change citation behaviour?</h2>
+                    <p class="ci-lede">
+                        This tab combines the FLoRA dataset with citation data from
+                        <a href="https://opencitations.net" target="_blank">OpenCitations</a> to
+                        explore how the publication of a replication affects subsequent citations to the original study —
+                        and how often the original and the replication are co-cited.
+                    </p>
+                    <div class="kpi-row" id="kpis"></div>
+                </div>
+
+                <div class="card ci-card">
+                    <div class="card-header">Aggregate impact of replications</div>
+                    <div class="card-body">
+                        <p class="muted">
+                            Event-study estimates: each original is aligned at <em>t = 0</em>, the year of its first
+                            published replication. Bands show 95% CIs from a Poisson model with study and year fixed
+                            effects (a TWFE analogue of the preregistered FECT model).
+                        </p>
+
+                        <div class="filters">
+                            <span class="filter-label">Replication outcome</span>
+                            <div class="chip-group" id="outcome-chips">
+                                <button class="chip active" data-value="all">All</button>
+                                <button class="chip" data-value="failed">Failed</button>
+                                <button class="chip" data-value="successful">Successful</button>
+                                <button class="chip" data-value="mixed">Mixed</button>
+                            </div>
+                        </div>
+
+                        <div class="att-callout" id="att-callout"></div>
+
+                        <div class="plot-grid">
+                            <div class="plot-card">
+                                <h3>Citations to the original</h3>
+                                <div id="plot-cit" class="plot"></div>
+                            </div>
+                            <div class="plot-card">
+                                <h3>Co-citations (original ⊕ replication)</h3>
+                                <div id="plot-cocit" class="plot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card ci-card">
+                    <div class="card-header">Browse all originals</div>
+                    <div class="card-body">
+                        <p class="muted">Click any row to see its citation timeline with replication events marked.</p>
+
+                        <div class="search-row">
+                            <input id="search-input" type="search" placeholder="Search title, author, or DOI…" />
+                            <select id="filter-outcome">
+                                <option value="">All outcomes</option>
+                                <option value="failed">Has failed replication</option>
+                                <option value="successful">Has successful replication</option>
+                                <option value="mixed">Has mixed replication</option>
+                            </select>
+                            <select id="sort-by">
+                                <option value="n_citations">Most cited</option>
+                                <option value="n_replications">Most replicated</option>
+                                <option value="year_desc">Newest original</option>
+                                <option value="year_asc">Oldest original</option>
+                            </select>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table id="originals-table">
+                                <thead>
+                                    <tr>
+                                        <th>Original</th>
+                                        <th>Year</th>
+                                        <th>Replications</th>
+                                        <th>Citations</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                </div>
+
+                <div class="card ci-card">
+                    <div class="card-header">About this analysis</div>
+                    <div class="card-body">
+                        <p>
+                            Data are refreshed weekly. The pipeline filters FLoRA to
+                            <strong>conceptual and direct replications</strong> with outcomes labelled
+                            <em>successful</em>, <em>failed</em>, or <em>mixed</em> (reproductions are excluded).
+                            For each included original and replication, we retrieve all citing works from
+                            OpenCitations COCI. A "co-citation" is any work that cites both the original and at
+                            least one of its replications.
+                        </p>
+                        <p>
+                            The aggregate plots show event-study estimates from a Poisson two-way fixed-effects
+                            model — a transparent analogue of the FECT specification used in the
+                            preregistered analysis. See the
+                            <a href="https://github.com/forrtproject/FReD-data" target="_blank">FReD-data repository</a>
+                            for the underlying FLoRA dataset.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================ MEAN CITEDNESS ============================ -->
+            <div class="tab-pane fade" id="mean-citedness" role="tabpanel">
+                <div class="data-stamp" data-stamp-source="impact_factor"></div>
+
+                <div class="card">
+                    <div class="card-header">Journal-Level Citation Metrics and Replicability</div>
+                    <div class="card-body">
+                        <p class="muted" style="margin-bottom: 1rem;">
+                            This tab presents a statistical analysis of whether the
+                            <strong>OpenAlex Mean Citedness</strong> (OMC) of an original study's journal
+                            predicts replication success. The analysis is rendered weekly by an R pipeline
+                            (logistic regression, GAM, and multilevel modelling with discipline as a
+                            random effect).
+                        </p>
+                        <div id="mc-loading" style="color: var(--flora-muted); font-size: 0.9rem; padding: 1rem 0;">Loading analysis…</div>
+                        <div id="mc-content"></div>
+                        <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
+                            Could not load the rendered analysis. It is generated by
+                            <code>scripts/render_impact_factor.R</code> and committed weekly by
+                            GitHub Actions to <code>data/impact_factor.html</code>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            Data source: <a href="https://github.com/forrtproject/FReD-data" target="_blank">FORRT FReD Project</a> ·
+            <a href="https://forrt.org/" target="_blank">FORRT — Framework for Open and Reproducible Research Training</a>
+        </div>
+    </div>
+
+    <!-- Per-study modal (Citation Impact) -->
+    <div class="modal-backdrop" id="ci-modal" hidden>
+        <div class="modal-card">
+            <button class="modal-close" id="ci-modal-close">×</button>
+            <div id="ci-modal-body"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+
+    <script src="assets/app.js"></script>
+    <script src="assets/citation-impact.js"></script>
+</body>
+</html>

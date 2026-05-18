@@ -1,0 +1,11 @@
+{
+  "last_updated": "2026-05-18T08:10:50.741183+00:00",
+  "n_originals": 1783,
+  "n_replications": 1926,
+  "outcome_counts": {
+    "successful": 795,
+    "failed": 693,
+    "mixed": 438
+  },
+  "partial_run": false
+}
