@@ -12,28 +12,28 @@
     --flora-danger: #b3331e;
     --flora-warning: #d49b1d;
     --flora-info: #667eea;
-    --flora-muted: #6f7686;
+    --flora-muted: #6b7280;
 
-    --flora-bg: #f5edf2;
+    --flora-bg: #f2f2f2;
     --flora-card-bg: #ffffff;
-    --flora-border: #e2d4db;
-    --flora-border-strong: #cdb9c4;
-    --flora-text: #2a1520;
-    --flora-text-soft: #5a3d49;
-    --flora-subtle-bg: #faf3f7;
-    --flora-subtle-bg-2: #f5edf2;
-    --flora-header-bg: #3a0d1f;
+    --flora-border: #e0e0e0;
+    --flora-border-strong: #c8c8c8;
+    --flora-text: #1a1a1a;
+    --flora-text-soft: #4b5563;
+    --flora-subtle-bg: #f8f8f8;
+    --flora-subtle-bg-2: #f2f2f2;
+    --flora-header-bg: #2c2c2c;
     --flora-hero-bg: #ffffff;
     --flora-input-bg: #ffffff;
     --flora-link: var(--flora-secondary);
-    --flora-grid: #dfd8e5;
-    --flora-chart-tick: #4e4858;
-    --flora-shadow: rgba(42, 35, 48, 0.06);
-    --flora-shadow-hover: rgba(42, 35, 48, 0.12);
+    --flora-grid: #e0e0e0;
+    --flora-chart-tick: #4b5563;
+    --flora-shadow: rgba(0, 0, 0, 0.06);
+    --flora-shadow-hover: rgba(0, 0, 0, 0.12);
     --flora-callout-bg: #fdf6e4;
     --flora-callout-accent: #9c4221;
     --flora-wip-bg: #fff4d6;
-    --flora-wip-border: #e8a23a;
+    --flora-wip-border: #d49b1d;
     --flora-wip-text: #6b4e1f;
 
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -93,7 +93,6 @@ h1, .serif, .card-header, .stats-card .number,
     font-size: 0.95rem;
     letter-spacing: 0.01em;
     position: relative;
-    border-bottom: 3px solid var(--flora-primary);
 }
 .top-bar .top-bar-inner {
     display: flex; align-items: center; justify-content: space-between;
