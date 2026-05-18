@@ -25,7 +25,7 @@ const REMOTE_CSV_URL = 'https://raw.githubusercontent.com/forrtproject/FReD-data
 const FLORA_META_URL = 'data/flora_meta.json';
 const CITATIONS_META_URL = 'data/meta.json';
 const IMPACT_META_URL = 'data/impact_factor_meta.json';
-const IMPACT_HTML_URL = 'data/impact_factor.html';
+const IMPACT_DATA_URL = 'data/impact_factor_data.json';
 const DISCIPLINES_URL = 'data/disciplines.json';
 const CITATION_URL = 'https://raw.githubusercontent.com/forrtproject/FReD-data/refs/heads/main/CITATION.cff';
 const FAQ_URL = 'https://raw.githubusercontent.com/forrtproject/fred-data/refs/heads/main/output/flora_faq.md';
@@ -910,23 +910,145 @@ window._rerenderAllCharts = function() {
         renderOverviewChart(fullRowData);
         if (trendsInitialized) renderAllTrends();
     }
+    renderBrowseOutcomeChart();
+    if (mcDistChart || mcGamChart) renderMcCharts(window._mcData);
 };
 
 // ===== Mean Citedness tab =====
+let mcDistChart = null, mcGamChart = null;
+window._mcData = null;
+
+function renderMcCharts(d) {
+    if (!d) return;
+    window._mcData = d;
+    const ac = themeAxisColors();
+    const primary = getComputedStyle(document.documentElement)
+        .getPropertyValue('--flora-primary').trim() || '#8b1a4a';
+
+    // ── Overview grid ─────────────────────────────────────────────────────
+    const ov = d.overview;
+    const pctS = ov.n_total ? Math.round(100 * ov.n_success / ov.n_total) : 0;
+    const pctF = ov.n_total ? Math.round(100 * ov.n_failed  / ov.n_total) : 0;
+    document.getElementById('mc-overview').innerHTML = `
+        <div class="mc-stat"><span class="mc-stat-value">${ov.n_total.toLocaleString()}</span><span class="mc-stat-label">Studies with OMC</span></div>
+        <div class="mc-stat"><span class="mc-stat-value" style="color:#2f8f4f">${ov.n_success.toLocaleString()}</span><span class="mc-stat-label">Successful (${pctS}%)</span></div>
+        <div class="mc-stat"><span class="mc-stat-value" style="color:#b3331e">${ov.n_failed.toLocaleString()}</span><span class="mc-stat-label">Failed (${pctF}%)</span></div>
+        <div class="mc-stat"><span class="mc-stat-value" style="color:#d49b1d">${ov.n_mixed.toLocaleString()}</span><span class="mc-stat-label">Mixed</span></div>
+        <div class="mc-stat"><span class="mc-stat-value">${ov.n_journals.toLocaleString()}</span><span class="mc-stat-label">Journals matched</span></div>
+        <div class="mc-stat"><span class="mc-stat-value">${ov.n_disciplines}</span><span class="mc-stat-label">Disciplines</span></div>`;
+
+    // ── GAM stats note ────────────────────────────────────────────────────
+    const st = d.stats;
+    const pStr = st.p_val < 0.001 ? 'p < .001' : `p = ${st.p_val.toFixed(3)}`;
+    document.getElementById('mc-gam-stats').innerHTML =
+        `GAM smooth — edf = ${st.edf}, χ² = ${st.chi_sq}, ${pStr} — ` +
+        `McFadden R² = ${st.r2} — N = ${st.n_model} (successful vs. failed)`;
+
+    // ── Distribution chart ────────────────────────────────────────────────
+    const bins  = d.histogram;
+    const xMids = bins.map(b => ((b.bin_lo + b.bin_hi) / 2).toFixed(2));
+    if (mcDistChart) mcDistChart.destroy();
+    mcDistChart = new Chart(document.getElementById('mc-dist-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: xMids,
+            datasets: [
+                { label: 'Successful',    data: bins.map(b => b.successful),    backgroundColor: OUTCOME_COLORS.successful },
+                { label: 'Failed',        data: bins.map(b => b.failed),        backgroundColor: OUTCOME_COLORS.failed },
+                { label: 'Mixed',         data: bins.map(b => b.mixed),         backgroundColor: OUTCOME_COLORS.mixed },
+                { label: 'Inconclusive',  data: bins.map(b => b.inconclusive),  backgroundColor: OUTCOME_COLORS.inconclusive }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { color: ac.legend, boxWidth: 12, padding: 12, font: { size: 12 } } },
+                tooltip: { mode: 'index', intersect: false,
+                    callbacks: { title: items => `OMC ≈ ${items[0].label}` } }
+            },
+            scales: {
+                x: { stacked: true, title: { display: true, text: 'OpenAlex Mean Citedness (OMC)', color: ac.tick },
+                     grid: { color: ac.grid }, ticks: { color: ac.tick, maxTicksLimit: 10 } },
+                y: { stacked: true, title: { display: true, text: 'Number of studies', color: ac.tick },
+                     grid: { color: ac.grid }, ticks: { color: ac.tick } }
+            },
+            animation: false
+        }
+    });
+
+    // ── GAM curve chart ───────────────────────────────────────────────────
+    const gc = d.gam_curve;
+    const isDark = currentTheme() === 'dark';
+    const bandColor = isDark ? 'rgba(224,165,192,0.18)' : 'rgba(139,26,74,0.15)';
+    const lineColor = isDark ? '#e0a5c0' : primary;
+    const jitterPts = (d.jitter || []).map(pt => ({
+        x: pt.omc + (Math.random() - 0.5) * 0.12,
+        y: pt.outcome + (Math.random() - 0.5) * 0.06
+    }));
+
+    if (mcGamChart) mcGamChart.destroy();
+    mcGamChart = new Chart(document.getElementById('mc-gam-chart').getContext('2d'), {
+        data: {
+            datasets: [
+                { type: 'line', label: '95% CI (upper)', data: gc.map(p => ({ x: p.omc, y: p.p_hi })),
+                  borderWidth: 0, pointRadius: 0, fill: '+1', backgroundColor: bandColor, tension: 0.4 },
+                { type: 'line', label: '95% CI (lower)', data: gc.map(p => ({ x: p.omc, y: p.p_lo })),
+                  borderWidth: 0, pointRadius: 0, fill: false, tension: 0.4 },
+                { type: 'line', label: 'GAM estimate',   data: gc.map(p => ({ x: p.omc, y: p.p })),
+                  borderColor: lineColor, borderWidth: 2, pointRadius: 0, fill: false, tension: 0.4 },
+                { type: 'scatter', label: 'Studies', data: jitterPts,
+                  pointRadius: 3, pointStyle: 'circle',
+                  backgroundColor: isDark ? 'rgba(200,200,200,0.18)' : 'rgba(100,100,100,0.15)',
+                  borderWidth: 0 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top',
+                    labels: { color: ac.legend, boxWidth: 12, padding: 12, font: { size: 12 },
+                        filter: item => !item.text.startsWith('95%') } },
+                tooltip: { filter: item => item.datasetIndex >= 2,
+                    callbacks: {
+                        title: items => `OMC = ${Number(items[0].parsed.x).toFixed(2)}`,
+                        label: item => item.datasetIndex === 2
+                            ? `P(success) = ${(item.parsed.y * 100).toFixed(1)}%`
+                            : `Outcome = ${item.parsed.y === 1 ? 'Successful' : 'Failed'}`
+                    }
+                }
+            },
+            scales: {
+                x: { type: 'linear', title: { display: true, text: 'OpenAlex Mean Citedness (OMC)', color: ac.tick },
+                     grid: { color: ac.grid }, ticks: { color: ac.tick } },
+                y: { min: 0, max: 1,
+                     title: { display: true, text: 'P(successful replication)', color: ac.tick },
+                     grid: { color: ac.grid }, ticks: { color: ac.tick,
+                         callback: v => `${Math.round(v * 100)}%` } }
+            },
+            animation: false
+        }
+    });
+}
+
 async function loadMeanCitedness() {
-    const loadingEl = document.getElementById('mc-loading');
-    const contentEl = document.getElementById('mc-content');
-    const errorEl = document.getElementById('mc-error');
+    const loadingEl  = document.getElementById('mc-loading');
+    const overviewEl = document.getElementById('mc-overview');
+    const distCard   = document.getElementById('mc-dist-card');
+    const gamCard    = document.getElementById('mc-gam-card');
+    const errorEl    = document.getElementById('mc-error');
     try {
-        const res = await fetch(IMPACT_HTML_URL, { cache: 'no-cache' });
+        const res = await fetch(IMPACT_DATA_URL, { cache: 'no-cache' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
-        const html = await res.text();
-        contentEl.innerHTML = html;
-        loadingEl.style.display = 'none';
+        const data = await res.json();
+        loadingEl.style.display  = 'none';
+        overviewEl.style.display = '';
+        distCard.style.display   = '';
+        gamCard.style.display    = '';
+        renderMcCharts(data);
     } catch (err) {
         console.warn('Mean Citedness load failed:', err);
         loadingEl.style.display = 'none';
-        errorEl.style.display = 'block';
+        errorEl.style.display   = 'block';
     }
 }
 document.getElementById('mc-tab').addEventListener('shown.bs.tab', loadMeanCitedness);

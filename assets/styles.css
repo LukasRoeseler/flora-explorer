@@ -546,11 +546,15 @@ tr.shown td.details-control::before { transform: rotate(90deg); }
 .mc-stat-label { display: block; font-size: 0.72rem; color: var(--flora-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.15rem; }
 .mc-model-note { font-size: 0.88rem; color: var(--flora-muted); margin: 0.25rem 0 1rem; }
 
-/* Mean Citedness — content from rendered R fragment */
-#mc-content { color: var(--flora-text); font-size: 0.95rem; line-height: 1.65; }
-#mc-content h1, #mc-content h2, #mc-content h3 { font-family: var(--font-serif); color: var(--flora-primary); }
-[data-theme="dark"] #mc-content h1, [data-theme="dark"] #mc-content h2, [data-theme="dark"] #mc-content h3 { color: var(--flora-primary-dark-accent); }
-#mc-content img { max-width: 100%; height: auto; display: block; margin: 1rem auto; background: #fff; border-radius: 6px; }
-#mc-content figure { margin: 1.25rem 0; }
-#mc-content figure p.caption, #mc-content .caption { color: var(--flora-muted); font-size: 0.85rem; text-align: center; margin-top: 0.3rem; }
-#mc-content code { background: var(--flora-subtle-bg); padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.88em; }
+/* Mean Citedness — Chart.js chart cards */
+.mc-chart-card {
+    background: var(--flora-card-bg); border: 1px solid var(--flora-border);
+    border-radius: 10px; padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 2px var(--flora-shadow); margin-bottom: 1.25rem;
+}
+.mc-chart-title {
+    font-family: var(--font-serif); font-weight: 600; font-size: 1rem;
+    color: var(--flora-primary); margin-bottom: 0.5rem;
+}
+[data-theme="dark"] .mc-chart-title { color: var(--flora-primary-dark-accent); }
+.mc-chart-wrap { position: relative; height: 320px; }

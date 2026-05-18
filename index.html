@@ -579,14 +579,22 @@
                             Replications only — reproductions are not included in this analysis
                         </span>
                         <div id="mc-loading" style="color: var(--flora-muted); font-size: 0.9rem; padding: 1rem 0;">Loading analysis…</div>
-                        <div id="mc-content"></div>
+                        <div id="mc-overview" class="mc-overview-grid" style="display:none;"></div>
+                        <div id="mc-dist-card" class="mc-chart-card" style="display:none;">
+                            <div class="mc-chart-title">Distribution of studies by journal Mean Citedness</div>
+                            <div class="mc-chart-wrap"><canvas id="mc-dist-chart"></canvas></div>
+                        </div>
+                        <div id="mc-gam-card" class="mc-chart-card" style="display:none;">
+                            <div class="mc-chart-title">GAM — P(successful replication) vs OMC</div>
+                            <p id="mc-gam-stats" class="mc-model-note"></p>
+                            <div class="mc-chart-wrap"><canvas id="mc-gam-chart"></canvas></div>
+                        </div>
                         <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
                             The analysis has not been generated yet. Run the pipeline once to produce it:
                             <ol style="margin-top: 0.5rem;">
-                                <li>Install R packages: <code>rmarkdown, ggplot2, mgcv, lme4, pROC, patchwork, scales, jsonlite</code></li>
                                 <li><code>python scripts/compute_omc.py</code> — enriches FLoRA with OpenAlex Mean Citedness</li>
-                                <li><code>Rscript scripts/render_impact_factor.R</code> — renders the analysis to <code>data/impact_factor.html</code></li>
-                                <li>Commit and push <code>data/impact_factor.html</code> and <code>data/impact_factor_figs/</code></li>
+                                <li><code>Rscript scripts/render_impact_factor.R</code> — computes GAM and writes <code>data/impact_factor_data.json</code></li>
+                                <li>Commit and push <code>data/impact_factor_data.json</code></li>
                             </ol>
                             After the first run, the GitHub Actions workflow keeps it updated weekly.
                         </div>
