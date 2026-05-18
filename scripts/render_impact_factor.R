@@ -43,10 +43,16 @@ rmarkdown::render(
   quiet        = TRUE
 )
 
-# Rewrite figure paths so they work from /data/impact_factor.html
+# Rewrite figure paths so they work when the fragment is injected into the root page.
+# The fragment is fetched and inserted via innerHTML, so relative paths resolve against
+# the root document URL — not against data/impact_factor.html.
+# Handle both forms knitr may produce:
+#   "../data/impact_factor_figs/foo.png"  (relative to knit_root_dir = scripts/)
+#   "impact_factor_figs/foo.png"          (adjusted relative to output_file)
+# Both become "data/impact_factor_figs/foo.png".
 html <- readLines(out_html, warn = FALSE)
-# Anything like "../data/impact_factor_figs/foo.png" → "impact_factor_figs/foo.png"
-html <- gsub("\\.\\./data/impact_factor_figs/", "impact_factor_figs/", html, fixed = FALSE)
+html <- gsub("../data/impact_factor_figs/", "data/impact_factor_figs/", html, fixed = TRUE)
+html <- gsub('(?<!data/)impact_factor_figs/', 'data/impact_factor_figs/', html, perl = TRUE)
 writeLines(html, out_html)
 
 # Count source rows for the meta file
