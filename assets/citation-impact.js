@@ -4,7 +4,7 @@
 
 (function() {
     const CI = {
-        meta: null, agg: null, studies: null, index: null,
+        meta: null, agg: null, studies: null, index: null, fect: null,
         outcome: 'all', page: 1, perPage: 20,
         loaded: false, loading: false
     };
@@ -75,6 +75,12 @@
             const originals = await origRes.json();
             CI.studies = originals.studies;
             CI.index = originals.index;
+
+            // Optional: ETWFE results (may not exist on first run)
+            try {
+                const fectRes = await fetch('data/fect_results.json');
+                if (fectRes.ok) CI.fect = await fectRes.json();
+            } catch (_) {}
 
             renderKPIs(); renderAggregate(); renderTable(); bindEvents();
             CI.loaded = true;
@@ -168,9 +174,42 @@
                     y: model.estimate.map(e => e == null || !Number.isFinite(e) ? null : Math.exp(e) * baseline),
                     type: 'scatter', mode: 'lines',
                     line: { color: plotlyTheme().font, width: 1.5, dash: 'dot' },
-                    name: 'Model fit', hoverinfo: 'skip'
+                    name: 'Model fit (OLS)', hoverinfo: 'skip'
                 });
             }
+        }
+
+        // ETWFE overlay (optional — only shown when fect_results.json exists)
+        const fectKey = modelField === 'citations_model' ? 'citations' : 'cocitations';
+        const fect = CI.fect && CI.fect[outcome] && CI.fect[outcome][fectKey];
+        if (fect && fect.event_time && fect.event_time.length > 0) {
+            const refIdx = desc.event_time ? desc.event_time.indexOf(-1) : -1;
+            const baseline = refIdx >= 0 ? desc[descField][refIdx] : 0;
+            const fectColor = '#4a74b4';
+            const fectColorAlpha = 'rgba(74,116,180,0.15)';
+            // CI band: lower bound first (invisible), then upper bound fills back to it
+            traces.push({
+                x: fect.event_time,
+                y: fect.att_lo.map(v => baseline + (v || 0)),
+                type: 'scatter', mode: 'lines',
+                line: { width: 0 }, showlegend: false,
+                hoverinfo: 'skip', name: '_fect_lo'
+            });
+            traces.push({
+                x: fect.event_time,
+                y: fect.att_hi.map(v => baseline + (v || 0)),
+                type: 'scatter', mode: 'lines', fill: 'tonexty',
+                fillcolor: fectColorAlpha, line: { width: 0 },
+                showlegend: false, hoverinfo: 'skip', name: '_fect_hi'
+            });
+            traces.push({
+                x: fect.event_time,
+                y: fect.att_est.map(v => baseline + (v || 0)),
+                type: 'scatter', mode: 'lines',
+                line: { color: fectColor, width: 2, dash: 'dashdot' },
+                name: `ETWFE (n=${fect.n_units})`,
+                hovertemplate: 't=%{x}: %{y:.2f}<extra>ETWFE causal est.</extra>'
+            });
         }
 
         if (traces.length === 0) {
