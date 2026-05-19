@@ -364,6 +364,10 @@ async function loadCitation() {
         htmlParts.push(`<em>${escapeHtml(title)}</em>${escapeHtml(version)} [Dataset].`);
         if (doiLink) htmlParts.push(doiLink);
         box.innerHTML = htmlParts.join(' ');
+        ['citation-text-top', 'citation-text-browse'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.innerHTML = htmlParts.join(' ');
+        });
 
         const plainParts = [];
         if (authorsStr) plainParts.push(authorsStr);
@@ -373,7 +377,11 @@ async function loadCitation() {
         box.dataset.plain = plainParts.join(' ');
     } catch (err) {
         console.error('Citation load failed:', err);
-        box.innerHTML = `<span style="color: var(--flora-muted);">Could not load live citation. Please see the <a href="${CITATION_URL}" target="_blank" class="doi-link">CITATION.cff file</a>.</span>`;
+        const errHtml = '<span style="color: var(--flora-muted);">Could not load live citation. Please see the <a href="' + CITATION_URL + '" target="_blank" class="doi-link">CITATION.cff file</a>.</span>';
+        box.innerHTML = errHtml;
+        ['citation-text-top', 'citation-text-browse'].forEach(function(id) {
+            var el = document.getElementById(id); if (el) el.innerHTML = errHtml;
+        });
     }
 }
 

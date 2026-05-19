@@ -295,6 +295,27 @@ h1, .serif, .card-header, .stats-card .number,
 .example-card .ex-line-title { font-family: var(--font-serif); font-weight: 600; font-size: 0.95rem; color: var(--flora-text); line-height: 1.35; }
 .example-card .ex-line-meta { display: block; font-size: 0.78rem; color: var(--flora-muted); margin-top: 0.15rem; }
 
+/* Per-tab citation block */
+.tab-cite-block {
+    background: var(--flora-subtle-bg); border: 1px solid var(--flora-border);
+    border-left: 3px solid var(--flora-primary); border-radius: 8px;
+    padding: 0.8rem 1.1rem; margin-bottom: 1.25rem;
+}
+.tab-cite-block-label {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--flora-primary); margin-bottom: 0.45rem;
+}
+[data-theme="dark"] .tab-cite-block-label { color: var(--flora-primary-dark-accent); }
+.tab-cite-block .reuse-text {
+    font-size: 0.82rem; color: var(--flora-text-soft); line-height: 1.55; margin-bottom: 0.55rem;
+}
+.tab-cite-block .cite-ref {
+    font-size: 0.82rem; font-family: var(--font-serif); color: var(--flora-text);
+    line-height: 1.6; padding-top: 0.35rem; margin-top: 0.35rem;
+    border-top: 1px solid var(--flora-border);
+}
+.tab-cite-block .cite-ref:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
 /* Citation */
 .citation-box { background: var(--flora-subtle-bg); border: 1px solid var(--flora-border); border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.95rem; line-height: 1.65; font-family: var(--font-serif); position: relative; color: var(--flora-text); }
 .citation-box .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: var(--flora-card-bg); border: 1px solid var(--flora-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.75rem; cursor: pointer; color: var(--flora-muted); font-family: var(--font-sans); }
