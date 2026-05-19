@@ -557,5 +557,4 @@ tr.shown td.details-control::before { transform: rotate(90deg); }
     color: var(--flora-primary); margin-bottom: 0.5rem;
 }
 [data-theme="dark"] .mc-chart-title { color: var(--flora-primary-dark-accent); }
-.mc-chart-wrap { position: relative; height: 320px; }
-#mc-gam-card .mc-chart-wrap { height: 640px; }
+.mc-chart-wrap { position: relative; }

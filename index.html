@@ -571,8 +571,8 @@
                         <p class="muted" style="margin-bottom: 0.75rem;">
                             This tab presents a statistical analysis of whether the
                             <strong>OpenAlex Mean Citedness</strong> (OMC) of an original study's journal
-                            predicts replication success. The analysis is rendered weekly by an R pipeline
-                            (GAM with discipline as context).
+                            predicts replication success. OMC is a proxy for the Journal Impact Factor.
+                            The analysis is rendered weekly by an R pipeline (GAM).
                         </p>
                         <span class="scope-note">
                             <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
@@ -588,6 +588,7 @@
                             <div class="mc-chart-title">P(successful replication) vs Mean Citedness — logistic smooth</div>
                             <p id="mc-gam-stats" class="mc-model-note"></p>
                             <div class="mc-chart-wrap"><div id="mc-gam-chart"></div></div>
+                            <p class="mc-model-note" style="margin-top:0.6rem;">Only studies with successful or failed replication outcomes were included in the smooth model. Mixed and inconclusive outcomes were excluded.</p>
                         </div>
                         <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
                             Failed to load analysis data.

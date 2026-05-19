@@ -963,6 +963,7 @@ function renderMcCharts(d) {
         plot_bgcolor: t.plot, paper_bgcolor: t.paper,
         font: { family: 'Inter, sans-serif', size: 12, color: t.font },
         legend: { orientation: 'h', y: -0.2, font: { color: t.font } },
+        height: 320,
     }, { displayModeBar: false, responsive: true });
 
     const st = d.stats || {};
@@ -997,6 +998,7 @@ function renderMcCharts(d) {
           hovertemplate: 'OMC = %{x:.2f}<br>%{text}<extra></extra>' },
     ];
     const gamLayout = {
+        height: 640,
         margin: { t: 10, r: 10, b: 50, l: 60 },
         xaxis: { title: 'OpenAlex Mean Citedness (OMC)', gridcolor: t.grid, color: t.font, tickfont: { color: t.font } },
         yaxis: { title: 'P(successful replication)', range: [-0.08, 1.08],
@@ -1004,6 +1006,17 @@ function renderMcCharts(d) {
         plot_bgcolor: t.plot, paper_bgcolor: t.paper,
         font: { family: 'Inter, sans-serif', size: 12, color: t.font },
         legend: { orientation: 'h', y: -0.2, font: { color: t.font } },
+        shapes: [{
+            type: 'line', xref: 'paper', x0: 0, x1: 1,
+            yref: 'y', y0: 0.5, y1: 0.5,
+            line: { color: isDark ? 'rgba(200,200,210,0.45)' : 'rgba(100,100,100,0.4)', width: 1.5, dash: 'dash' },
+        }],
+        annotations: [{
+            xref: 'paper', x: 1, xanchor: 'right',
+            yref: 'y', y: 0.5, yanchor: 'bottom',
+            text: 'chance (50%)', showarrow: false,
+            font: { size: 11, color: isDark ? 'rgba(200,200,210,0.6)' : 'rgba(100,100,100,0.6)' },
+        }],
     };
     Plotly.newPlot('mc-gam-chart', gamTraces, gamLayout, { displayModeBar: false, responsive: true });
     const pNote = (st.p_val !== null && st.p_val !== undefined)
