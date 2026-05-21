@@ -84,6 +84,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="mc-tab" data-bs-toggle="tab" data-bs-target="#mean-citedness" type="button" role="tab">Mean Citedness</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="overlap-tab" data-bs-toggle="tab" data-bs-target="#authorship-overlap" type="button" role="tab">Authorship Overlap</button>
+                </li>
             </ul>
         </div>
     </div>
@@ -622,6 +625,58 @@
                         <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
                             Failed to load analysis data.
                             <code id="mc-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== AUTHORSHIP OVERLAP ==================== -->
+            <div class="tab-pane fade" id="authorship-overlap" role="tabpanel">
+                <div class="data-stamp" data-stamp-source="author_overlap"></div>
+
+                <div class="tab-cite-block">
+                    <div class="tab-cite-block-label">How to cite</div>
+                    <div class="cite-ref">Wallrich, L., &amp; Röseler, L. (2026). <em>FLoRA Explorer</em> [Website]. <a href="https://forrt.org/flora-explorer/" target="_blank" class="doi-link">https://forrt.org/flora-explorer/</a></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Authorship Overlap and Outcomes</div>
+                    <div class="card-body">
+                        <p style="margin-bottom:0.75rem;">
+                            This analysis checks whether any author of the <strong>original study</strong>
+                            also appears as an author of the <strong>replication study</strong> — a pattern
+                            sometimes called a <em>same-author replication</em> or <em>self-replication</em>.
+                            Author names are matched by family name (normalised: lowercase, diacritics removed).
+                            This may produce <strong>false positives</strong> for common family names when two
+                            unrelated researchers share a surname.
+                        </p>
+                        <span class="scope-note" style="margin-bottom:1rem;display:inline-flex;">
+                            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
+                            Replications only — reproductions are not included in this analysis
+                        </span>
+
+                        <div id="ao-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
+
+                        <div id="ao-overview" class="mc-overview-grid" style="display:none;"></div>
+
+                        <div id="ao-chart-card" class="mc-chart-card" style="display:none;margin-top:1.25rem;">
+                            <div class="mc-chart-title">Replication outcomes by authorship overlap</div>
+                            <div class="mc-chart-wrap"><div id="ao-chart"></div></div>
+                        </div>
+
+                        <div id="ao-caveat" style="display:none;margin-top:1rem;">
+                            <div class="key-distinction">
+                                <strong>Interpretation caveat:</strong> Authors replicating their own work may
+                                bring unique methodological knowledge and access to original materials, which
+                                could improve replication success. At the same time, they may have a conflict of
+                                interest in publicly reporting inconsistent results. Both effects can operate
+                                simultaneously, making the direction of bias difficult to predict.
+                            </div>
+                        </div>
+
+                        <div id="ao-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
+                            Failed to load authorship overlap data.
+                            <code id="ao-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
                         </div>
                     </div>
                 </div>

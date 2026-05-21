@@ -920,6 +920,7 @@ window._rerenderAllCharts = function() {
     }
     renderBrowseOutcomeChart();
     if (window._mcData) renderMcCharts(window._mcData);
+    if (window._aoData) renderOverlapCharts(window._aoData);
 };
 
 // ===== Mean Citedness tab =====
@@ -1063,16 +1064,137 @@ async function loadMeanCitedness() {
 }
 document.getElementById('mc-tab').addEventListener('shown.bs.tab', loadMeanCitedness);
 
+// ===== Authorship Overlap tab =====
+window._aoData = null;
+
+function aoPlotlyTheme() {
+    const dark = currentTheme() === 'dark';
+    return {
+        paper: dark ? '#1d1e29' : '#ffffff',
+        plot:  dark ? '#1d1e29' : '#ffffff',
+        grid:  dark ? '#2d2e3d' : '#eeeaef',
+        font:  dark ? '#e8e6ee' : '#2a2330',
+    };
+}
+
+function renderOverlapCharts(d) {
+    if (!d) return;
+    const th = aoPlotlyTheme();
+    const ov = d.overview;
+    const by = d.by_outcome;
+
+    // ── Overview boxes ─────────────────────────────────────────────────────────
+    const ovEl = document.getElementById('ao-overview');
+    if (ovEl) {
+        ovEl.innerHTML =
+            '<div class="mc-stat-box">' +
+                '<div class="mc-stat-value">' + (ov.n_total || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Replications included</div>' +
+            '</div>' +
+            '<div class="mc-stat-box">' +
+                '<div class="mc-stat-value">' + (ov.n_overlap || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">With author overlap (' + (ov.pct_overlap || 0) + '%)</div>' +
+            '</div>' +
+            '<div class="mc-stat-box">' +
+                '<div class="mc-stat-value">' + (ov.n_no_overlap || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Without author overlap (' + (ov.pct_no_overlap || 0) + '%)</div>' +
+            '</div>' +
+            '<div class="mc-stat-box">' +
+                '<div class="mc-stat-value">' + (ov.n_unknown || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Overlap unknown</div>' +
+            '</div>';
+        ovEl.style.display = '';
+    }
+
+    // ── Grouped bar chart ──────────────────────────────────────────────────────
+    const OUTCOMES   = ['successful', 'failed', 'mixed', 'inconclusive'];
+    const OUT_LABELS = { successful: 'Successful', failed: 'Failed', mixed: 'Mixed', inconclusive: 'Inconclusive' };
+    const groups     = ['overlap', 'no_overlap'];
+    const GROUP_LABELS = { overlap: 'Author overlap', no_overlap: 'No author overlap' };
+
+    const traces = OUTCOMES.map(oc => ({
+        name: OUT_LABELS[oc],
+        type: 'bar',
+        x: groups.map(g => GROUP_LABELS[g]),
+        y: groups.map(g => (by[g] && by[g][oc]) || 0),
+        marker: { color: OUTCOME_COLORS[oc] || '#a0a7b4' },
+    }));
+
+    const layout = {
+        barmode: 'group',
+        height: 420,
+        paper_bgcolor: th.paper,
+        plot_bgcolor:  th.plot,
+        font: { color: th.font, size: 13 },
+        legend: { orientation: 'h', y: -0.18, font: { color: th.font } },
+        margin: { l: 50, r: 20, t: 20, b: 80 },
+        yaxis: {
+            title: 'Number of replications',
+            gridcolor: th.grid,
+            zerolinecolor: th.grid,
+            tickfont: { color: th.font },
+            titlefont: { color: th.font },
+        },
+        xaxis: {
+            tickfont: { color: th.font },
+        },
+    };
+
+    const config = { responsive: true, displayModeBar: false };
+    const chartEl = document.getElementById('ao-chart');
+    if (chartEl) Plotly.react(chartEl, traces, layout, config);
+
+    // ── Caveat ─────────────────────────────────────────────────────────────────
+    const caveatEl = document.getElementById('ao-caveat');
+    if (caveatEl) caveatEl.style.display = '';
+}
+
+async function loadAuthorOverlap() {
+    if (window._aoData) { renderOverlapCharts(window._aoData); return; }
+    const loadingEl  = document.getElementById('ao-loading');
+    const overviewEl = document.getElementById('ao-overview');
+    const chartCard  = document.getElementById('ao-chart-card');
+    const caveatEl   = document.getElementById('ao-caveat');
+    const errorEl    = document.getElementById('ao-error');
+    try {
+        if (loadingEl)  loadingEl.style.display  = 'block';
+        if (overviewEl) overviewEl.style.display = 'none';
+        if (chartCard)  chartCard.style.display  = 'none';
+        if (caveatEl)   caveatEl.style.display   = 'none';
+        if (errorEl)    errorEl.style.display    = 'none';
+
+        const res = await fetch(OVERLAP_DATA_URL, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const d = await res.json();
+        window._aoData = d;
+
+        if (loadingEl)  loadingEl.style.display  = 'none';
+        if (chartCard)  chartCard.style.display  = '';
+        renderOverlapCharts(d);
+    } catch (err) {
+        if (loadingEl)  loadingEl.style.display  = 'none';
+        if (errorEl)    errorEl.style.display    = 'block';
+        const det = document.getElementById('ao-error-detail');
+        if (det) det.textContent = String(err);
+    }
+}
+document.getElementById('overlap-tab').addEventListener('shown.bs.tab', loadAuthorOverlap);
+
 // ===== Data stamps (last updated) =====
+const OVERLAP_DATA_URL = 'data/author_overlap_data.json';
+const OVERLAP_META_URL = 'data/author_overlap_meta.json';
+
 const STAMP_LABELS = {
     flora: 'FLoRA data',
     citations: 'Citation data',
-    impact_factor: 'Mean Citedness analysis'
+    impact_factor: 'Mean Citedness analysis',
+    author_overlap: 'Authorship Overlap data'
 };
 const STAMP_URLS = {
     flora: FLORA_META_URL,
     citations: CITATIONS_META_URL,
-    impact_factor: IMPACT_META_URL
+    impact_factor: IMPACT_META_URL,
+    author_overlap: OVERLAP_META_URL
 };
 
 async function loadDataStamps() {
