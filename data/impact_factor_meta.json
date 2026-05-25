@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-22T09:50:21Z",
-  "n_rows_with_omc": 2106,
+  "last_updated": "2026-05-25T08:56:22Z",
+  "n_rows_with_omc": 2111,
   "source": "scripts/render_impact_factor.R"
 }

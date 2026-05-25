@@ -3349,5 +3349,15 @@
     "id": "https://openalex.org/S4306542696",
     "display_name": "\u4e2d\u83ef\u5fc3\u7406\u5b78\u520a",
     "impact_factor": 0.0
+  },
+  "journal of cognitive psychology": {
+    "id": "https://openalex.org/S133248390",
+    "display_name": "The European Journal of Cognitive Psychology",
+    "impact_factor": 0.0
+  },
+  "psychological research": {
+    "id": "https://openalex.org/S35819839",
+    "display_name": "Psychological Research",
+    "impact_factor": 1.3765586034912718
   }
 }
