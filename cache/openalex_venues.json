@@ -3359,5 +3359,16 @@
     "id": "https://openalex.org/S35819839",
     "display_name": "Psychological Research",
     "impact_factor": 1.3765586034912718
-  }
+  },
+  "political psychology": {
+    "id": "https://openalex.org/S141683002",
+    "display_name": "Political Psychology",
+    "impact_factor": 2.1094224924012157
+  },
+  "survey research methods": {
+    "id": "https://openalex.org/S4363604456",
+    "display_name": "Encyclopedia of Survey Research Methods",
+    "impact_factor": 0.0
+  },
+  "translational issues in psychological science": null
 }
