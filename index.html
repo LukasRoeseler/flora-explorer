@@ -540,15 +540,6 @@
                                 <option value="successful">Has successful replication</option>
                                 <option value="mixed">Has mixed replication</option>
                             </select>
-                            <select id="sort-by">
-                                <option value="n_citations">Most cited</option>
-                                <option value="n_replications">Most replicated</option>
-                                <option value="n_cocitations">Most co-cited</option>
-                                <option value="cocit_prop_high">Highest co-citation proportion</option>
-                                <option value="cocit_prop_low">Lowest co-citation proportion</option>
-                                <option value="year_desc">Newest original</option>
-                                <option value="year_asc">Oldest original</option>
-                            </select>
                         </div>
 
                         <div class="table-wrap">
@@ -556,10 +547,10 @@
                                 <thead>
                                     <tr>
                                         <th>Original</th>
-                                        <th>Year</th>
-                                        <th>Replications</th>
-                                        <th>Citations</th>
-                                        <th>Co-cit.</th>
+                                        <th class="sortable" data-sort="year">Year</th>
+                                        <th class="sortable" data-sort="n_replications">Replications</th>
+                                        <th class="sortable" data-sort="n_citations">Citations</th>
+                                        <th class="sortable" data-sort="n_cocitations">Co-citations</th>
                                         <th></th>
                                     </tr>
                                 </thead>
