@@ -342,13 +342,22 @@
                 <p class="muted">${escapeHtml(formatAuthors(s.author))} · ${s.year || '?'}
                     ${s.venue ? '· ' + escapeHtml(s.venue) : ''}<br>
                     <a href="https://doi.org/${s.doi}" target="_blank">${s.doi}</a></p>
+                <button type="button" class="ci-share-btn" data-doi="${escapeHtml(s.doi)}">🔗 Copy link to this chart</button>
                 <h3 style="margin-top:18px">Citation timeline</h3>
                 <div id="study-plot" style="width:100%;height:380px"></div>
                 <h3 style="margin-top:18px">Replications (${s.n_replications})</h3>
                 <ul class="rep-list">${reps}</ul>
             </div>`;
         document.getElementById('ci-modal').hidden = false;
+        // Reflect the open chart in the address bar so it's directly shareable.
+        history.replaceState(null, '', citationLink(s.doi));
         drawStudyTimeline(s);
+    }
+
+    function closeModal() {
+        document.getElementById('ci-modal').hidden = true;
+        // Drop ?doi= but keep the user on the Citation Impact tab.
+        history.replaceState(null, '', new URL('./?tab=citations', window.location.href).href);
     }
 
     function drawStudyTimeline(s) {
@@ -413,14 +422,73 @@
         document.getElementById('pagination').addEventListener('click', e => {
             if (e.target.dataset.p) { CI.page = +e.target.dataset.p; renderTable(); }
         });
-        document.getElementById('ci-modal-close').addEventListener('click', () => document.getElementById('ci-modal').hidden = true);
+        document.getElementById('ci-modal-body').addEventListener('click', e => {
+            const btn = e.target.closest('.ci-share-btn');
+            if (!btn) return;
+            const link = citationLink(btn.dataset.doi);
+            navigator.clipboard.writeText(link).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = '✓ Link copied';
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            }).catch(() => window.prompt('Copy this link:', link));
+        });
+        document.getElementById('ci-modal-close').addEventListener('click', closeModal);
         document.getElementById('ci-modal').addEventListener('click', e => {
-            if (e.target.id === 'ci-modal') document.getElementById('ci-modal').hidden = true;
+            if (e.target.id === 'ci-modal') closeModal();
         });
     }
 
+    // Memoised loader so the deep-link handler can await the same in-flight
+    // load that opening the tab triggers (avoids a load race).
+    let initPromise = null;
+    function ensureInit() {
+        if (!initPromise) initPromise = init();
+        return initPromise;
+    }
+
+    // ===== Deep-linking: /citations/?doi=<doi> opens a study's chart popup =====
+    function normalizeDoi(doi) {
+        return (doi || '').trim().toLowerCase()
+            .replace(/^https?:\/\/(dx\.)?doi\.org\//, '')
+            .replace(/^doi:/, '');
+    }
+
+    // Resolve a (possibly prefixed) DOI to the matching key in CI.studies.
+    function findStudyDoi(doi) {
+        const t = normalizeDoi(doi);
+        if (!t || !CI.studies) return null;
+        return Object.keys(CI.studies).find(d => normalizeDoi(d) === t) || null;
+    }
+
+    // Build the shareable ?tab=citations&doi=… URL on the main page, relative
+    // so it works under the GitHub Pages project path (/flora-explorer/).
+    function citationLink(doi) {
+        return new URL('./?tab=citations&doi=' + encodeURIComponent(doi), window.location.href).href;
+    }
+
+    // Switch to the Citation Impact tab, ensure data is loaded, then open the
+    // study's chart popup. Returns true if a matching study was found.
+    async function openStudyByDoi(doi) {
+        await ensureInit();
+        const matchDoi = findStudyDoi(doi);
+        if (!matchDoi) return false;
+        const tabBtn = document.getElementById('citation-tab');
+        if (tabBtn && window.bootstrap) bootstrap.Tab.getOrCreateInstance(tabBtn).show();
+        showStudy(matchDoi);
+        return true;
+    }
+
+    // Read ?doi= from the current URL and open the matching popup, if any.
+    async function handleDeepLink() {
+        const doi = new URLSearchParams(window.location.search).get('doi');
+        if (doi) await openStudyByDoi(doi);
+    }
+
     // Lazy-load when the user opens the tab
-    document.getElementById('citation-tab').addEventListener('shown.bs.tab', init);
+    document.getElementById('citation-tab').addEventListener('shown.bs.tab', ensureInit);
+
+    // Open a study popup straight away if arrived via /citations/?doi=…
+    handleDeepLink();
 
     // Re-theme Plotly plots on dark-mode toggle
     document.getElementById('theme-toggle').addEventListener('click', () => {
