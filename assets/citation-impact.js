@@ -74,7 +74,15 @@
             CI.agg = await aggRes.json();
             const originals = await origRes.json();
             CI.studies = originals.studies;
-            CI.index = originals.index;
+            CI.index = originals.index.map(s => {
+                const study = CI.studies[s.doi];
+                const n_cocitations = study
+                    ? (study.timeline || []).reduce((sum, t) =>
+                        sum + (t.with_successful || 0) + (t.with_failed || 0) + (t.with_mixed || 0), 0)
+                    : 0;
+                const cocit_prop = s.n_citations > 0 ? n_cocitations / s.n_citations : 0;
+                return { ...s, n_cocitations, cocit_prop };
+            });
 
             // Optional: ETWFE results (may not exist on first run)
             try {
@@ -107,7 +115,7 @@
             if (el) el.innerHTML = '<div style="padding:80px 20px;text-align:center;color:var(--flora-muted)">No data yet</div>';
         });
         const tbody = document.querySelector('#originals-table tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--flora-muted)">No data yet — first refresh in progress.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--flora-muted)">No data yet — first refresh in progress.</td></tr>';
     }
 
     function renderKPIs() {
@@ -235,6 +243,30 @@
         Plotly.newPlot(divId, traces, layout, { displayModeBar: false, responsive: true });
     }
 
+    function renderOutcomeBar(outcomeMix, nReplications) {
+        if (!outcomeMix || !nReplications) return '—';
+        const total = nReplications;
+        const ORDERS = ['failed', 'mixed', 'successful'];
+        const segments = ORDERS.map(o => {
+            const count = outcomeMix[o] || 0;
+            if (!count) return '';
+            const pct = (count / total * 100).toFixed(1);
+            const label = `${count} ${o}`;
+            return `<div class="rep-seg ${o}" style="width:${pct}%" title="${label}"></div>`;
+        }).join('');
+        const tooltipParts = ORDERS.filter(o => outcomeMix[o]).map(o => `${outcomeMix[o]} ${o}`).join(', ');
+        return `<div class="rep-bar-wrap" title="${tooltipParts}">
+            <div class="rep-bar">${segments}</div>
+            <span class="rep-count">${total}</span>
+        </div>`;
+    }
+
+    function renderCocitCell(s) {
+        if (!s.n_cocitations && s.n_cocitations !== 0) return '—';
+        const pct = s.n_citations > 0 ? (s.cocit_prop * 100).toFixed(1) + '%' : '—';
+        return `<span title="${s.n_cocitations.toLocaleString()} co-citations">${s.n_cocitations.toLocaleString()}<span class="cocit-pct"> (${pct})</span></span>`;
+    }
+
     function renderTable() {
         const q = (document.getElementById('search-input').value || '').toLowerCase();
         const outFilter = document.getElementById('filter-outcome').value;
@@ -249,8 +281,11 @@
             return true;
         });
         rows.sort((a, b) => {
-            if (sortBy === 'n_citations') return (b.n_citations || 0) - (a.n_citations || 0);
+            if (sortBy === 'n_citations')    return (b.n_citations || 0) - (a.n_citations || 0);
             if (sortBy === 'n_replications') return (b.n_replications || 0) - (a.n_replications || 0);
+            if (sortBy === 'n_cocitations')  return (b.n_cocitations || 0) - (a.n_cocitations || 0);
+            if (sortBy === 'cocit_prop_high') return (b.cocit_prop || 0) - (a.cocit_prop || 0);
+            if (sortBy === 'cocit_prop_low')  return (a.cocit_prop || 0) - (b.cocit_prop || 0);
             if (sortBy === 'year_desc') return (b.year || 0) - (a.year || 0);
             if (sortBy === 'year_asc') return (a.year || 0) - (b.year || 0);
             return 0;
@@ -264,8 +299,6 @@
 
         const tbody = document.querySelector('#originals-table tbody');
         tbody.innerHTML = slice.map(s => {
-            const badges = Object.entries(s.outcome_mix || {})
-                .map(([k, v]) => `<span class="outcome-badge ${k}">${v} ${k}</span>`).join(' ');
             return `
                 <tr data-doi="${escapeHtml(s.doi)}">
                     <td>
@@ -273,8 +306,9 @@
                         <div class="author-cell">${escapeHtml(formatAuthors(s.author))} ${s.venue ? '· ' + escapeHtml(s.venue) : ''}</div>
                     </td>
                     <td>${s.year || '—'}</td>
-                    <td>${badges}</td>
+                    <td>${renderOutcomeBar(s.outcome_mix, s.n_replications)}</td>
                     <td>${(s.n_citations || 0).toLocaleString()}</td>
+                    <td>${renderCocitCell(s)}</td>
                     <td>›</td>
                 </tr>`;
         }).join('');

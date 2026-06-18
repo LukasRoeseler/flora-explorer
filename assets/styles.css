@@ -519,6 +519,15 @@ tr.shown td.details-control::before { transform: rotate(90deg); }
 .outcome-badge.successful { background: rgba(47,143,79,0.15); color: var(--flora-success); }
 .outcome-badge.mixed { background: rgba(212,155,29,0.18); color: var(--flora-warning); }
 
+.rep-bar-wrap { display: flex; align-items: center; gap: 0.45rem; }
+.rep-bar { display: flex; height: 10px; border-radius: 4px; overflow: hidden; min-width: 80px; flex: 1; background: var(--flora-border); }
+.rep-seg { height: 100%; min-width: 3px; transition: width 0.2s; }
+.rep-seg.failed { background: #b3331e; }
+.rep-seg.mixed { background: #d49b1d; }
+.rep-seg.successful { background: #2f8f4f; }
+.rep-count { font-size: 0.78rem; color: var(--flora-muted); white-space: nowrap; }
+.cocit-pct { font-size: 0.78rem; color: var(--flora-muted); }
+
 .pagination { display: flex; justify-content: center; gap: 0.35rem; margin-top: 1rem; }
 .pagination button { background: var(--flora-card-bg); border: 1px solid var(--flora-border); padding: 0.35rem 0.75rem; border-radius: 4px; cursor: pointer; font-size: 0.82rem; color: var(--flora-text); }
 .pagination button.active { background: var(--flora-primary); color: #fff; border-color: var(--flora-primary); }
