@@ -1,10 +1,10 @@
 {
-  "last_updated": "2026-06-17T08:32:26.073540+00:00",
+  "last_updated": "2026-06-18T08:12:41.159150+00:00",
   "source_url": "https://raw.githubusercontent.com/forrtproject/FReD-data/refs/heads/main/output/flora.csv",
-  "n_rows": 2211,
+  "n_rows": 2212,
   "columns": [
     "\ufeff\"doi_o\"",
-    "doi_o_alt",
+    "alt_identifier_o",
     "doi_o_hash",
     "title_o",
     "author_o",
@@ -18,7 +18,7 @@
     "url_o",
     "language_o",
     "doi_r",
-    "doi_r_alt",
+    "alt_identifier_r",
     "doi_r_hash",
     "title_r",
     "author_r",
@@ -37,8 +37,6 @@
     "outcome_quote",
     "outcome_quote_source",
     "type",
-    "source",
-    "self_identified_replication",
-    "replication_intent_confidence"
+    "source"
   ]
 }
