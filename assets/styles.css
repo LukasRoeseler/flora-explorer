@@ -519,6 +519,12 @@ tr.shown td.details-control::before { transform: rotate(90deg); }
 .outcome-badge.successful { background: rgba(47,143,79,0.15); color: var(--flora-success); }
 .outcome-badge.mixed { background: rgba(212,155,29,0.18); color: var(--flora-warning); }
 
+#originals-table th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+#originals-table th.sortable:hover { color: var(--flora-primary); }
+#originals-table th.sortable::after { content: ' ⇅'; opacity: 0.35; font-size: 0.75em; }
+#originals-table th.sort-asc::after { content: ' ▲'; opacity: 1; color: var(--flora-primary); }
+#originals-table th.sort-desc::after { content: ' ▼'; opacity: 1; color: var(--flora-primary); }
+
 .rep-bar-wrap { display: flex; align-items: center; gap: 0.45rem; }
 .rep-bar { display: flex; height: 10px; border-radius: 4px; overflow: hidden; min-width: 80px; flex: 1; background: var(--flora-border); }
 .rep-seg { height: 100%; min-width: 3px; transition: width 0.2s; }

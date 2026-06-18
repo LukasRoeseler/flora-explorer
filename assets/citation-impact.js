@@ -6,6 +6,7 @@
     const CI = {
         meta: null, agg: null, studies: null, index: null, fect: null,
         outcome: 'all', page: 1, perPage: 20,
+        sortCol: 'n_citations', sortDir: 'desc',
         loaded: false, loading: false
     };
 
@@ -270,7 +271,6 @@
     function renderTable() {
         const q = (document.getElementById('search-input').value || '').toLowerCase();
         const outFilter = document.getElementById('filter-outcome').value;
-        const sortBy = document.getElementById('sort-by').value;
 
         let rows = CI.index.filter(s => {
             if (q) {
@@ -280,15 +280,18 @@
             if (outFilter && !(s.outcome_mix && s.outcome_mix[outFilter])) return false;
             return true;
         });
+
+        const col = CI.sortCol, dir = CI.sortDir;
         rows.sort((a, b) => {
-            if (sortBy === 'n_citations')    return (b.n_citations || 0) - (a.n_citations || 0);
-            if (sortBy === 'n_replications') return (b.n_replications || 0) - (a.n_replications || 0);
-            if (sortBy === 'n_cocitations')  return (b.n_cocitations || 0) - (a.n_cocitations || 0);
-            if (sortBy === 'cocit_prop_high') return (b.cocit_prop || 0) - (a.cocit_prop || 0);
-            if (sortBy === 'cocit_prop_low')  return (a.cocit_prop || 0) - (b.cocit_prop || 0);
-            if (sortBy === 'year_desc') return (b.year || 0) - (a.year || 0);
-            if (sortBy === 'year_asc') return (a.year || 0) - (b.year || 0);
-            return 0;
+            const av = a[col] != null ? a[col] : -Infinity;
+            const bv = b[col] != null ? b[col] : -Infinity;
+            return dir === 'asc' ? av - bv : bv - av;
+        });
+
+        // Update header indicators
+        document.querySelectorAll('#originals-table thead th[data-sort]').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            if (th.dataset.sort === col) th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
         });
 
         const total = rows.length;
@@ -390,7 +393,19 @@
         });
         document.getElementById('search-input').addEventListener('input', () => { CI.page = 1; renderTable(); });
         document.getElementById('filter-outcome').addEventListener('change', () => { CI.page = 1; renderTable(); });
-        document.getElementById('sort-by').addEventListener('change', () => { CI.page = 1; renderTable(); });
+        document.querySelectorAll('#originals-table thead th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const col = th.dataset.sort;
+                if (CI.sortCol === col) {
+                    CI.sortDir = CI.sortDir === 'desc' ? 'asc' : 'desc';
+                } else {
+                    CI.sortCol = col;
+                    CI.sortDir = 'desc';
+                }
+                CI.page = 1;
+                renderTable();
+            });
+        });
         document.querySelector('#originals-table tbody').addEventListener('click', e => {
             const tr = e.target.closest('tr');
             if (tr && tr.dataset.doi) showStudy(tr.dataset.doi);
