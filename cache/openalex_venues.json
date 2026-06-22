@@ -3370,5 +3370,20 @@
     "display_name": "Encyclopedia of Survey Research Methods",
     "impact_factor": 0.0
   },
-  "translational issues in psychological science": null
+  "translational issues in psychological science": null,
+  "clinical cardiology": {
+    "id": "https://openalex.org/S82037729",
+    "display_name": "Clinical Cardiology",
+    "impact_factor": 2.1145833333333335
+  },
+  "journal for research in mathematics education": {
+    "id": "https://openalex.org/S79038290",
+    "display_name": "Journal for Research in Mathematics Education",
+    "impact_factor": 2.1739130434782608
+  },
+  "socio-economic review": {
+    "id": "https://openalex.org/S147547362",
+    "display_name": "Socio-Economic Review",
+    "impact_factor": 2.5545023696682465
+  }
 }
