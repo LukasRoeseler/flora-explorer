@@ -1295,6 +1295,49 @@ async function loadData() {
     loadCitation();
     loadFaqs();
     loadDataStamps();
+    applyTabFromUrl();
 }
+
+// Map friendly ?tab= values to the Bootstrap tab buttons.
+const TAB_PARAM_MAP = {
+    overview: 'overview-tab',
+    browse: 'browse-tab',
+    trends: 'trends-tab', years: 'trends-tab', disciplines: 'trends-tab',
+    citations: 'citation-tab', 'citation-impact': 'citation-tab',
+    'mean-citedness': 'mc-tab', omc: 'mc-tab',
+    'authorship-overlap': 'overlap-tab', overlap: 'overlap-tab'
+};
+
+// Canonical ?tab= value for each tab button (the reverse of TAB_PARAM_MAP).
+const TAB_ID_TO_PARAM = {
+    'overview-tab': 'overview', 'browse-tab': 'browse', 'trends-tab': 'trends',
+    'citation-tab': 'citations', 'mc-tab': 'mean-citedness', 'overlap-tab': 'authorship-overlap'
+};
+
+// Select a tab from the ?tab= URL param (e.g. ?tab=citations). Activating the
+// tab fires shown.bs.tab, which lazy-loads that tab's content as usual.
+function applyTabFromUrl() {
+    const tab = (new URLSearchParams(window.location.search).get('tab') || '').toLowerCase();
+    if (!tab) return;
+    const btn = document.getElementById(TAB_PARAM_MAP[tab] || '');
+    if (btn && window.bootstrap) bootstrap.Tab.getOrCreateInstance(btn).show();
+}
+
+// Reflect the active tab in the address bar so it stays shareable as the user
+// navigates. Fires for both clicks and programmatic shows.
+function syncTabToUrl(tabId) {
+    const name = TAB_ID_TO_PARAM[tabId];
+    if (!name) return;
+    const params = new URLSearchParams(window.location.search);
+    if (name !== 'citations') params.delete('doi');   // doi only applies to Citation Impact
+    if (name === 'overview') params.delete('tab');     // keep the home URL clean
+    else params.set('tab', name);
+    const qs = params.toString();
+    history.replaceState(null, '', new URL('./' + (qs ? '?' + qs : ''), window.location.href).href);
+}
+Object.keys(TAB_ID_TO_PARAM).forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('shown.bs.tab', () => syncTabToUrl(id));
+});
 
 $(document).ready(loadData);
