@@ -1,11 +1,11 @@
 {
-  "last_updated": "2026-06-22T12:53:59.014613+00:00",
-  "n_originals": 1825,
-  "n_replications": 1947,
+  "last_updated": "2026-06-29T09:03:33.856487+00:00",
+  "n_originals": 1827,
+  "n_replications": 1950,
   "outcome_counts": {
-    "successful": 801,
+    "successful": 800,
     "failed": 700,
-    "mixed": 446
+    "mixed": 450
   },
   "partial_run": false
 }
