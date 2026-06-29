@@ -3385,5 +3385,70 @@
     "id": "https://openalex.org/S147547362",
     "display_name": "Socio-Economic Review",
     "impact_factor": 2.5545023696682465
+  },
+  "archives of suicide research": {
+    "id": "https://openalex.org/S109655379",
+    "display_name": "Archives of Suicide Research",
+    "impact_factor": 2.0366492146596857
+  },
+  "brain and language": {
+    "id": "https://openalex.org/S61781353",
+    "display_name": "Brain and Language",
+    "impact_factor": 1.8205128205128205
+  },
+  "canadian journal of education / revue canadienne de l\u00e9ducation": {
+    "id": "https://openalex.org/S4210228210",
+    "display_name": "Paideusis",
+    "impact_factor": 0.0
+  },
+  "cognitive therapy and research": {
+    "id": "https://openalex.org/S47649111",
+    "display_name": "Cognitive Therapy and Research",
+    "impact_factor": 1.7843137254901962
+  },
+  "communications of the association for information systems": {
+    "id": "https://openalex.org/S4210239688",
+    "display_name": "Communications of the Association for Information Systems",
+    "impact_factor": 1.8592233009708738
+  },
+  "community college review": {
+    "id": "https://openalex.org/S73080522",
+    "display_name": "Community College Review",
+    "impact_factor": 1.5918367346938775
+  },
+  "electroencephalography and clinical neurophysiology": {
+    "id": "https://openalex.org/S22656279",
+    "display_name": "Electroencephalography and Clinical Neurophysiology",
+    "impact_factor": 0.0
+  },
+  "global environmental change": {
+    "id": "https://openalex.org/S130750583",
+    "display_name": "Global Environmental Change",
+    "impact_factor": 8.282685512367491
+  },
+  "journal of reading behavior": {
+    "id": "https://openalex.org/S4210181866",
+    "display_name": "Journal of Reading Behavior",
+    "impact_factor": 0.0
+  },
+  "journal of sports analytics": {
+    "id": "https://openalex.org/S4210188861",
+    "display_name": "Journal of Sports Analytics",
+    "impact_factor": 0.9868421052631579
+  },
+  "journal of verbal learning and verbal behavior": {
+    "id": "https://openalex.org/S17882476",
+    "display_name": "Journal of Verbal Learning and Verbal Behavior",
+    "impact_factor": 0.0
+  },
+  "plos biology": {
+    "id": "https://openalex.org/S154343897",
+    "display_name": "PLoS Biology",
+    "impact_factor": 6.530120481927711
+  },
+  "psychological methods": {
+    "id": "https://openalex.org/S45419345",
+    "display_name": "Psychological Methods",
+    "impact_factor": 2.56973293768546
   }
 }
