@@ -3450,5 +3450,176 @@
     "id": "https://openalex.org/S45419345",
     "display_name": "Psychological Methods",
     "impact_factor": 2.56973293768546
+  },
+  "andrology": {
+    "id": "https://openalex.org/S4394735507",
+    "display_name": "Journal of Andrology",
+    "impact_factor": 0.0
+  },
+  "applied economics": {
+    "id": "https://openalex.org/S201533460",
+    "display_name": "Applied Economics",
+    "impact_factor": 2.1068702290076335
+  },
+  "cognitive behaviour therapy": {
+    "id": "https://openalex.org/S94622921",
+    "display_name": "Cognitive Behaviour Therapy",
+    "impact_factor": 2.2346368715083798
+  },
+  "economic policy": {
+    "id": "https://openalex.org/S99606308",
+    "display_name": "Economic Policy",
+    "impact_factor": 5.1625
+  },
+  "environmental and resource economics": {
+    "id": "https://openalex.org/S86125002",
+    "display_name": "Environmental and Resource Economics",
+    "impact_factor": 3.781609195402299
+  },
+  "health economics": {
+    "id": "https://openalex.org/S145200904",
+    "display_name": "Health Economics",
+    "impact_factor": 1.7293447293447293
+  },
+  "iral - international review of applied linguistics in language teaching": {
+    "id": "https://openalex.org/S2764731898",
+    "display_name": "IRAL - International Review of Applied Linguistics in Language Teaching",
+    "impact_factor": 3.878612716763006
+  },
+  "international economic review": {
+    "id": "https://openalex.org/S179979277",
+    "display_name": "International Economic Review",
+    "impact_factor": 2.3333333333333335
+  },
+  "journal of accounting and economics": {
+    "id": "https://openalex.org/S62142384",
+    "display_name": "Journal of Accounting and Economics",
+    "impact_factor": 6.03680981595092
+  },
+  "journal of african economies": {
+    "id": "https://openalex.org/S36588791",
+    "display_name": "Journal of African Economies",
+    "impact_factor": 1.671875
+  },
+  "journal of banking & finance": {
+    "id": "https://openalex.org/S2876017",
+    "display_name": "Journal of Banking & Finance",
+    "impact_factor": 4.208333333333333
+  },
+  "journal of business ethics": {
+    "id": "https://openalex.org/S76633192",
+    "display_name": "Journal of Business Ethics",
+    "impact_factor": 5.30625
+  },
+  "journal of business venturing insights": {
+    "id": "https://openalex.org/S2898242091",
+    "display_name": "Journal of Business Venturing Insights",
+    "impact_factor": 3.5520833333333335
+  },
+  "journal of corporate finance": {
+    "id": "https://openalex.org/S152282257",
+    "display_name": "Journal of Corporate Finance",
+    "impact_factor": 5.658602150537634
+  },
+  "journal of cultural economics": {
+    "id": "https://openalex.org/S31225034",
+    "display_name": "Journal of Cultural Economics",
+    "impact_factor": 1.505050505050505
+  },
+  "journal of econometrics": {
+    "id": "https://openalex.org/S127742747",
+    "display_name": "Journal of Econometrics",
+    "impact_factor": 2.766439909297052
+  },
+  "journal of economic perspectives": {
+    "id": "https://openalex.org/S72880728",
+    "display_name": "The Journal of Economic Perspectives",
+    "impact_factor": 7.904
+  },
+  "journal of futures markets": {
+    "id": "https://openalex.org/S136612413",
+    "display_name": "Journal of Futures Markets",
+    "impact_factor": 2.132013201320132
+  },
+  "journal of health economics": {
+    "id": "https://openalex.org/S166621295",
+    "display_name": "Journal of Health Economics",
+    "impact_factor": 2.872146118721461
+  },
+  "journal of human resources": {
+    "id": "https://openalex.org/S62957338",
+    "display_name": "The Journal of Human Resources",
+    "impact_factor": 1.3868613138686132
+  },
+  "journal of international economics": {
+    "id": "https://openalex.org/S198098467",
+    "display_name": "Journal of International Economics",
+    "impact_factor": 5.752351097178684
+  },
+  "journal of public economics": {
+    "id": "https://openalex.org/S199447588",
+    "display_name": "Journal of Public Economics",
+    "impact_factor": 3.606741573033708
+  },
+  "journal of the history of economic thought": {
+    "id": "https://openalex.org/S4210168092",
+    "display_name": "Journal of the History of Economic Thought",
+    "impact_factor": 0.19014084507042253
+  },
+  "land use policy": {
+    "id": "https://openalex.org/S80485027",
+    "display_name": "Land Use Policy",
+    "impact_factor": 6.666666666666667
+  },
+  "lingua": {
+    "id": "https://openalex.org/S105737376",
+    "display_name": "Lingua",
+    "impact_factor": 1.2361623616236161
+  },
+  "national tax journal": {
+    "id": "https://openalex.org/S116184629",
+    "display_name": "National Tax Journal",
+    "impact_factor": 1.391304347826087
+  },
+  "nature plants": {
+    "id": "https://openalex.org/S2764671299",
+    "display_name": "Nature Plants",
+    "impact_factor": 9.496607869742197
+  },
+  "public administration": {
+    "id": "https://openalex.org/S76877748",
+    "display_name": "Public Administration Review",
+    "impact_factor": 3.2661064425770308
+  },
+  "public choice": {
+    "id": "https://openalex.org/S7424199",
+    "display_name": "Public Choice",
+    "impact_factor": 1.8026755852842808
+  },
+  "research policy": {
+    "id": "https://openalex.org/S9731383",
+    "display_name": "Research Policy",
+    "impact_factor": 7.173719376391982
+  },
+  "review of economic studies": {
+    "id": "https://openalex.org/S88935262",
+    "display_name": "The Review of Economic Studies",
+    "impact_factor": 15.122222222222222
+  },
+  "small business economics": {
+    "id": "https://openalex.org/S41869786",
+    "display_name": "Small Business Economics",
+    "impact_factor": 4.808785529715762
+  },
+  "the entrepreneurship research challenge": null,
+  "the review of economics and statistics": {
+    "id": "https://openalex.org/S180061323",
+    "display_name": "The Review of Economics and Statistics",
+    "impact_factor": 4.109677419354838
+  },
+  "unknown": {
+    "id": "https://openalex.org/S4306482006",
+    "display_name": "Unknown eBooks",
+    "impact_factor": 0.0
   }
 }
