@@ -1,0 +1,46 @@
+name: Refresh Registered Reports status (weekly)
+
+on:
+  schedule:
+    # Monday 06:00 UTC, after the other weekly refreshes
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Refresh FLoRA snapshot
+        run: python scripts/refresh_flora.py
+
+      - name: Compute Registered Reports status
+        env:
+          MY_EMAIL: ${{ secrets.MY_EMAIL }}
+        run: python scripts/compute_rr_status.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/flora.csv data/flora_meta.json data/rr_status_data.json data/rr_status_meta.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Registered Reports status refresh: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase origin main
+            git push
+          fi
