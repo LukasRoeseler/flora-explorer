@@ -3,7 +3,7 @@
 A static, GitHub-Pages-friendly dashboard for the [FORRT Library of
 Replication Attempts (FLoRA)](https://forrt.org/replication-hub/flora).
 
-Five tabs:
+Seven tabs:
 
 | Tab                      | What it shows                                                   | Refreshed |
 |--------------------------|-----------------------------------------------------------------|-----------|
@@ -12,9 +12,14 @@ Five tabs:
 | **Years & Disciplines**  | Year/journal/discipline breakdowns of outcomes                  | Daily     |
 | **Citation Impact**      | OpenCitations event-study of citation changes after replication | Weekly    |
 | **Mean Citedness**       | Journal-level OMC vs replication success (R analysis)           | Weekly    |
+| **Authorship Overlap**   | Replication outcomes by original/replication author overlap     | Daily     |
+| **Registered Reports**   | Replication outcomes for Registered Reports vs. other replications, matched against the FORRT Zotero RR library | Weekly |
 
 Every tab shows a "Last updated" stamp pulled from the relevant
 `*_meta.json` next to the data.
+
+Contributions of new dashboards/tabs are welcome — see
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Layout
 
@@ -32,9 +37,12 @@ Every tab shows a "Last updated" stamp pulled from the relevant
 │   ├── flora_meta.json
 │   ├── flora_with_omc.csv     # FLoRA + OpenAlex OMC per journal_o (weekly)
 │   ├── flora_with_omc_meta.json
-│   ├── impact_factor.html     # Rendered R fragment for Mean Citedness tab (weekly)
+│   ├── impact_factor_data.json # Chart-ready Mean Citedness data (weekly)
 │   ├── impact_factor_meta.json
-│   ├── impact_factor_figs/    # PNGs referenced from impact_factor.html
+│   ├── author_overlap_data.json # Authorship Overlap tab data (daily)
+│   ├── author_overlap_meta.json
+│   ├── rr_status_data.json    # Registered Reports tab data (weekly)
+│   ├── rr_status_meta.json
 │   ├── meta.json              # Citation pipeline (weekly)
 │   ├── aggregate.json
 │   └── originals.json
@@ -42,16 +50,22 @@ Every tab shows a "Last updated" stamp pulled from the relevant
 │   ├── refresh_flora.py       # Daily flora.csv snapshot
 │   ├── refresh_data.py        # Weekly OpenCitations citation pipeline
 │   ├── compute_omc.py         # Weekly OpenAlex OMC enrichment
-│   ├── impact_factor.Rmd      # R Markdown source for Mean Citedness
-│   ├── render_impact_factor.R # Renders the Rmd to data/impact_factor.html
+│   ├── compute_author_overlap.py # Daily authorship-overlap computation
+│   ├── compute_rr_status.py   # Weekly Registered-Reports classification (Zotero API)
+│   ├── render_impact_factor.R # Computes Mean Citedness stats, writes JSON directly
+│   ├── run_fect.R             # ETWFE overlay for Citation Impact (not yet wired into a workflow)
 │   └── requirements.txt
+├── archive/                   # Superseded scripts/outputs, kept for reference only
+│   ├── scripts/                #   compute_impact_json.py, impact_factor.Rmd
+│   └── data/                   #   impact_factor.html + impact_factor_figs/
 ├── cache/                     # API caches committed between runs
 │   ├── oc/                    # OpenCitations
 │   └── openalex_venues.json   # OpenAlex sources
 └── .github/workflows/
-    ├── refresh-flora.yml          # Daily   03:00 UTC
+    ├── refresh-flora.yml          # Daily   03:00 UTC (flora.csv + author overlap)
     ├── refresh-data.yml           # Weekly Mon 04:00 UTC (citation pipeline)
     ├── refresh-impact-factor.yml  # Weekly Mon 05:00 UTC (OMC + R render)
+    ├── refresh-rr-status.yml      # Weekly Mon 06:00 UTC (Registered Reports classification)
     └── clean-json.yml             # Manual maintenance helper
 ```
 
@@ -63,7 +77,7 @@ Every tab shows a "Last updated" stamp pulled from the relevant
 3. **Settings → Secrets and variables → Actions** — add the secrets used by
    the data-refresh workflows:
    - `MY_EMAIL` — your email. Used in the polite User-Agent header for
-     OpenAlex and OpenCitations. Required.
+     OpenAlex, OpenCitations, and the Zotero API. Required.
    - `OC_API_KEY` — *optional* OpenCitations API key (raises rate limits).
 4. **Settings → Actions → General → Workflow permissions:** select
    *Read and write permissions* so the bot can commit refreshed data
@@ -86,16 +100,21 @@ pip install -r scripts/requirements.txt
 # Daily snapshot (just pulls flora.csv)
 python scripts/refresh_flora.py
 
-# Mean Citedness pipeline (needs R + Pandoc)
+# Mean Citedness pipeline (needs R)
 MY_EMAIL=you@example.org python scripts/compute_omc.py
 Rscript scripts/render_impact_factor.R
 
 # Citation Impact pipeline (long-running; uses OpenCitations)
 MY_EMAIL=you@example.org python scripts/refresh_data.py
+
+# Authorship Overlap (needs flora.csv already downloaded)
+python scripts/compute_author_overlap.py
+
+# Registered Reports status (needs flora.csv already downloaded; queries the Zotero API)
+MY_EMAIL=you@example.org python scripts/compute_rr_status.py
 ```
 
-R packages required: `rmarkdown`, `jsonlite`, `ggplot2`, `scales`,
-`patchwork`, `mgcv`, `pROC`, `lme4`, plus a working Pandoc.
+R packages required: `jsonlite`, `mgcv`.
 
 ## Editing the disciplines map
 
