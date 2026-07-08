@@ -1,4 +1,4 @@
-﻿/* FLoRA Explorer — main application logic
+﻿/* FLoRA Explorer: main application logic
    Overview · Browse Studies · Years & Disciplines tabs */
 
 // ----- Theme (light/dark) -----
@@ -750,7 +750,10 @@ function updateTrendsCount() {
 }
 
 function trendsOutcomeLabel(row) {
-    if (trendsKind === 'all') return '__all__';
+    if (trendsKind === 'all') {
+        const c = classifyOutcome(row.outcome);
+        return c.charAt(0).toUpperCase() + c.slice(1);  // Successful, Mixed, Failed, Inconclusive, Other
+    }
     if (trendsKind === 'replication') {
         if (!hasMatchedOutcome(row)) return null;
         const c = classifyOutcome(row.outcome);
@@ -803,7 +806,11 @@ function aggregateByField(data) {
 }
 
 function trendsDatasets(agg) {
-    if (trendsKind === 'all') return [{ label: 'Studies', data: agg.map(r => r.byLabel['__all__'] || 0), backgroundColor: '#8b1a4a' }];
+    if (trendsKind === 'all') {
+        const order = ['Successful', 'Mixed', 'Failed', 'Inconclusive', 'Other'];
+        const colors = { 'Successful': OUTCOME_COLORS.successful, 'Mixed': OUTCOME_COLORS.mixed, 'Failed': OUTCOME_COLORS.failed, 'Inconclusive': OUTCOME_COLORS.inconclusive, 'Other': OUTCOME_COLORS.other };
+        return order.map(label => ({ label, data: agg.map(r => r.byLabel[label] || 0), backgroundColor: colors[label] }));
+    }
     if (trendsKind === 'replication') {
         const order = ['Successful', 'Mixed', 'Failed', 'Inconclusive'];
         const colors = { 'Successful': OUTCOME_COLORS.successful, 'Mixed': OUTCOME_COLORS.mixed, 'Failed': OUTCOME_COLORS.failed, 'Inconclusive': OUTCOME_COLORS.inconclusive };
@@ -843,8 +850,8 @@ function renderStackedChart(canvasId, agg, orientation, existing, opts = {}) {
     const wrapLabels = !!opts.wrapLabels;
     const labels = agg.map(r => wrapLabels ? wrapLabel(r.key, 38) : r.key);
     const datasets = trendsDatasets(agg);
-    const isStacked = trendsKind !== 'all';
-    const showLegend = trendsKind !== 'all';
+    const isStacked = true;
+    const showLegend = true;
 
     return new Chart(ctx, {
         type: 'bar', data: { labels, datasets },
@@ -855,7 +862,6 @@ function renderStackedChart(canvasId, agg, orientation, existing, opts = {}) {
                 tooltip: { callbacks: {
                     title: items => { const label = items[0].label; return Array.isArray(label) ? label.join(' ') : label; },
                     afterLabel: ctx => {
-                        if (trendsKind === 'all') return '';
                         const row = agg[ctx.dataIndex];
                         const val = ctx.parsed[isHorizontal ? 'x' : 'y'];
                         const pct = row.total ? ((val / row.total) * 100).toFixed(1) : 0;
@@ -921,6 +927,7 @@ window._rerenderAllCharts = function() {
     renderBrowseOutcomeChart();
     if (window._mcData) renderMcCharts(window._mcData);
     if (window._aoData) renderOverlapCharts(window._aoData);
+    if (window._rrData) renderRRCharts(window._rrData);
 };
 
 // ===== Mean Citedness tab =====
@@ -1031,12 +1038,14 @@ function renderMcCharts(d) {
     const pNote = (st.p_val !== null && st.p_val !== undefined)
         ? (st.p_val < 0.001 ? 'p < .001' : 'p = ' + st.p_val.toFixed(3))
         : '';
+    const glossEdf = '<span class="gloss" tabindex="0">edf<span class="gloss-tip">Effective degrees of freedom: how flexible the fitted curve is. edf ≈ 1 is close to a straight line; higher values mean a more flexible, wigglier fit.</span></span>';
+    const glossR2 = '<span class="gloss" tabindex="0">McFadden R²<span class="gloss-tip">McFadden’s pseudo-R²: a goodness-of-fit measure for logistic models. It isn’t directly comparable to an OLS R² — values around 0.2–0.4 already indicate a good fit.</span></span>';
     document.getElementById('mc-gam-stats').innerHTML =
-        'Logistic smooth — edf = ' + st.edf +
+        'Logistic smooth: ' + glossEdf + ' = ' + st.edf +
         ', χ² = ' + st.chi_sq +
         (pNote ? ', ' + pNote : '') +
-        ' — McFadden R² = ' + st.r2 +
-        ' — N = ' + st.n_model + ' (successful vs. failed)';
+        '; ' + glossR2 + ' = ' + st.r2 +
+        '; N = ' + st.n_model + ' (successful vs. failed)';
 }
 
 async function loadMeanCitedness() {
@@ -1180,21 +1189,155 @@ async function loadAuthorOverlap() {
 }
 document.getElementById('overlap-tab').addEventListener('shown.bs.tab', loadAuthorOverlap);
 
+// ===== Registered Reports tab =====
+window._rrData = null;
+
+function renderRRCharts(d) {
+    if (!d) return;
+    const th = aoPlotlyTheme();
+    const ov = d.overview;
+    const by = d.by_outcome;
+
+    // ── Overview boxes ─────────────────────────────────────────────────────────
+    const ovEl = document.getElementById('rr-overview');
+    if (ovEl) {
+        ovEl.innerHTML =
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_total || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Replications checked</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_rr || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Registered Reports (' + (ov.pct_rr || 0) + '%)</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_non_rr || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Rest (' + (ov.pct_non_rr || 0) + '%)</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_unknown || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Not checkable</div>' +
+            '</div>';
+        ovEl.style.display = '';
+    }
+
+    // ── Grouped bar chart ──────────────────────────────────────────────────────
+    const OUTCOMES   = ['successful', 'failed', 'mixed', 'inconclusive'];
+    const OUT_LABELS = { successful: 'Successful', failed: 'Failed', mixed: 'Mixed', inconclusive: 'Inconclusive' };
+    const groups     = ['rr', 'non_rr'];
+    const GROUP_LABELS = { rr: 'Registered Report', non_rr: 'Rest' };
+
+    const traces = OUTCOMES.map(oc => ({
+        name: OUT_LABELS[oc],
+        type: 'bar',
+        x: groups.map(g => GROUP_LABELS[g]),
+        y: groups.map(g => (by[g] && by[g][oc]) || 0),
+        marker: { color: OUTCOME_COLORS[oc] || '#a0a7b4' },
+    }));
+
+    const layout = {
+        barmode: 'group',
+        height: 420,
+        paper_bgcolor: th.paper,
+        plot_bgcolor:  th.plot,
+        font: { color: th.font, size: 13 },
+        legend: { orientation: 'h', y: -0.18, font: { color: th.font } },
+        margin: { l: 50, r: 20, t: 20, b: 80 },
+        yaxis: {
+            title: 'Number of replications',
+            gridcolor: th.grid,
+            zerolinecolor: th.grid,
+            tickfont: { color: th.font },
+            titlefont: { color: th.font },
+        },
+        xaxis: {
+            tickfont: { color: th.font },
+        },
+    };
+
+    const config = { responsive: true, displayModeBar: false };
+    const chartEl = document.getElementById('rr-chart');
+    if (chartEl) Plotly.react(chartEl, traces, layout, config);
+
+    // ── Included-studies table ───────────────────────────────────────────────────
+    const studies = Array.isArray(d.rr_studies) ? d.rr_studies : [];
+    const tbody = document.querySelector('#rr-studies-table tbody');
+    if (tbody) {
+        tbody.innerHTML = studies.map(s => {
+            const doiLink = s.doi_r
+                ? '<a href="https://doi.org/' + encodeURIComponent(s.doi_r) + '" target="_blank" class="doi-link">' + s.doi_r + '</a>'
+                : (s.url_r ? '<a href="' + s.url_r + '" target="_blank" class="doi-link">link</a>' : '');
+            return '<tr>' +
+                '<td>' + (s.title_r || '') + '</td>' +
+                '<td>' + (s.journal_r || '') + '</td>' +
+                '<td>' + (s.year_r || '') + '</td>' +
+                '<td>' + (s.outcome || '') + '</td>' +
+                '<td>' + doiLink + '</td>' +
+            '</tr>';
+        }).join('');
+        const studiesCard = document.getElementById('rr-studies-card');
+        if (studiesCard) studiesCard.style.display = studies.length ? '' : 'none';
+        const countEl = document.getElementById('rr-studies-count');
+        if (countEl) countEl.textContent = '(' + studies.length.toLocaleString() + ')';
+    }
+
+    // ── Caveat ─────────────────────────────────────────────────────────────────
+    const caveatEl = document.getElementById('rr-caveat');
+    if (caveatEl) caveatEl.style.display = '';
+}
+
+async function loadRegisteredReports() {
+    if (window._rrData) { renderRRCharts(window._rrData); return; }
+    const loadingEl  = document.getElementById('rr-loading');
+    const overviewEl = document.getElementById('rr-overview');
+    const chartCard  = document.getElementById('rr-chart-card');
+    const studiesCard = document.getElementById('rr-studies-card');
+    const caveatEl   = document.getElementById('rr-caveat');
+    const errorEl    = document.getElementById('rr-error');
+    try {
+        if (loadingEl)   loadingEl.style.display   = 'block';
+        if (overviewEl)  overviewEl.style.display  = 'none';
+        if (chartCard)   chartCard.style.display   = 'none';
+        if (studiesCard) studiesCard.style.display = 'none';
+        if (caveatEl)    caveatEl.style.display    = 'none';
+        if (errorEl)     errorEl.style.display     = 'none';
+
+        const res = await fetch(RR_DATA_URL, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const d = await res.json();
+        window._rrData = d;
+
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (chartCard) chartCard.style.display = '';
+        renderRRCharts(d);
+    } catch (err) {
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl)   errorEl.style.display   = 'block';
+        const det = document.getElementById('rr-error-detail');
+        if (det) det.textContent = String(err);
+    }
+}
+document.getElementById('rr-tab').addEventListener('shown.bs.tab', loadRegisteredReports);
+
 // ===== Data stamps (last updated) =====
 const OVERLAP_DATA_URL = 'data/author_overlap_data.json';
 const OVERLAP_META_URL = 'data/author_overlap_meta.json';
+const RR_DATA_URL = 'data/rr_status_data.json';
+const RR_META_URL = 'data/rr_status_meta.json';
 
 const STAMP_LABELS = {
     flora: 'FLoRA data',
     citations: 'Citation data',
     impact_factor: 'Mean Citedness analysis',
-    author_overlap: 'Authorship Overlap data'
+    author_overlap: 'Authorship Overlap data',
+    rr_status: 'Registered Reports data'
 };
 const STAMP_URLS = {
     flora: FLORA_META_URL,
     citations: CITATIONS_META_URL,
     impact_factor: IMPACT_META_URL,
-    author_overlap: OVERLAP_META_URL
+    author_overlap: OVERLAP_META_URL,
+    rr_status: RR_META_URL
 };
 
 async function loadDataStamps() {
@@ -1218,7 +1361,7 @@ async function loadDataStamps() {
             const dt = new Date(meta.last_updated);
             const ageMs = Date.now() - dt.getTime();
             const ageDays = ageMs / (1000 * 60 * 60 * 24);
-            const stale = (src === 'citations' || src === 'impact_factor') ? ageDays > 14 : ageDays > 3;
+            const stale = (src === 'citations' || src === 'impact_factor' || src === 'rr_status') ? ageDays > 14 : ageDays > 3;
             el.classList.toggle('stale', stale);
             const fmt = dt.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             el.innerHTML = `${label} last updated: <strong>${fmt}</strong>`;
@@ -1257,7 +1400,9 @@ function parseCsvFromUrl(url) {
 }
 
 async function loadData() {
-    await loadDisciplines();
+    // Disciplines and the CSV are independent - fetch them concurrently rather than
+    // waiting on the (small) disciplines request before starting the (large) CSV one.
+    const disciplinesPromise = loadDisciplines();
 
     let results;
     try {
@@ -1275,6 +1420,7 @@ async function loadData() {
             return;
         }
     }
+    await disciplinesPromise;
 
     if (results.errors && results.errors.length > 0) console.warn('CSV parsing warnings:', results.errors);
     const data = results.data.map(row => {
@@ -1295,6 +1441,55 @@ async function loadData() {
     loadCitation();
     loadFaqs();
     loadDataStamps();
+    applyTabFromUrl();
 }
 
-$(document).ready(loadData);
+// Map friendly ?tab= values to the Bootstrap tab buttons.
+const TAB_PARAM_MAP = {
+    overview: 'overview-tab',
+    browse: 'browse-tab',
+    trends: 'trends-tab', years: 'trends-tab', disciplines: 'trends-tab',
+    citations: 'citation-tab', 'citation-impact': 'citation-tab',
+    'mean-citedness': 'mc-tab', omc: 'mc-tab',
+    'authorship-overlap': 'overlap-tab', overlap: 'overlap-tab',
+    'registered-reports': 'rr-tab', rr: 'rr-tab'
+};
+
+// Canonical ?tab= value for each tab button (the reverse of TAB_PARAM_MAP).
+const TAB_ID_TO_PARAM = {
+    'overview-tab': 'overview', 'browse-tab': 'browse', 'trends-tab': 'trends',
+    'citation-tab': 'citations', 'mc-tab': 'mean-citedness', 'overlap-tab': 'authorship-overlap',
+    'rr-tab': 'registered-reports'
+};
+
+// Select a tab from the ?tab= URL param (e.g. ?tab=citations). Activating the
+// tab fires shown.bs.tab, which lazy-loads that tab's content as usual.
+function applyTabFromUrl() {
+    const tab = (new URLSearchParams(window.location.search).get('tab') || '').toLowerCase();
+    if (!tab) return;
+    const btn = document.getElementById(TAB_PARAM_MAP[tab] || '');
+    if (btn && window.bootstrap) bootstrap.Tab.getOrCreateInstance(btn).show();
+}
+
+// Reflect the active tab in the address bar so it stays shareable as the user
+// navigates. Fires for both clicks and programmatic shows.
+function syncTabToUrl(tabId) {
+    const name = TAB_ID_TO_PARAM[tabId];
+    if (!name) return;
+    const params = new URLSearchParams(window.location.search);
+    if (name !== 'citations') params.delete('doi');   // doi only applies to Citation Impact
+    if (name === 'overview') params.delete('tab');     // keep the home URL clean
+    else params.set('tab', name);
+    const qs = params.toString();
+    history.replaceState(null, '', new URL('./' + (qs ? '?' + qs : ''), window.location.href).href);
+}
+Object.keys(TAB_ID_TO_PARAM).forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('shown.bs.tab', () => syncTabToUrl(id));
+});
+
+// Called directly (not via $(document).ready) so the CSV fetch starts as soon as this
+// script runs, rather than waiting for the whole document - including later, lazily-used
+// libraries like Plotly - to finish loading. Safe because this tag sits at the end of
+// <body>, so every element loadData() touches already exists in the DOM.
+loadData();

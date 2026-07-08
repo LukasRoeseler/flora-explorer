@@ -24,12 +24,23 @@ FLORA_URL = "https://raw.githubusercontent.com/forrtproject/FReD-data/refs/heads
 OUT_CSV = DATA_DIR / "flora.csv"
 OUT_META = DATA_DIR / "flora_meta.json"
 
+# The frontend (assets/app.js) only ever reads these columns. The upstream CSV also
+# carries apa_ref/bibtex_ref and other bibliographic fields that nothing displays,
+# which roughly doubles the payload the browser has to download and parse - so keep
+# only what's used in the committed snapshot. The upstream fallback URL in app.js is
+# untouched and still serves the full CSV.
+KEEP_COLUMNS = [
+    "doi_o", "title_o", "author_o", "journal_o", "year_o",
+    "doi_r", "title_r", "author_r", "journal_r", "year_r", "url_r",
+    "outcome", "outcome_quote", "type",
+]
+
 
 def main():
     print(f"Fetching {FLORA_URL} …")
     r = requests.get(FLORA_URL, timeout=120)
     r.raise_for_status()
-    text = r.text
+    text = r.text.lstrip("\ufeff")  # strip BOM so "doi_o" (not BOM-prefixed) is the fieldname
 
     # Sanity-check the CSV before committing
     reader = csv.DictReader(io.StringIO(text))
@@ -38,9 +49,14 @@ def main():
         raise SystemExit("Downloaded flora.csv has no rows; aborting.")
 
     n_rows = len(rows)
-    columns = reader.fieldnames or []
+    upstream_columns = reader.fieldnames or []
+    columns = [c for c in KEEP_COLUMNS if c in upstream_columns]
 
-    OUT_CSV.write_text(text, encoding="utf-8")
+    out = io.StringIO()
+    writer = csv.DictWriter(out, fieldnames=columns, extrasaction="ignore")
+    writer.writeheader()
+    writer.writerows(rows)
+    OUT_CSV.write_text(out.getvalue(), encoding="utf-8")
 
     meta = {
         "last_updated": datetime.now(timezone.utc).isoformat(),

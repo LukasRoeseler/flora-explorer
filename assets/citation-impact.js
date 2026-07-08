@@ -1,10 +1,10 @@
-/* FLoRA Explorer — Citation Impact tab
+/* FLoRA Explorer: Citation Impact tab
    Loads weekly-refreshed OpenCitations data and renders KPIs, event-study
    plots, and a browsable per-original table. Adapted from flora-citations. */
 
 (function() {
     const CI = {
-        meta: null, agg: null, studies: null, index: null, fect: null,
+        meta: null, agg: null, studies: null, index: null, fect: null, cocitBreakdown: null,
         outcome: 'all', page: 1, perPage: 20,
         sortCol: 'n_citations', sortDir: 'desc',
         loaded: false, loading: false
@@ -76,13 +76,11 @@
             const originals = await origRes.json();
             CI.studies = originals.studies;
             CI.index = originals.index.map(s => {
-                const study = CI.studies[s.doi];
-                const n_cocitations = study
-                    ? (study.timeline || []).reduce((sum, t) =>
-                        sum + (t.with_successful || 0) + (t.with_failed || 0) + (t.with_mixed || 0), 0)
-                    : 0;
-                const cocit_prop = s.n_citations > 0 ? n_cocitations / s.n_citations : 0;
-                return { ...s, n_cocitations, cocit_prop };
+                // Denominator is citations since the first replication, not lifetime
+                // citations — citing works published before any replication existed
+                // could never have co-cited one.
+                const cocit_prop = s.n_citations_post_first_rep > 0 ? s.n_cocitations / s.n_citations_post_first_rep : 0;
+                return { ...s, cocit_prop };
             });
 
             // Optional: ETWFE results (may not exist on first run)
@@ -91,7 +89,13 @@
                 if (fectRes.ok) CI.fect = await fectRes.json();
             } catch (_) {}
 
-            renderKPIs(); renderAggregate(); renderTable(); bindEvents();
+            // Optional: co-citation breakdown by pub status / outcome (may not exist on first run)
+            try {
+                const breakdownRes = await fetch('data/cocit_breakdown.json');
+                if (breakdownRes.ok) CI.cocitBreakdown = await breakdownRes.json();
+            } catch (_) {}
+
+            renderKPIs(); renderAggregate(); renderTable(); renderCocitBreakdown(); bindEvents();
             CI.loaded = true;
         } catch (e) {
             console.error('Citation Impact load failed:', e);
@@ -116,7 +120,7 @@
             if (el) el.innerHTML = '<div style="padding:80px 20px;text-align:center;color:var(--flora-muted)">No data yet</div>';
         });
         const tbody = document.querySelector('#originals-table tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--flora-muted)">No data yet — first refresh in progress.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--flora-muted)">No data yet. First refresh in progress.</td></tr>';
     }
 
     function renderKPIs() {
@@ -138,12 +142,19 @@
         let html;
         const hasModel = model.att != null && Number.isFinite(model.att);
         if (hasModel) {
-            const pct = ((Math.exp(model.att) - 1) * 100).toFixed(1);
+            const pctNum = (Math.exp(model.att) - 1) * 100;
             const ci = (model.att_ci || []).filter(v => v != null && Number.isFinite(v));
-            const ciL = ci.length === 2 ? ((Math.exp(ci[0]) - 1) * 100).toFixed(1) : '?';
-            const ciH = ci.length === 2 ? ((Math.exp(ci[1]) - 1) * 100).toFixed(1) : '?';
-            html = `<strong>Average post-replication effect on citations:</strong>
-                ${pct}% (95% CI: ${ciL}%, ${ciH}%) · <span class="muted">based on ${model.n_units} originals</span>`;
+            const ciLNum = ci.length === 2 ? (Math.exp(ci[0]) - 1) * 100 : null;
+            const ciHNum = ci.length === 2 ? (Math.exp(ci[1]) - 1) * 100 : null;
+            const ciL = ciLNum !== null ? ciLNum.toFixed(1) : '?';
+            const ciH = ciHNum !== null ? ciHNum.toFixed(1) : '?';
+            const notSig = ciLNum !== null && ciHNum !== null && ciLNum < 0 && ciHNum > 0;
+            const direction = pctNum >= 0 ? 'higher' : 'lower';
+            const gloss = '<span class="gloss" tabindex="0">Average post-replication effect on citations<span class="gloss-tip">Compares citation counts in the years after the first replication to the year just before it (t = -1), controlling for study and year fixed effects.</span></span>';
+            html = `<strong>${gloss}:</strong>
+                citations were an estimated <strong>${Math.abs(pctNum).toFixed(1)}% ${direction}</strong> after the first replication than in the year before it
+                (95% CI: ${ciL}%, ${ciH}%)${notSig ? ' — <span class="muted">not statistically distinguishable from no change</span>' : ''}
+                · <span class="muted">based on ${model.n_units} originals</span>`;
         } else if (desc.n_units && desc.n_units.length) {
             const maxN = Math.max(...desc.n_units);
             html = `<strong>Descriptive trajectory shown.</strong>
@@ -188,7 +199,7 @@
             }
         }
 
-        // ETWFE overlay (optional — only shown when fect_results.json exists)
+        // ETWFE overlay (optional, only shown when fect_results.json exists)
         const fectKey = modelField === 'citations_model' ? 'citations' : 'cocitations';
         const fect = CI.fect && CI.fect[outcome] && CI.fect[outcome][fectKey];
         if (fect && fect.event_time && fect.event_time.length > 0) {
@@ -262,10 +273,51 @@
         </div>`;
     }
 
+    const PUBSTATUS_LABELS = {
+        individual: 'Individual', large_project: 'Large project (>3 originals)', unpublished: 'Preprint only'
+    };
+    const BREAKDOWN_OUTCOME_LABELS = { successful: 'Successful', failed: 'Failed', mixed: 'Mixed' };
+
+    function renderBreakdownTable(title, dim, labels, note) {
+        const rows = Object.keys(labels).map(key => {
+            const d = dim[key] || {};
+            const fmt = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+            return `<tr>
+                <td>${labels[key]}</td>
+                <td>${d.n_originals != null ? d.n_originals.toLocaleString() : '—'}</td>
+                <td>${fmt(d.mean_rate)}</td>
+                <td>${fmt(d.median_rate)}</td>
+                <td>${fmt(d.grand_mean_rate)}</td>
+            </tr>`;
+        }).join('');
+        return `<div class="cocit-breakdown-table">
+            <h4>${title}</h4>
+            <table>
+                <thead><tr><th>Group</th><th>N originals</th><th>Per-paper mean</th><th>Median</th><th>Weighted mean</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+            ${note ? `<p class="cocit-breakdown-note">${note}</p>` : ''}
+        </div>`;
+    }
+
+    function renderCocitBreakdown() {
+        const el = document.getElementById('cocit-breakdown');
+        if (!el) return;
+        const bd = CI.cocitBreakdown;
+        if (!bd) { el.innerHTML = '<p class="muted">Not available yet — this analysis is included from the next scheduled data refresh.</p>'; return; }
+        el.innerHTML =
+            renderBreakdownTable('By publication status of the replication', bd.pub_status || {}, PUBSTATUS_LABELS) +
+            renderBreakdownTable('By outcome of the replication', bd.outcome || {}, BREAKDOWN_OUTCOME_LABELS);
+    }
+
     function renderCocitCell(s) {
         if (!s.n_cocitations && s.n_cocitations !== 0) return '—';
-        const pct = s.n_citations > 0 ? (s.cocit_prop * 100).toFixed(1) + '%' : '—';
-        return `<span title="${s.n_cocitations.toLocaleString()} co-citations">${s.n_cocitations.toLocaleString()}<span class="cocit-pct"> (${pct})</span></span>`;
+        const denom = s.n_citations_post_first_rep;
+        const pct = denom > 0 ? (s.cocit_prop * 100).toFixed(1) + '%' : '—';
+        const tooltip = denom
+            ? `${s.n_cocitations.toLocaleString()} of ${denom.toLocaleString()} citations since the first replication (${s.first_replication_year}) also cite a replication`
+            : `${s.n_cocitations.toLocaleString()} co-citations`;
+        return `<span title="${escapeHtml(tooltip)}">${s.n_cocitations.toLocaleString()}<span class="cocit-pct"> (${pct})</span></span>`;
     }
 
     function renderTable() {
@@ -292,6 +344,10 @@
         document.querySelectorAll('#originals-table thead th[data-sort]').forEach(th => {
             th.classList.remove('sort-asc', 'sort-desc');
             if (th.dataset.sort === col) th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
+        });
+        document.querySelectorAll('.cocit-sort-btn').forEach(btn => {
+            btn.classList.remove('sort-asc', 'sort-desc');
+            if (btn.dataset.sort === col) btn.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
         });
 
         const total = rows.length;
@@ -334,21 +390,31 @@
                 <span class="outcome-badge ${r.outcome}">${r.outcome}</span>
                 <strong>${escapeHtml(formatAuthors(r.author, 2))} (${r.year || '?'})</strong>
                 ${r.title ? '— ' + escapeHtml(r.title) : ''}
-                ${r.doi ? `<br><a href="https://doi.org/${r.doi}" target="_blank" class="small">${r.doi}</a>` : ''}
+                ${r.doi ? `<br><a href="https://doi.org/${escapeHtml(r.doi)}" target="_blank" class="small">${escapeHtml(r.doi)}</a>` : ''}
             </li>`).join('');
         document.getElementById('ci-modal-body').innerHTML = `
             <div class="modal-body">
                 <h2>${escapeHtml(s.title || '(untitled)')}</h2>
                 <p class="muted">${escapeHtml(formatAuthors(s.author))} · ${s.year || '?'}
                     ${s.venue ? '· ' + escapeHtml(s.venue) : ''}<br>
-                    <a href="https://doi.org/${s.doi}" target="_blank">${s.doi}</a></p>
+                    <a href="https://doi.org/${escapeHtml(s.doi)}" target="_blank">${escapeHtml(s.doi)}</a></p>
+                <button type="button" class="ci-share-btn" data-doi="${escapeHtml(s.doi)}">🔗 Copy link to this chart</button>
                 <h3 style="margin-top:18px">Citation timeline</h3>
+                ${s.cocit_conflated ? `<p class="cocit-warning">⚠️ Co-citation can't be measured for ${s.cocit_conflated > 1 ? 'some replications of ' : ''}this study: OpenCitations groups the original and ${s.cocit_conflated > 1 ? 'those replications' : 'its replication'} under one record, so citations of the two can't be told apart. The timeline below counts all of them as citations of the original.</p>` : ''}
                 <div id="study-plot" style="width:100%;height:380px"></div>
                 <h3 style="margin-top:18px">Replications (${s.n_replications})</h3>
                 <ul class="rep-list">${reps}</ul>
             </div>`;
         document.getElementById('ci-modal').hidden = false;
+        // Reflect the open chart in the address bar so it's directly shareable.
+        history.replaceState(null, '', citationLink(s.doi));
         drawStudyTimeline(s);
+    }
+
+    function closeModal() {
+        document.getElementById('ci-modal').hidden = true;
+        // Drop ?doi= but keep the user on the Citation Impact tab.
+        history.replaceState(null, '', new URL('./?tab=citations', window.location.href).href);
     }
 
     function drawStudyTimeline(s) {
@@ -393,18 +459,21 @@
         });
         document.getElementById('search-input').addEventListener('input', () => { CI.page = 1; renderTable(); });
         document.getElementById('filter-outcome').addEventListener('change', () => { CI.page = 1; renderTable(); });
+        function sortBy(col) {
+            if (CI.sortCol === col) {
+                CI.sortDir = CI.sortDir === 'desc' ? 'asc' : 'desc';
+            } else {
+                CI.sortCol = col;
+                CI.sortDir = 'desc';
+            }
+            CI.page = 1;
+            renderTable();
+        }
         document.querySelectorAll('#originals-table thead th[data-sort]').forEach(th => {
-            th.addEventListener('click', () => {
-                const col = th.dataset.sort;
-                if (CI.sortCol === col) {
-                    CI.sortDir = CI.sortDir === 'desc' ? 'asc' : 'desc';
-                } else {
-                    CI.sortCol = col;
-                    CI.sortDir = 'desc';
-                }
-                CI.page = 1;
-                renderTable();
-            });
+            th.addEventListener('click', () => sortBy(th.dataset.sort));
+        });
+        document.querySelectorAll('.cocit-sort-btn').forEach(btn => {
+            btn.addEventListener('click', () => sortBy(btn.dataset.sort));
         });
         document.querySelector('#originals-table tbody').addEventListener('click', e => {
             const tr = e.target.closest('tr');
@@ -413,14 +482,73 @@
         document.getElementById('pagination').addEventListener('click', e => {
             if (e.target.dataset.p) { CI.page = +e.target.dataset.p; renderTable(); }
         });
-        document.getElementById('ci-modal-close').addEventListener('click', () => document.getElementById('ci-modal').hidden = true);
+        document.getElementById('ci-modal-body').addEventListener('click', e => {
+            const btn = e.target.closest('.ci-share-btn');
+            if (!btn) return;
+            const link = citationLink(btn.dataset.doi);
+            navigator.clipboard.writeText(link).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = '✓ Link copied';
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            }).catch(() => window.prompt('Copy this link:', link));
+        });
+        document.getElementById('ci-modal-close').addEventListener('click', closeModal);
         document.getElementById('ci-modal').addEventListener('click', e => {
-            if (e.target.id === 'ci-modal') document.getElementById('ci-modal').hidden = true;
+            if (e.target.id === 'ci-modal') closeModal();
         });
     }
 
+    // Memoised loader so the deep-link handler can await the same in-flight
+    // load that opening the tab triggers (avoids a load race).
+    let initPromise = null;
+    function ensureInit() {
+        if (!initPromise) initPromise = init();
+        return initPromise;
+    }
+
+    // ===== Deep-linking: /citations/?doi=<doi> opens a study's chart popup =====
+    function normalizeDoi(doi) {
+        return (doi || '').trim().toLowerCase()
+            .replace(/^https?:\/\/(dx\.)?doi\.org\//, '')
+            .replace(/^doi:/, '');
+    }
+
+    // Resolve a (possibly prefixed) DOI to the matching key in CI.studies.
+    function findStudyDoi(doi) {
+        const t = normalizeDoi(doi);
+        if (!t || !CI.studies) return null;
+        return Object.keys(CI.studies).find(d => normalizeDoi(d) === t) || null;
+    }
+
+    // Build the shareable ?tab=citations&doi=… URL on the main page, relative
+    // so it works under the GitHub Pages project path (/flora-explorer/).
+    function citationLink(doi) {
+        return new URL('./?tab=citations&doi=' + encodeURIComponent(doi), window.location.href).href;
+    }
+
+    // Switch to the Citation Impact tab, ensure data is loaded, then open the
+    // study's chart popup. Returns true if a matching study was found.
+    async function openStudyByDoi(doi) {
+        await ensureInit();
+        const matchDoi = findStudyDoi(doi);
+        if (!matchDoi) return false;
+        const tabBtn = document.getElementById('citation-tab');
+        if (tabBtn && window.bootstrap) bootstrap.Tab.getOrCreateInstance(tabBtn).show();
+        showStudy(matchDoi);
+        return true;
+    }
+
+    // Read ?doi= from the current URL and open the matching popup, if any.
+    async function handleDeepLink() {
+        const doi = new URLSearchParams(window.location.search).get('doi');
+        if (doi) await openStudyByDoi(doi);
+    }
+
     // Lazy-load when the user opens the tab
-    document.getElementById('citation-tab').addEventListener('shown.bs.tab', init);
+    document.getElementById('citation-tab').addEventListener('shown.bs.tab', ensureInit);
+
+    // Open a study popup straight away if arrived via /citations/?doi=…
+    handleDeepLink();
 
     // Re-theme Plotly plots on dark-mode toggle
     document.getElementById('theme-toggle').addEventListener('click', () => {
