@@ -3621,5 +3621,36 @@
     "id": "https://openalex.org/S4306482006",
     "display_name": "Unknown eBooks",
     "impact_factor": 0.0
-  }
+  },
+  "bmj": {
+    "id": "https://openalex.org/S4393911389",
+    "display_name": "BMJ",
+    "impact_factor": 0.0
+  },
+  "human communication research": {
+    "id": "https://openalex.org/S195553305",
+    "display_name": "Human Communication Research",
+    "impact_factor": 3.9
+  },
+  "information systems research": {
+    "id": "https://openalex.org/S202812398",
+    "display_name": "Information Systems Research",
+    "impact_factor": 5.098765432098766
+  },
+  "international journal of psychology": {
+    "id": "https://openalex.org/S53056752",
+    "display_name": "International Journal of Psychology",
+    "impact_factor": 2.0232558139534884
+  },
+  "journal of vision": {
+    "id": "https://openalex.org/S137468011",
+    "display_name": "Journal of Vision",
+    "impact_factor": 0.3965149359886202
+  },
+  "library trends": {
+    "id": "https://openalex.org/S9186059",
+    "display_name": "Library trends",
+    "impact_factor": 0.6545454545454545
+  },
+  "the clinical journal of pain": null
 }
