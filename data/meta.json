@@ -1,14 +1,14 @@
 {
-  "last_updated": "2026-07-13T07:31:22.128941+00:00",
-  "n_originals": 1946,
-  "n_replications": 2092,
+  "last_updated": "2026-07-20T06:55:26.316338+00:00",
+  "n_originals": 1958,
+  "n_replications": 2097,
   "outcome_counts": {
-    "successful": 856,
+    "successful": 857,
     "failed": 744,
-    "mixed": 492
+    "mixed": 496
   },
   "pub_status_counts": {
-    "individual": 1609,
+    "individual": 1614,
     "large_project": 436,
     "unpublished": 47
   },
