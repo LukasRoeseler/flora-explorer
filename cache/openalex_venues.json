@@ -3652,5 +3652,10 @@
     "display_name": "Library trends",
     "impact_factor": 0.6545454545454545
   },
-  "the clinical journal of pain": null
+  "the clinical journal of pain": null,
+  "motivation and emotion": {
+    "id": "https://openalex.org/S19400212",
+    "display_name": "Motivation and Emotion",
+    "impact_factor": 1.5270935960591132
+  }
 }
