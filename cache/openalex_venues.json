@@ -3657,5 +3657,71 @@
     "id": "https://openalex.org/S19400212",
     "display_name": "Motivation and Emotion",
     "impact_factor": 1.5270935960591132
+  },
+  "academy of management learning & education": {
+    "id": "https://openalex.org/S45682993",
+    "display_name": "Academy of Management Learning and Education",
+    "impact_factor": 8.326732673267326
+  },
+  "business strategy and the environment": {
+    "id": "https://openalex.org/S205793605",
+    "display_name": "Business Strategy and the Environment",
+    "impact_factor": 8.00048567265663
+  },
+  "eastern illinois university": {
+    "id": "https://openalex.org/S4377196467",
+    "display_name": "The Keep (Eastern Illinois University)",
+    "impact_factor": 0.015503875968992248
+  },
+  "educational psychology": {
+    "id": "https://openalex.org/S61703936",
+    "display_name": "Journal of Educational Psychology",
+    "impact_factor": 2.270053475935829
+  },
+  "educational technology research and development": {
+    "id": "https://openalex.org/S114840262",
+    "display_name": "Educational Technology Research and Development",
+    "impact_factor": 6.762463343108505
+  },
+  "journal of emotional and behavioral disorders": {
+    "id": "https://openalex.org/S24815079",
+    "display_name": "Journal of Emotional and Behavioral Disorders",
+    "impact_factor": 1.8611111111111112
+  },
+  "journal of experimental psychology: applied": {
+    "id": "https://openalex.org/S79587319",
+    "display_name": "Journal of Experimental Psychology Applied",
+    "impact_factor": 0.7033898305084746
+  },
+  "language and speech": {
+    "id": "https://openalex.org/S137261208",
+    "display_name": "Language and Speech",
+    "impact_factor": 0.9
+  },
+  "multivariate behavioral research": {
+    "id": "https://openalex.org/S64250036",
+    "display_name": "Multivariate Behavioral Research",
+    "impact_factor": 2.850515463917526
+  },
+  "natural language semantics": {
+    "id": "https://openalex.org/S186219999",
+    "display_name": "Natural Language Semantics",
+    "impact_factor": 0.96875
+  },
+  "neurosurgery": {
+    "id": "https://openalex.org/S111727011",
+    "display_name": "Neurosurgery",
+    "impact_factor": 0.92692750287687
+  },
+  "proceedings of the 15th international conference on mining software repositories": null,
+  "psychotherapy: theory, research, practice, training": {
+    "id": "https://openalex.org/S133322011",
+    "display_name": "Psychotherapy",
+    "impact_factor": 1.375
+  },
+  "research in science education": {
+    "id": "https://openalex.org/S52057175",
+    "display_name": "Research in Science Education",
+    "impact_factor": 4.29047619047619
   }
 }
