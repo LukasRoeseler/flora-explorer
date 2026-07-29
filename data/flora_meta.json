@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-07-28T05:51:55.380614+00:00",
+  "last_updated": "2026-07-29T05:56:31.075417+00:00",
   "source_url": "https://raw.githubusercontent.com/forrtproject/FReD-data/refs/heads/main/output/flora.csv",
-  "n_rows": 2460,
+  "n_rows": 2461,
   "columns": [
     "doi_o",
     "title_o",
