@@ -3723,5 +3723,16 @@
     "id": "https://openalex.org/S52057175",
     "display_name": "Research in Science Education",
     "impact_factor": 4.29047619047619
+  },
+  "journal of economic psychology": {
+    "id": "https://openalex.org/S71968408",
+    "display_name": "Journal of Economic Psychology",
+    "impact_factor": 2.5985401459854014
+  },
+  "proceedings of the 54th acm technical symposium on computer science education v. 1": null,
+  "sociological science": {
+    "id": "https://openalex.org/S2739021930",
+    "display_name": "Sociological Science",
+    "impact_factor": 3.2695652173913046
   }
 }
