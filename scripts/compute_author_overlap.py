@@ -56,17 +56,27 @@ def family_names(author_json) -> set[str]:
     return {normalize(n) for n in raw if len(normalize(n)) > 1}
 
 
-# ── Load & filter to replications ─────────────────────────────────────────────
-df = pd.read_csv(IN_CSV, low_memory=False, na_values=["", "NA"])
-
-if "type" in df.columns:
-    mask = (
-        df["type"].astype(str).str.contains("replication", case=False, na=False) &
-        ~df["type"].astype(str).str.contains("reproduc",   case=False, na=False)
-    )
-    df = df[mask].copy()
-
-df["outcome_lc"] = df.get("outcome", pd.Series(dtype=str)).astype(str).str.lower().str.strip()
+def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
+    """Split a reproduction's compound outcome string into its two independent
+    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly so the
+    frontend and this pipeline agree on how the same raw string is classified."""
+    s = str(outcome_raw or "").lower()
+    computational = None
+    robustness = None
+    for part in (p.strip() for p in s.split(",")):
+        if computational is None:
+            if "computational issue" in part:
+                computational = "issues"
+            elif "computational" in part and "success" in part:
+                computational = "successful"
+        if robustness is None:
+            if "robustness challenge" in part:
+                robustness = "challenges"
+            elif "robustness not checked" in part:
+                robustness = "not_checked"
+            elif "robust" in part:
+                robustness = "robust"
+    return computational, robustness
 
 
 # ── Compute per-row overlap flag ───────────────────────────────────────────────
@@ -77,40 +87,81 @@ def _overlap(row) -> bool | None:
         return None
     return bool(orig & repl)
 
-df["author_overlap"] = df.apply(_overlap, axis=1)
 
-df_known = df[df["author_overlap"].notna()].copy()
-n_total     = len(df_known)
-n_overlap   = int(df_known["author_overlap"].sum())
-n_no_overlap = n_total - n_overlap
-n_unknown   = int(df["author_overlap"].isna().sum())
+REPLICATION_OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
+COMPUTATIONAL_BUCKETS = ["successful", "issues", "not_coded"]
+ROBUSTNESS_BUCKETS = ["robust", "challenges", "not_checked", "not_coded"]
+MIN_N_FOR_BREAKDOWN = 5  # below this, a per-bucket overlap breakdown is not meaningful
 
-OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
 
-by_outcome: dict[str, dict[str, int]] = {}
-for grp, flag in [("overlap", True), ("no_overlap", False)]:
-    sub = df_known.loc[df_known["author_overlap"] == flag, "outcome_lc"]
-    by_outcome[grp] = {oc: int((sub == oc).sum()) for oc in OUTCOMES}
+def compute_overlap_result(sub: pd.DataFrame, bucket_fn, buckets: list[str]) -> dict:
+    """Shared overlap computation for one study-type slice of the data. bucket_fn maps a
+    row's outcome to one of `buckets` (replication: fixed 4-outcome vocabulary; reproduction:
+    the parsed computational or robustness dimension)."""
+    sub = sub.copy()
+    sub["author_overlap"] = sub.apply(_overlap, axis=1)
+    sub["bucket"] = sub.apply(bucket_fn, axis=1)
+
+    known = sub[sub["author_overlap"].notna()].copy()
+    n_total = len(known)
+    n_overlap = int(known["author_overlap"].sum())
+    n_no_overlap = n_total - n_overlap
+    n_unknown = int(sub["author_overlap"].isna().sum())
+
+    by_outcome: dict[str, dict[str, int]] = {}
+    for grp, flag in [("overlap", True), ("no_overlap", False)]:
+        bkt = known.loc[known["author_overlap"] == flag, "bucket"]
+        by_outcome[grp] = {b: int((bkt == b).sum()) for b in buckets}
+
+    return {
+        "overview": {
+            "n_total": n_total,
+            "n_overlap": n_overlap,
+            "n_no_overlap": n_no_overlap,
+            "n_unknown": n_unknown,
+            "pct_overlap": round(100 * n_overlap / n_total, 1) if n_total else 0,
+            "pct_no_overlap": round(100 * n_no_overlap / n_total, 1) if n_total else 0,
+            "insufficient_n": n_total < MIN_N_FOR_BREAKDOWN,
+        },
+        "by_outcome": by_outcome,
+    }
+
+
+# ── Load & split by study type ─────────────────────────────────────────────────
+df = pd.read_csv(IN_CSV, low_memory=False, na_values=["", "NA"])
+df["type_lc"] = df.get("type", pd.Series(dtype=str)).astype(str).str.lower()
+df["outcome_lc"] = df.get("outcome", pd.Series(dtype=str)).astype(str).str.lower().str.strip()
+
+is_reproduction = df["type_lc"].str.contains("reproduc", na=False)
+is_replication = df["type_lc"].str.contains("replication", na=False) & ~is_reproduction
+
+repro_df = df[is_reproduction].copy()
+repro_dims = repro_df["outcome_lc"].apply(parse_reproduction_outcome)
+repro_df["computational_bucket"] = repro_dims.apply(lambda t: t[0] or "not_coded")
+repro_df["robustness_bucket"] = repro_dims.apply(lambda t: t[1] or "not_coded")
 
 result = {
-    "overview": {
-        "n_total":      n_total,
-        "n_overlap":    n_overlap,
-        "n_no_overlap": n_no_overlap,
-        "n_unknown":    n_unknown,
-        "pct_overlap":    round(100 * n_overlap    / n_total, 1) if n_total else 0,
-        "pct_no_overlap": round(100 * n_no_overlap / n_total, 1) if n_total else 0,
-    },
-    "by_outcome": by_outcome,
+    "replication": compute_overlap_result(
+        df[is_replication], lambda r: r["outcome_lc"], REPLICATION_OUTCOMES
+    ),
+    "reproduction-numerical": compute_overlap_result(
+        repro_df, lambda r: r["computational_bucket"], COMPUTATIONAL_BUCKETS
+    ),
+    "reproduction-robustness": compute_overlap_result(
+        repro_df, lambda r: r["robustness_bucket"], ROBUSTNESS_BUCKETS
+    ),
 }
 
 OUT_DATA.write_text(json.dumps(result), encoding="utf-8")
 OUT_META.write_text(json.dumps({
     "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-    "n_total":      n_total,
-    "source":       "scripts/compute_author_overlap.py",
+    "n_total": {k: v["overview"]["n_total"] for k, v in result.items()},
+    "source": "scripts/compute_author_overlap.py",
 }, indent=2), encoding="utf-8")
 
-print(f"n_total={n_total}, overlap={n_overlap} ({result['overview']['pct_overlap']}%), "
-      f"no_overlap={n_no_overlap}, unknown={n_unknown}")
+for kind, r in result.items():
+    ov = r["overview"]
+    print(f"{kind}: n_total={ov['n_total']}, overlap={ov['n_overlap']} ({ov['pct_overlap']}%), "
+          f"no_overlap={ov['n_no_overlap']}, unknown={ov['n_unknown']}"
+          + (" [insufficient n]" if ov["insufficient_n"] else ""))
 print(f"Written: {OUT_DATA}")

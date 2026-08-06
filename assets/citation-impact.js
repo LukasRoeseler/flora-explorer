@@ -14,6 +14,8 @@
         failed: '#b3331e', successful: '#2f8f4f', mixed: '#d49b1d', all: '#8b1a4a'
     };
 
+    let ciKind = 'replication';
+
     function escapeHtml(s) {
         if (s == null) return '';
         return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -95,13 +97,83 @@
                 if (breakdownRes.ok) CI.cocitBreakdown = await breakdownRes.json();
             } catch (_) {}
 
+            // Optional: simple descriptive citation counts for reproductions (no event-study -
+            // too few reproductions for that model to be meaningful; see refresh_data.py)
+            try {
+                const reproRes = await fetch('data/reproduction_citations.json');
+                if (reproRes.ok) CI.repro = await reproRes.json();
+            } catch (_) {}
+
             renderKPIs(); renderAggregate(); renderTable(); renderCocitBreakdown(); bindEvents();
+            renderCiKindGate(ciKind);
             CI.loaded = true;
         } catch (e) {
             console.error('Citation Impact load failed:', e);
             showPlaceholder();
         } finally {
             CI.loading = false;
+        }
+    }
+
+    // Reproduction dimension buckets for the descriptive citation-count table (mirrors
+    // parseReproductionOutcome() in assets/app.js). Unlike the replication view, there's no
+    // event-study model here - too few reproductions for that to be meaningful - so this
+    // just shows the simple counts refresh_data.py's compute_reproduction_citations() wrote.
+    const CI_REPRO_BUCKETS = {
+        'reproduction-numerical': [
+            { key: 'successful', label: 'Successful' },
+            { key: 'issues', label: 'Issues' },
+            { key: 'not_coded', label: 'Not yet coded' },
+        ],
+        'reproduction-robustness': [
+            { key: 'robust', label: 'Robust' },
+            { key: 'challenges', label: 'Robustness challenges' },
+            { key: 'not_checked', label: 'Not checked' },
+            { key: 'not_coded', label: 'Not yet coded' },
+        ],
+    };
+    const CI_REPRO_MIN_N = 5;
+
+    function renderCiKindGate(kind) {
+        const contentEl = document.getElementById('ci-content');
+        const reproEl = document.getElementById('ci-repro-content');
+        const placeholderEl = document.getElementById('ci-placeholder');
+        if (kind === 'replication') {
+            if (contentEl) contentEl.style.display = '';
+            if (reproEl) reproEl.style.display = 'none';
+            if (placeholderEl) placeholderEl.style.display = 'none';
+            return;
+        }
+        if (contentEl) contentEl.style.display = 'none';
+
+        const buckets = CI_REPRO_BUCKETS[kind] || [];
+        const data = CI.repro && CI.repro[kind];
+        const totalOriginals = data
+            ? buckets.reduce((sum, b) => sum + ((data[b.key] && data[b.key].n_originals) || 0), 0)
+            : 0;
+        if (!data || totalOriginals < CI_REPRO_MIN_N) {
+            if (reproEl) reproEl.style.display = 'none';
+            if (placeholderEl) {
+                placeholderEl.textContent =
+                    `Not enough reproductions with citation data yet (n=${totalOriginals}; need at least ${CI_REPRO_MIN_N}).`;
+                placeholderEl.style.display = '';
+            }
+            return;
+        }
+        if (placeholderEl) placeholderEl.style.display = 'none';
+        if (reproEl) reproEl.style.display = '';
+        const tbody = document.querySelector('#ci-repro-table tbody');
+        if (tbody) {
+            tbody.innerHTML = buckets.map(b => {
+                const row = data[b.key] || {};
+                return '<tr>' +
+                    '<td>' + escapeHtml(b.label) + '</td>' +
+                    '<td>' + (row.n_originals || 0).toLocaleString() + '</td>' +
+                    '<td>' + (row.n_citations_to_original || 0).toLocaleString() + '</td>' +
+                    '<td>' + (row.n_citations_to_reproduction || 0).toLocaleString() + '</td>' +
+                    '<td>' + (row.n_cocitations || 0).toLocaleString() + '</td>' +
+                '</tr>';
+            }).join('');
         }
     }
 
@@ -547,7 +619,7 @@
     // Lazy-load when the user opens the tab
     document.getElementById('citation-tab').addEventListener('shown.bs.tab', ensureInit);
 
-    setupStudyTypeSelect('ci-study-type', kind => applyStudyTypeGate('ci-content', 'ci-placeholder', kind));
+    setupStudyTypeSelect('ci-study-type', kind => { ciKind = kind; renderCiKindGate(kind); });
 
     // Open a study popup straight away if arrived via /citations/?doi=…
     handleDeepLink();

@@ -164,7 +164,10 @@ def clean_for_json(obj):
 
 
 # ------------------------------------------------------------------ FLoRA
-def load_flora() -> pd.DataFrame:
+def load_flora_raw() -> pd.DataFrame:
+    """Fetch + parse FLoRA into the common column shape, before any type/outcome
+    filtering - so both filter_replications() and filter_reproductions() can work
+    from the same parsed frame."""
     print("Fetching FLoRA…")
     df = pd.read_csv(FLORA_URL, low_memory=False)
     print(f"  {len(df)} rows; columns: {list(df.columns)[:14]}…")
@@ -193,7 +196,7 @@ def load_flora() -> pd.DataFrame:
     col_year_r  = find_col(["year_r"], required=False)
     col_journal_r = find_col(["journal_r"], required=False)
 
-    out = pd.DataFrame({
+    return pd.DataFrame({
         "doi_o":     df[col_doi_o].map(doi_clean),
         "doi_r":     df[col_doi_r].map(doi_clean),
         "outcome":   df[col_outcome].astype(str).str.lower().str.strip() if col_outcome else "unknown",
@@ -208,6 +211,8 @@ def load_flora() -> pd.DataFrame:
         "journal_r": df[col_journal_r] if col_journal_r else "",
     })
 
+
+def filter_replications(out: pd.DataFrame) -> pd.DataFrame:
     n0 = len(out)
     out = out[out["type"].str.contains("replication", na=False)
               & ~out["type"].str.contains("reproduc", na=False)]
@@ -228,6 +233,51 @@ def load_flora() -> pd.DataFrame:
 
     print(f"  Filtered: {n0} → {len(out)} (replications with known outcomes)")
     return out.reset_index(drop=True)
+
+
+def load_flora() -> pd.DataFrame:
+    """Back-compat: raw fetch + the replication filter, exactly as before this
+    was split so build_study_data()'s event-study path is unaffected."""
+    return filter_replications(load_flora_raw())
+
+
+def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
+    """Split a reproduction's compound outcome string into its two independent
+    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly."""
+    s = str(outcome_raw or "").lower()
+    computational = None
+    robustness = None
+    for part in (p.strip() for p in s.split(",")):
+        if computational is None:
+            if "computational issue" in part:
+                computational = "issues"
+            elif "computational" in part and "success" in part:
+                computational = "successful"
+        if robustness is None:
+            if "robustness challenge" in part:
+                robustness = "challenges"
+            elif "robustness not checked" in part:
+                robustness = "not_checked"
+            elif "robust" in part:
+                robustness = "robust"
+    return computational, robustness
+
+
+def filter_reproductions(out: pd.DataFrame) -> pd.DataFrame:
+    """Reproduction rows with both DOIs present, so their citations can be fetched
+    from OpenCitations the same way as replications. Unlike filter_replications(),
+    outcome is not restricted to a fixed set here - callers bucket by the parsed
+    computational/robustness dimension, which has an explicit not_coded bucket for
+    the many reproductions that don't have an outcome yet."""
+    is_repro = out["type"].str.contains("reproduc", na=False)
+    repro = (out[is_repro]
+             .dropna(subset=["doi_o", "doi_r"])
+             .drop_duplicates(subset=["doi_o", "doi_r"])
+             .copy())
+    dims = repro["outcome"].apply(parse_reproduction_outcome)
+    repro["computational_bucket"] = dims.apply(lambda t: t[0] or "not_coded")
+    repro["robustness_bucket"] = dims.apply(lambda t: t[1] or "not_coded")
+    return repro.reset_index(drop=True)
 
 
 # ------------------------------------------------------------------ OpenCitations
@@ -678,6 +728,46 @@ def compute_cocit_breakdown(studies: dict) -> dict:
     }
 
 
+def compute_reproduction_citations(repro: pd.DataFrame) -> dict:
+    """Descriptive (not event-study) citation counts for reproductions, bucketed by
+    computational/robustness dimension. Deliberately skips the OLS/TWFE event-study
+    used for replications: event_study() already requires >= 5 distinct originals
+    within the event window (line ~550), and with at most ~15 reproduction DOI pairs
+    - far fewer once split into dimension buckets - that guard would return an empty
+    result anyway. Simple counts are the honest, meaningful thing to show at this
+    dataset size; this will read as a real per-dimension analysis (not "coming soon")
+    once there's enough coded reproductions to make an event-study worthwhile."""
+    def bucket_stats(bucket_col: str, buckets: list[str]) -> dict:
+        out = {}
+        for b in buckets:
+            sub = repro[repro[bucket_col] == b]
+            n_citations_o = 0
+            n_citations_r = 0
+            n_cocitations = 0
+            for doi_o, grp in sub.groupby("doi_o"):
+                cites_o = fetch_oc_citations(doi_o) or []
+                co = {c["citing"] for c in cites_o}
+                n_citations_o += len(cites_o)
+                rep_citing = set()
+                for _, row in grp.iterrows():
+                    cites_r = fetch_oc_citations(row["doi_r"]) or []
+                    n_citations_r += len(cites_r)
+                    rep_citing.update(c["citing"] for c in cites_r)
+                n_cocitations += sum(1 for c in co if c in rep_citing)
+            out[b] = {
+                "n_originals": int(sub["doi_o"].nunique()),
+                "n_citations_to_original": int(n_citations_o),
+                "n_citations_to_reproduction": int(n_citations_r),
+                "n_cocitations": int(n_cocitations),
+            }
+        return out
+
+    return {
+        "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "not_coded"]),
+        "reproduction-robustness": bucket_stats("robustness_bucket", ["robust", "challenges", "not_checked", "not_coded"]),
+    }
+
+
 def write_outputs(studies: dict, flora: pd.DataFrame, partial: bool = False):
     panel = build_panel(studies)
     aggregate = {}
@@ -730,7 +820,8 @@ def write_outputs(studies: dict, flora: pd.DataFrame, partial: bool = False):
 
 # ------------------------------------------------------------------ main
 def main():
-    flora = load_flora()
+    raw = load_flora_raw()
+    flora = filter_replications(raw)
     studies = {}
     partial = True
     try:
@@ -741,6 +832,21 @@ def main():
     finally:
         write_outputs(studies, flora, partial=partial)
     print(f"Done. {len(studies)} originals processed.")
+
+    # Reproductions: a small, separate, best-effort addition. Wrapped so any failure
+    # here can never affect the replication pipeline above, which has already written
+    # its outputs by this point.
+    if should_stop(60):
+        print("⏰ low on time budget; skipping reproduction citation stats this run.")
+    else:
+        try:
+            repro = filter_reproductions(raw)
+            repro_result = compute_reproduction_citations(repro)
+            (DATA_DIR / "reproduction_citations.json").write_text(
+                json.dumps(clean_for_json(repro_result), indent=2, allow_nan=False))
+            print(f"✔ wrote reproduction citation stats ({len(repro)} reproduction rows)")
+        except Exception as e:
+            print(f"! reproduction citation stats failed (non-fatal): {e}")
 
 
 if __name__ == "__main__":

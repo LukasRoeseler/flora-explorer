@@ -123,46 +123,43 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Computational Reproducibility</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about computational reproducibility">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Covers <strong>reproductions only</strong>: were the original results obtained? Reproduction coverage is still small, so this chart will fill in as more are added.</span>
-                        </span>
-                    </div>
+                    <div class="card-header">Outcome Breakdown</div>
                     <div class="card-body">
-                        <div class="chart-container-stack">
-                            <canvas id="overview-computational-chart"></canvas>
+                        <div class="outcome-chart-row">
+                            <div class="outcome-chart-label">
+                                <span>Computational Reproducibility</span>
+                                <span class="info-icon" tabindex="0" aria-label="Info about computational reproducibility">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <span class="info-tip">Covers <strong>reproductions only</strong>: were the original results obtained? Reproduction coverage is still small, so this chart will fill in as more are added.</span>
+                                </span>
+                            </div>
+                            <div class="chart-container-stack">
+                                <canvas id="overview-computational-chart"></canvas>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Robustness</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about robustness">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Covers <strong>reproductions only</strong>: do results hold under alternative analysis choices? Not every reproduction has a robustness check yet.</span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container-stack">
-                            <canvas id="overview-robustness-chart"></canvas>
+                        <div class="outcome-chart-row">
+                            <div class="outcome-chart-label">
+                                <span>Robustness</span>
+                                <span class="info-icon" tabindex="0" aria-label="Info about robustness">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <span class="info-tip">Covers <strong>reproductions only</strong>: do results hold under alternative analysis choices? Not every reproduction has a robustness check yet.</span>
+                                </span>
+                            </div>
+                            <div class="chart-container-stack">
+                                <canvas id="overview-robustness-chart"></canvas>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Replicability</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about replicability">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Currently, this distribution covers <strong>replications only</strong>. Reproductions are shown separately above, since they're coded along different dimensions.</span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container-stack">
-                            <canvas id="overview-outcome-chart"></canvas>
+                        <div class="outcome-chart-row">
+                            <div class="outcome-chart-label">
+                                <span>Replicability</span>
+                                <span class="info-icon" tabindex="0" aria-label="Info about replicability">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <span class="info-tip">Currently, this distribution covers <strong>replications only</strong>. Reproductions are shown separately above, since they're coded along different dimensions.</span>
+                                </span>
+                            </div>
+                            <div class="chart-container-stack">
+                                <canvas id="overview-outcome-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -362,46 +359,46 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Computational Reproducibility</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about computational reproducibility">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Reflects the reproductions in the table below: were the original results obtained?</span>
-                        </span>
-                    </div>
+                    <div class="card-header">Outcome Breakdown</div>
                     <div class="card-body">
-                        <div class="chart-container-stack">
-                            <canvas id="browse-computational-chart"></canvas>
+                        <div id="browse-chart-placeholder" class="coming-soon-placeholder" style="display:none;">
+                            Select "Replications only", "Numerical Reproductions", or "Robustness Reproductions" above to see its outcome breakdown.
                         </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Robustness</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about robustness">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Reflects the reproductions in the table below: do results hold under alternative analysis choices?</span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container-stack">
-                            <canvas id="browse-robustness-chart"></canvas>
+                        <div class="outcome-chart-row" id="browse-computational-row" style="display:none;">
+                            <div class="outcome-chart-label">
+                                <span>Computational Reproducibility</span>
+                                <span class="info-icon" tabindex="0" aria-label="Info about computational reproducibility">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <span class="info-tip">Reflects the reproductions in the table below: were the original results obtained?</span>
+                                </span>
+                            </div>
+                            <div class="chart-container-stack">
+                                <canvas id="browse-computational-chart"></canvas>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Replicability</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about replicability">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Reflects the studies in the table below. Currently this breakdown covers <strong>replications only</strong>; reproductions are shown separately above.</span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container-stack">
-                            <canvas id="browse-outcome-chart"></canvas>
+                        <div class="outcome-chart-row" id="browse-robustness-row" style="display:none;">
+                            <div class="outcome-chart-label">
+                                <span>Robustness</span>
+                                <span class="info-icon" tabindex="0" aria-label="Info about robustness">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <span class="info-tip">Reflects the reproductions in the table below: do results hold under alternative analysis choices?</span>
+                                </span>
+                            </div>
+                            <div class="chart-container-stack">
+                                <canvas id="browse-robustness-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="outcome-chart-row" id="browse-replicability-row" style="display:none;">
+                            <div class="outcome-chart-label">
+                                <span>Replicability</span>
+                                <span class="info-icon" tabindex="0" aria-label="Info about replicability">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <span class="info-tip">Reflects the studies in the table below. Currently this breakdown covers <strong>replications only</strong>; reproductions are shown separately when their filter is selected.</span>
+                                </span>
+                            </div>
+                            <div class="chart-container-stack">
+                                <canvas id="browse-outcome-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -554,7 +551,7 @@
                         <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
                         <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
                     </div>
-                    <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
+                    <div class="study-type-note">Numerical/Robustness Reproductions show simple citation counts rather than the full event-study model below, since there are currently too few reproductions for that model to be meaningful.</div>
                     <p class="ci-lede">
                         This tab combines the FLoRA dataset with citation data from
                         <a href="https://opencitations.net" target="_blank">OpenCitations</a> to
@@ -563,8 +560,30 @@
                     </p>
                 </div>
 
-                <div id="ci-placeholder" class="coming-soon-placeholder" style="display:none;">
-                    Not computed yet for this study type — coming soon.
+                <div id="ci-placeholder" class="coming-soon-placeholder" style="display:none;"></div>
+
+                <div id="ci-repro-content" class="card ci-card" style="display:none;">
+                    <div class="card-header">Reproduction citation counts</div>
+                    <div class="card-body">
+                        <p class="muted">
+                            Descriptive citation counts only - with this few reproductions, the event-study model
+                            used for replications (below) would have too little data to fit meaningfully.
+                        </p>
+                        <div class="table-wrap">
+                            <table class="table table-striped table-hover" id="ci-repro-table" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Originals</th>
+                                        <th>Citations to original</th>
+                                        <th>Citations to reproduction</th>
+                                        <th>Co-citations</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="ci-content">

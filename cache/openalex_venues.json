@@ -3734,5 +3734,45 @@
     "id": "https://openalex.org/S2739021930",
     "display_name": "Sociological Science",
     "impact_factor": 3.2695652173913046
+  },
+  "canadian journal of experimental psychology / revue canadienne de psychologie exp\u00e9rimentale": {
+    "id": "https://openalex.org/S181082468",
+    "display_name": "Canadian Journal of Experimental Psychology/Revue canadienne de psychologie exp\u00e9rimentale",
+    "impact_factor": 0.6017699115044248
+  },
+  "european journal of information systems": {
+    "id": "https://openalex.org/S116712389",
+    "display_name": "European Journal of Information Systems",
+    "impact_factor": 7.327102803738318
+  },
+  "jci insight": {
+    "id": "https://openalex.org/S2764964142",
+    "display_name": "JCI Insight",
+    "impact_factor": 5.9733242134062925
+  },
+  "journal of evolutionary psychology": {
+    "id": "https://openalex.org/S4210189590",
+    "display_name": "Journal of Evolutionary Psychology",
+    "impact_factor": 0.0
+  },
+  "journal of religion and health": {
+    "id": "https://openalex.org/S67703274",
+    "display_name": "Journal of Religion and Health",
+    "impact_factor": 2.111254851228978
+  },
+  "reading research quarterly": {
+    "id": "https://openalex.org/S102860129",
+    "display_name": "Reading Research Quarterly",
+    "impact_factor": 3.8114754098360657
+  },
+  "social behavior and personality: an international journal": {
+    "id": "https://openalex.org/S61066606",
+    "display_name": "Social Behavior and Personality An International Journal",
+    "impact_factor": 1.1327272727272728
+  },
+  "toxicological sciences": {
+    "id": "https://openalex.org/S186282544",
+    "display_name": "Toxicological Sciences",
+    "impact_factor": 5.410835214446952
   }
 }

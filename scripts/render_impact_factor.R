@@ -48,7 +48,19 @@ raw$discipline   <- lookup$discipline[match(raw$journal_norm, lookup$journal_nor
 raw$discipline   <- ifelse(is.na(raw$discipline), "Uncategorized", raw$discipline)
 
 raw$impact_factor <- suppressWarnings(as.numeric(raw$impact_factor))
-df_all  <- raw[!is.na(raw$impact_factor) & raw$impact_factor < 35, ]
+
+# This analysis is replications only - reproductions are coded on different dimensions
+# (computational/robustness, not successful/failed/mixed) and are handled separately by
+# compute_omc.py's compute_reproduction_impact_stats(), written to
+# data/impact_factor_reproductions.json. Without this filter, reproduction rows silently
+# inflated n_total/n_journals/n_disciplines here (their outcome text never matched
+# "successful"/"failed"/etc, so they never affected the outcome counts, but were still
+# counted as rows).
+raw$type_lc     <- tolower(raw$type)
+is_reproduction <- grepl("reproduc", raw$type_lc)
+is_replication  <- grepl("replication", raw$type_lc) & !is_reproduction
+
+df_all  <- raw[!is.na(raw$impact_factor) & raw$impact_factor < 35 & is_replication, ]
 oc_all  <- tolower(df_all$outcome)
 
 # ── Overview stats ───────────────────────────────────────────────────────────

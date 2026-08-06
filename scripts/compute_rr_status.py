@@ -121,20 +121,32 @@ rr_dois, rr_titles = fetch_rr_library()
 print(f"RR library: {len(rr_dois)} DOIs, {len(rr_titles)} titles")
 
 
-# ── Load & filter to replications ─────────────────────────────────────────────
-df = pd.read_csv(IN_CSV, low_memory=False, na_values=["", "NA"])
-
-if "type" in df.columns:
-    mask = (
-        df["type"].astype(str).str.contains("replication", case=False, na=False) &
-        ~df["type"].astype(str).str.contains("reproduc",   case=False, na=False)
-    )
-    df = df[mask].copy()
-
-df["outcome_lc"] = df.get("outcome", pd.Series(dtype=str)).astype(str).str.lower().str.strip()
+def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
+    """Split a reproduction's compound outcome string into its two independent
+    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly so the
+    frontend and this pipeline agree on how the same raw string is classified."""
+    s = str(outcome_raw or "").lower()
+    computational = None
+    robustness = None
+    for part in (p.strip() for p in s.split(",")):
+        if computational is None:
+            if "computational issue" in part:
+                computational = "issues"
+            elif "computational" in part and "success" in part:
+                computational = "successful"
+        if robustness is None:
+            if "robustness challenge" in part:
+                robustness = "challenges"
+            elif "robustness not checked" in part:
+                robustness = "not_checked"
+            elif "robust" in part:
+                robustness = "robust"
+    return computational, robustness
 
 
 def _classify(row) -> bool | None:
+    """RR-vs-not classification is purely DOI/title matching against the Zotero
+    library, so it works identically for replication and reproduction rows."""
     doi = normalize_doi(row.get("doi_r", ""))
     title = normalize_title(row.get("title_r", ""))
     if not doi and not title:
@@ -146,61 +158,88 @@ def _classify(row) -> bool | None:
     return False
 
 
-df["is_rr"] = df.apply(_classify, axis=1)
-
-df_known = df[df["is_rr"].notna()].copy()
-n_total   = len(df_known)
-n_rr      = int(df_known["is_rr"].sum())
-n_non_rr  = n_total - n_rr
-n_unknown = int(df["is_rr"].isna().sum())
-
-OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
-
-by_outcome: dict[str, dict[str, int]] = {}
-for grp, flag in [("rr", True), ("non_rr", False)]:
-    sub = df_known.loc[df_known["is_rr"] == flag, "outcome_lc"]
-    by_outcome[grp] = {oc: int((sub == oc).sum()) for oc in OUTCOMES}
-
 def _clean(v):
     """Convert pandas NaN to None; JSON has no NaN literal that JS's JSON.parse accepts."""
     return None if pd.isna(v) else v
 
 
-rr_studies = [
-    {
-        "title_r":   _clean(row.get("title_r")),
-        "journal_r": _clean(row.get("journal_r")),
-        "year_r":    _clean(row.get("year_r")),
-        "outcome":   _clean(row.get("outcome")),
-        "doi_r":     _clean(row.get("doi_r")),
-        "url_r":     _clean(row.get("url_r")),
+REPLICATION_OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
+COMPUTATIONAL_BUCKETS = ["successful", "issues", "not_coded"]
+ROBUSTNESS_BUCKETS = ["robust", "challenges", "not_checked", "not_coded"]
+
+
+def compute_rr_result(sub: pd.DataFrame, bucket_col: str, buckets: list[str]) -> dict:
+    sub = sub.copy()
+    sub["is_rr"] = sub.apply(_classify, axis=1)
+
+    known = sub[sub["is_rr"].notna()].copy()
+    n_total = len(known)
+    n_rr = int(known["is_rr"].sum())
+    n_non_rr = n_total - n_rr
+    n_unknown = int(sub["is_rr"].isna().sum())
+
+    by_outcome: dict[str, dict[str, int]] = {}
+    for grp, flag in [("rr", True), ("non_rr", False)]:
+        bkt = known.loc[known["is_rr"] == flag, bucket_col]
+        by_outcome[grp] = {b: int((bkt == b).sum()) for b in buckets}
+
+    rr_studies = [
+        {
+            "title_r": _clean(row.get("title_r")),
+            "journal_r": _clean(row.get("journal_r")),
+            "year_r": _clean(row.get("year_r")),
+            "outcome": _clean(row.get("outcome")),
+            "doi_r": _clean(row.get("doi_r")),
+            "url_r": _clean(row.get("url_r")),
+        }
+        for _, row in known.loc[known["is_rr"]].iterrows()
+    ]
+    rr_studies.sort(key=lambda s: (s["year_r"] is None, s["year_r"]), reverse=True)
+
+    return {
+        "overview": {
+            "n_total": n_total,
+            "n_rr": n_rr,
+            "n_non_rr": n_non_rr,
+            "n_unknown": n_unknown,
+            "pct_rr": round(100 * n_rr / n_total, 1) if n_total else 0,
+            "pct_non_rr": round(100 * n_non_rr / n_total, 1) if n_total else 0,
+        },
+        "by_outcome": by_outcome,
+        "rr_studies": rr_studies,
     }
-    for _, row in df_known.loc[df_known["is_rr"]].iterrows()
-]
-rr_studies.sort(key=lambda s: (s["year_r"] is None, s["year_r"]), reverse=True)
+
+
+# ── Load & split by study type ─────────────────────────────────────────────────
+df = pd.read_csv(IN_CSV, low_memory=False, na_values=["", "NA"])
+df["type_lc"] = df.get("type", pd.Series(dtype=str)).astype(str).str.lower()
+df["outcome_lc"] = df.get("outcome", pd.Series(dtype=str)).astype(str).str.lower().str.strip()
+
+is_reproduction = df["type_lc"].str.contains("reproduc", na=False)
+is_replication = df["type_lc"].str.contains("replication", na=False) & ~is_reproduction
+
+repro_df = df[is_reproduction].copy()
+repro_dims = repro_df["outcome_lc"].apply(parse_reproduction_outcome)
+repro_df["computational_bucket"] = repro_dims.apply(lambda t: t[0] or "not_coded")
+repro_df["robustness_bucket"] = repro_dims.apply(lambda t: t[1] or "not_coded")
 
 result = {
-    "overview": {
-        "n_total":     n_total,
-        "n_rr":        n_rr,
-        "n_non_rr":    n_non_rr,
-        "n_unknown":   n_unknown,
-        "pct_rr":      round(100 * n_rr     / n_total, 1) if n_total else 0,
-        "pct_non_rr":  round(100 * n_non_rr / n_total, 1) if n_total else 0,
-    },
-    "by_outcome": by_outcome,
-    "rr_studies": rr_studies,
+    "replication": compute_rr_result(df[is_replication], "outcome_lc", REPLICATION_OUTCOMES),
+    "reproduction-numerical": compute_rr_result(repro_df, "computational_bucket", COMPUTATIONAL_BUCKETS),
+    "reproduction-robustness": compute_rr_result(repro_df, "robustness_bucket", ROBUSTNESS_BUCKETS),
 }
 
 OUT_DATA.write_text(json.dumps(result), encoding="utf-8")
 OUT_META.write_text(json.dumps({
-    "last_updated":       datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-    "n_total":            n_total,
+    "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    "n_total": {k: v["overview"]["n_total"] for k, v in result.items()},
     "n_rr_library_items": len(rr_dois | rr_titles),
-    "source":             "scripts/compute_rr_status.py",
-    "source_url":         ZOTERO_LIBRARY_URL,
+    "source": "scripts/compute_rr_status.py",
+    "source_url": ZOTERO_LIBRARY_URL,
 }, indent=2), encoding="utf-8")
 
-print(f"n_total={n_total}, rr={n_rr} ({result['overview']['pct_rr']}%), "
-      f"non_rr={n_non_rr}, unknown={n_unknown}")
+for kind, r in result.items():
+    ov = r["overview"]
+    print(f"{kind}: n_total={ov['n_total']}, rr={ov['n_rr']} ({ov['pct_rr']}%), "
+          f"non_rr={ov['n_non_rr']}, unknown={ov['n_unknown']}")
 print(f"Written: {OUT_DATA}")

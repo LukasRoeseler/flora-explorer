@@ -123,6 +123,105 @@ def lookup_venue(name: str, cache: dict) -> dict | None:
     return entry
 
 
+def load_disciplines() -> dict:
+    """journal name (lowercase, trimmed) -> discipline, from data/disciplines.json's
+    {discipline: [journal, ...]} shape."""
+    path = DATA_DIR / "disciplines.json"
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    mapping = {}
+    for discipline, journals in data.items():
+        for j in journals:
+            mapping[str(j).strip().lower()] = discipline
+    return mapping
+
+
+def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
+    """Split a reproduction's compound outcome string into its two independent
+    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly."""
+    s = str(outcome_raw or "").lower()
+    computational = None
+    robustness = None
+    for part in (p.strip() for p in s.split(",")):
+        if computational is None:
+            if "computational issue" in part:
+                computational = "issues"
+            elif "computational" in part and "success" in part:
+                computational = "successful"
+        if robustness is None:
+            if "robustness challenge" in part:
+                robustness = "challenges"
+            elif "robustness not checked" in part:
+                robustness = "not_checked"
+            elif "robust" in part:
+                robustness = "robust"
+    return computational, robustness
+
+
+def compute_reproduction_impact_stats(rows: list[dict]) -> None:
+    """Mean-Citedness stats for reproduction rows, split by computational/robustness
+    dimension. Written separately from data/impact_factor_data.json (which
+    render_impact_factor.R produces for replications) so this Python-only addition
+    can't affect that existing, working R pipeline. Deliberately skips GAM smoothing:
+    render_impact_factor.R already requires n >= 30 for its replication GAM, and
+    reproductions - currently under 20 rows total - never approach that."""
+    discipline_map = load_disciplines()
+    repro_rows = []
+    for row in rows:
+        if "reproduc" not in (row.get("type") or "").lower():
+            continue
+        try:
+            impact = float(row.get("impact_factor") or "")
+        except ValueError:
+            impact = None
+        if impact is None or impact >= 35:
+            continue
+        computational, robustness = parse_reproduction_outcome(row.get("outcome"))
+        journal = (row.get("journal_o") or "").strip()
+        repro_rows.append({
+            "impact_factor": impact,
+            "journal": journal,
+            "discipline": discipline_map.get(journal.lower(), "Uncategorized"),
+            "computational": computational or "not_coded",
+            "robustness": robustness or "not_coded",
+        })
+
+    def build_dimension(bucket_key: str, buckets: list[str]) -> dict:
+        journals = {r["journal"] for r in repro_rows if r["journal"]}
+        disciplines = {r["discipline"] for r in repro_rows if r["discipline"] != "Uncategorized"}
+        overview = {"n_total": len(repro_rows), "n_journals": len(journals), "n_disciplines": len(disciplines)}
+        for b in buckets:
+            overview[f"n_{b}"] = sum(1 for r in repro_rows if r[bucket_key] == b)
+
+        breaks = [i * 0.5 for i in range(41)]  # 0..20 in steps of 0.5, matching the R histogram
+        histogram = []
+        for lo, hi in zip(breaks[:-1], breaks[1:]):
+            counts = {b: 0 for b in buckets}
+            for r in repro_rows:
+                if lo <= r["impact_factor"] < hi:
+                    counts[r[bucket_key]] += 1
+            histogram.append({"bin_lo": lo, "bin_hi": hi, **counts})
+
+        return {
+            "overview": overview,
+            "histogram": histogram,
+            "stats": {"edf": None, "chi_sq": None, "p_val": None, "r2": None, "n_model": 0},
+            "gam_curve": [],
+            "jitter": [],
+        }
+
+    result = {
+        "reproduction-numerical": build_dimension("computational", ["successful", "issues", "not_coded"]),
+        "reproduction-robustness": build_dimension("robustness", ["robust", "challenges", "not_checked", "not_coded"]),
+    }
+    out_path = DATA_DIR / "impact_factor_reproductions.json"
+    out_path.write_text(json.dumps(result), encoding="utf-8")
+    print(f"✔ Wrote {out_path.relative_to(ROOT)} "
+          f"(numerical n={result['reproduction-numerical']['overview']['n_total']}, "
+          f"robustness n={result['reproduction-robustness']['overview']['n_total']})")
+
+
 def main():
     if not IN_CSV.exists():
         raise SystemExit(f"{IN_CSV} not found. Run refresh_flora.py first.")
@@ -178,6 +277,8 @@ def main():
     }
     (DATA_DIR / "flora_with_omc_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"✔ Wrote {OUT_CSV.relative_to(ROOT)} ({enriched}/{len(rows)} rows have OMC)")
+
+    compute_reproduction_impact_stats(rows)
 
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ const FLORA_META_URL = 'data/flora_meta.json';
 const CITATIONS_META_URL = 'data/meta.json';
 const IMPACT_META_URL = 'data/impact_factor_meta.json';
 const IMPACT_DATA_URL = 'data/impact_factor_data.json';
+const IMPACT_REPRODUCTIONS_URL = 'data/impact_factor_reproductions.json';
 const DISCIPLINES_URL = 'data/disciplines.json';
 const CITATION_URL = 'https://raw.githubusercontent.com/forrtproject/FReD-data/refs/heads/main/CITATION.cff';
 const FAQ_URL = 'https://raw.githubusercontent.com/forrtproject/fred-data/refs/heads/main/output/flora_faq.md';
@@ -158,20 +159,54 @@ function setupStudyTypeSelect(containerId, onChange) {
     });
 }
 
-// Toggles a tab's precomputed-analysis content vs. a "not computed yet" placeholder
-// based on the selected study type. All 4 analysis pipelines only ever compute
-// replication-scoped data today, so any reproduction kind falls back to the placeholder.
-function applyStudyTypeGate(contentId, placeholderId, kind) {
-    const contentEl = document.getElementById(contentId);
-    const placeholderEl = document.getElementById(placeholderId);
-    const show = kind === 'replication';
-    if (contentEl) contentEl.style.display = show ? '' : 'none';
-    if (placeholderEl) placeholderEl.style.display = show ? 'none' : '';
+// Minimum n below which a per-bucket breakdown (grouped bar / histogram / GAM-adjacent
+// stats) isn't meaningful enough to show - an explicit low-N message is shown instead.
+// Reproduction coverage is currently well under this for every dimension, so this is what
+// visitors will see there until the dataset grows; that's an honest reflection of the data,
+// not a bug.
+const ANALYSIS_MIN_N = 5;
+
+// Outcome-bucket definitions shared by Authorship Overlap and Registered Reports, whose
+// by_outcome/by_rr breakdowns use the same bucket vocabulary as the Overview/Browse charts:
+// replications keep the canonical 4-outcome vocabulary; reproductions are split into their
+// two independently-coded dimensions (see parseReproductionOutcome).
+function studyTypeOutcomeBuckets(kind) {
+    if (kind === 'reproduction-numerical') {
+        return [
+            { key: 'successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
+            { key: 'issues', label: 'Issues', color: REPRODUCTION_COLORS.issues },
+            { key: 'not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
+        ];
+    }
+    if (kind === 'reproduction-robustness') {
+        return [
+            { key: 'robust', label: 'Robust', color: REPRODUCTION_COLORS.robust },
+            { key: 'challenges', label: 'Robustness challenges', color: REPRODUCTION_COLORS.challenges },
+            { key: 'not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
+            { key: 'not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
+        ];
+    }
+    return [
+        { key: 'successful', label: 'Successful', color: OUTCOME_COLORS.successful },
+        { key: 'failed', label: 'Failed', color: OUTCOME_COLORS.failed },
+        { key: 'mixed', label: 'Mixed', color: OUTCOME_COLORS.mixed },
+        { key: 'inconclusive', label: 'Inconclusive', color: OUTCOME_COLORS.inconclusive },
+    ];
 }
 
-setupStudyTypeSelect('mc-study-type', kind => applyStudyTypeGate('mc-content', 'mc-placeholder', kind));
-setupStudyTypeSelect('ao-study-type', kind => applyStudyTypeGate('ao-content', 'ao-placeholder', kind));
-setupStudyTypeSelect('rr-study-type', kind => applyStudyTypeGate('rr-content', 'rr-placeholder', kind));
+function studyTypeLabel(kind) {
+    if (kind === 'reproduction-numerical') return 'Numerical Reproductions';
+    if (kind === 'reproduction-robustness') return 'Robustness Reproductions';
+    return 'Replications';
+}
+
+let mcKind = 'replication';
+let aoKind = 'replication';
+let rrKind = 'replication';
+
+setupStudyTypeSelect('mc-study-type', kind => { mcKind = kind; renderMcCharts(); });
+setupStudyTypeSelect('ao-study-type', kind => { aoKind = kind; renderOverlapCharts(); });
+setupStudyTypeSelect('rr-study-type', kind => { rrKind = kind; renderRRCharts(); });
 
 function getOutcomeBadge(outcome) {
     if (!outcome) return '<span class="badge badge-unknown">Unknown</span>';
@@ -788,6 +823,18 @@ function renderBrowseOutcomeCharts() {
     browseComputationalChart = renderKindStackedBar('browse-computational-chart', browseComputationalChart, data, 'computational', 'Reproductions');
     browseRobustnessChart = renderKindStackedBar('browse-robustness-chart', browseRobustnessChart, data, 'robustness', 'Reproductions');
     browseOutcomeChart = renderKindStackedBar('browse-outcome-chart', browseOutcomeChart, data, 'replicability', 'Replications');
+
+    // Only the chart matching the active kind filter is shown; "All studies" shows none,
+    // since mixing the replication and reproduction outcome vocabularies in one box reads
+    // as noise rather than signal.
+    const placeholderEl = document.getElementById('browse-chart-placeholder');
+    const rows = {
+        'reproduction-numerical': document.getElementById('browse-computational-row'),
+        'reproduction-robustness': document.getElementById('browse-robustness-row'),
+        replication: document.getElementById('browse-replicability-row')
+    };
+    if (placeholderEl) placeholderEl.style.display = browseKind === 'all' ? '' : 'none';
+    Object.entries(rows).forEach(([kind, el]) => { if (el) el.style.display = browseKind === kind ? '' : 'none'; });
 }
 
 function updateBrowseKindCount() {
@@ -832,32 +879,18 @@ function updateTrendsCount() {
     el.textContent = trendsKind === 'all' ? `${n.toLocaleString()} studies` : `${n.toLocaleString()} of ${total.toLocaleString()} studies`;
 }
 
-function trendsOutcomeLabel(row) {
-    if (trendsKind === 'all') {
-        const c = classifyOutcome(row.outcome);
-        return c.charAt(0).toUpperCase() + c.slice(1);  // Successful, Mixed, Failed, Inconclusive, Other
-    }
-    if (trendsKind === 'replication') {
-        if (!hasMatchedOutcome(row)) return null;
-        const c = classifyOutcome(row.outcome);
-        if (c === 'successful') return 'Successful';
-        if (c === 'mixed') return 'Mixed';
-        if (c === 'failed') return 'Failed';
-        if (c === 'inconclusive') return 'Inconclusive';
-        return null;
-    }
-    const raw = (row.outcome || '').trim(); return raw || null;
-}
-
-function aggregateGeneric(data, keyFn) {
+// Plain per-category counts (year/journal/field) - no outcome breakdown. A prior version
+// stacked these by outcome, but for 'reproduction-numerical'/'reproduction-robustness' kinds
+// the label fell back to the row's full raw (compound) outcome string regardless of which
+// dimension was selected, so both dimensions showed up under either kind. Simple counts sidestep
+// that entirely and are also the more legible default for a "how many, by category" view.
+function aggregateCounts(data, keyFn) {
     const groups = new Map();
     data.forEach(row => {
         const k = keyFn(row);
         if (k === null || k === undefined || k === '') return;
-        const label = trendsOutcomeLabel(row);
-        if (label === null) return;
-        if (!groups.has(k)) groups.set(k, { key: k, total: 0, byLabel: {} });
-        const g = groups.get(k); g.total++; g.byLabel[label] = (g.byLabel[label] || 0) + 1;
+        if (!groups.has(k)) groups.set(k, { key: k, total: 0 });
+        groups.get(k).total++;
     });
     return Array.from(groups.values());
 }
@@ -870,40 +903,22 @@ function aggregateByYear(data, yearField) {
         if (!y || y < 1800 || y > 2100) return null;
         return String(y);
     };
-    const out = aggregateGeneric(data, yearKey);
+    const out = aggregateCounts(data, yearKey);
     out.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
     return out;
 }
 
 function aggregateByJournal(data, field, topN) {
-    const out = aggregateGeneric(data, row => (row[field] || '').trim() || null);
+    const out = aggregateCounts(data, row => (row[field] || '').trim() || null);
     out.sort((a, b) => b.total - a.total);
     return out.slice(0, topN);
 }
 
 function aggregateByField(data) {
-    const out = aggregateGeneric(data, row => disciplineForJournal(row.journal_o));
+    const out = aggregateCounts(data, row => disciplineForJournal(row.journal_o));
     const mapped = out.filter(e => e.key !== 'Uncategorized').sort((a, b) => b.total - a.total);
     const uncat = out.filter(e => e.key === 'Uncategorized');
     return [...mapped, ...uncat];
-}
-
-function trendsDatasets(agg) {
-    if (trendsKind === 'all') {
-        const order = ['Successful', 'Mixed', 'Failed', 'Inconclusive', 'Other'];
-        const colors = { 'Successful': OUTCOME_COLORS.successful, 'Mixed': OUTCOME_COLORS.mixed, 'Failed': OUTCOME_COLORS.failed, 'Inconclusive': OUTCOME_COLORS.inconclusive, 'Other': OUTCOME_COLORS.other };
-        return order.map(label => ({ label, data: agg.map(r => r.byLabel[label] || 0), backgroundColor: colors[label] }));
-    }
-    if (trendsKind === 'replication') {
-        const order = ['Successful', 'Mixed', 'Failed', 'Inconclusive'];
-        const colors = { 'Successful': OUTCOME_COLORS.successful, 'Mixed': OUTCOME_COLORS.mixed, 'Failed': OUTCOME_COLORS.failed, 'Inconclusive': OUTCOME_COLORS.inconclusive };
-        return order.map(label => ({ label, data: agg.map(r => r.byLabel[label] || 0), backgroundColor: colors[label] }));
-    }
-    const labelSet = new Set();
-    agg.forEach(r => Object.keys(r.byLabel).forEach(l => labelSet.add(l)));
-    const labels = Array.from(labelSet).sort();
-    const palette = ['#2f8f4f', '#38b2ac', '#4299e1', '#d49b1d', '#b3331e', '#9f7aea', '#6f7686', '#a0a7b4'];
-    return labels.map((label, i) => ({ label, data: agg.map(r => r.byLabel[label] || 0), backgroundColor: palette[i % palette.length] }));
 }
 
 function wrapLabel(str, maxChars = 36) {
@@ -925,60 +940,55 @@ function wrapLabel(str, maxChars = 36) {
     return lines;
 }
 
-function renderStackedChart(canvasId, agg, orientation, existing, opts = {}) {
+function trendBarColor() { return currentTheme() === 'dark' ? '#e0a5c0' : '#8b1a4a'; }
+
+function renderCountChart(canvasId, agg, orientation, existing, opts = {}) {
     if (existing) existing.destroy();
     const ctx = document.getElementById(canvasId).getContext('2d');
     const isHorizontal = orientation === 'horizontal';
     const ac = themeAxisColors();
     const wrapLabels = !!opts.wrapLabels;
     const labels = agg.map(r => wrapLabels ? wrapLabel(r.key, 38) : r.key);
-    const datasets = trendsDatasets(agg);
-    const isStacked = true;
-    const showLegend = true;
 
     return new Chart(ctx, {
-        type: 'bar', data: { labels, datasets },
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Studies', data: agg.map(r => r.total), backgroundColor: trendBarColor() }] },
         options: {
             responsive: true, maintainAspectRatio: false, indexAxis: isHorizontal ? 'y' : 'x',
             plugins: {
-                legend: showLegend ? { position: 'bottom', labels: { padding: 10, color: ac.legend, boxWidth: 12, font: { size: 11 } } } : { display: false },
+                legend: { display: false },
                 tooltip: { callbacks: {
                     title: items => { const label = items[0].label; return Array.isArray(label) ? label.join(' ') : label; },
-                    afterLabel: ctx => {
-                        const row = agg[ctx.dataIndex];
-                        const val = ctx.parsed[isHorizontal ? 'x' : 'y'];
-                        const pct = row.total ? ((val / row.total) * 100).toFixed(1) : 0;
-                        return `(${pct}% of ${row.total})`;
-                    }
+                    label: ctx => `${ctx.parsed[isHorizontal ? 'x' : 'y'].toLocaleString()} studies`
                 }}
             },
             scales: {
-                x: { stacked: isStacked, grid: { color: ac.grid }, ticks: { color: ac.tick, autoSkip: !isHorizontal } },
-                y: { stacked: isStacked, grid: { color: ac.grid, display: !isHorizontal }, ticks: { color: ac.tick, autoSkip: false, font: { size: isHorizontal ? 11 : 12 } } }
+                x: { grid: { color: ac.grid }, ticks: { color: ac.tick, autoSkip: !isHorizontal } },
+                y: { grid: { color: ac.grid, display: !isHorizontal }, ticks: { color: ac.tick, autoSkip: false, font: { size: isHorizontal ? 11 : 12 } } }
             },
             layout: isHorizontal ? { padding: { left: 6 } } : {}
         }
     });
 }
 
-function renderTrendOrigYear() { trendOrigYearChart = renderStackedChart('trend-orig-year', aggregateByYear(trendsFilteredData(), 'year_o'), 'vertical', trendOrigYearChart); }
-function renderTrendRepYear() { trendRepYearChart = renderStackedChart('trend-rep-year', aggregateByYear(trendsFilteredData(), 'year_r'), 'vertical', trendRepYearChart); }
+function renderTrendOrigYear() { trendOrigYearChart = renderCountChart('trend-orig-year', aggregateByYear(trendsFilteredData(), 'year_o'), 'vertical', trendOrigYearChart); }
+function renderTrendRepYear() { trendRepYearChart = renderCountChart('trend-rep-year', aggregateByYear(trendsFilteredData(), 'year_r'), 'vertical', trendRepYearChart); }
 function renderTrendJournal() {
     const topN = parseInt(document.getElementById('journal-top-n').value, 10) || 15;
     const agg = aggregateByJournal(trendsFilteredData(), 'journal_o', topN);
     document.getElementById('trend-journal-container').style.height = Math.max(400, agg.length * 36) + 'px';
-    trendJournalChart = renderStackedChart('trend-journal', agg, 'horizontal', trendJournalChart, { wrapLabels: true });
+    trendJournalChart = renderCountChart('trend-journal', agg, 'horizontal', trendJournalChart, { wrapLabels: true });
 }
 function renderTrendRepJournal() {
     const topN = parseInt(document.getElementById('rep-journal-top-n').value, 10) || 15;
     const agg = aggregateByJournal(trendsFilteredData(), 'journal_r', topN);
     document.getElementById('trend-rep-journal-container').style.height = Math.max(400, agg.length * 36) + 'px';
-    trendRepJournalChart = renderStackedChart('trend-rep-journal', agg, 'horizontal', trendRepJournalChart, { wrapLabels: true });
+    trendRepJournalChart = renderCountChart('trend-rep-journal', agg, 'horizontal', trendRepJournalChart, { wrapLabels: true });
 }
 function renderTrendField() {
     const agg = aggregateByField(trendsFilteredData());
     document.getElementById('trend-field-container').style.height = Math.max(360, agg.length * 44) + 'px';
-    trendFieldChart = renderStackedChart('trend-field', agg, 'horizontal', trendFieldChart, { wrapLabels: true });
+    trendFieldChart = renderCountChart('trend-field', agg, 'horizontal', trendFieldChart, { wrapLabels: true });
 }
 function renderAllTrends() {
     updateTrendsCount();
@@ -1014,9 +1024,9 @@ window._rerenderAllCharts = function() {
         if (trendsInitialized) renderAllTrends();
     }
     renderBrowseOutcomeCharts();
-    if (window._mcData) renderMcCharts(window._mcData);
-    if (window._aoData) renderOverlapCharts(window._aoData);
-    if (window._rrData) renderRRCharts(window._rrData);
+    if (window._mcData) renderMcCharts();
+    if (window._aoData) renderOverlapCharts();
+    if (window._rrData) renderRRCharts();
 };
 
 // ===== Mean Citedness tab =====
@@ -1032,22 +1042,71 @@ function mcPlotlyTheme() {
     };
 }
 
-function renderMcCharts(d) {
-    if (!d) return;
-    window._mcData = d;
+// Overview-stat key and histogram-bucket key for a Mean Citedness dimension. The
+// replication path's overview keys are R's original naming (n_success, not
+// n_successful) while its histogram keys are "successful" - inconsistent with each
+// other, but real, so both are tracked explicitly rather than assumed to match.
+function mcBucketConfig(kind) {
+    if (kind === 'reproduction-numerical') {
+        return [
+            { histKey: 'successful', overviewKey: 'n_successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
+            { histKey: 'issues', overviewKey: 'n_issues', label: 'Issues', color: REPRODUCTION_COLORS.issues },
+            { histKey: 'not_coded', overviewKey: 'n_not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
+        ];
+    }
+    if (kind === 'reproduction-robustness') {
+        return [
+            { histKey: 'robust', overviewKey: 'n_robust', label: 'Robust', color: REPRODUCTION_COLORS.robust },
+            { histKey: 'challenges', overviewKey: 'n_challenges', label: 'Robustness challenges', color: REPRODUCTION_COLORS.challenges },
+            { histKey: 'not_checked', overviewKey: 'n_not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
+            { histKey: 'not_coded', overviewKey: 'n_not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
+        ];
+    }
+    return [
+        { histKey: 'successful', overviewKey: 'n_success', label: 'Successful', color: OUTCOME_COLORS.successful },
+        { histKey: 'failed', overviewKey: 'n_failed', label: 'Failed', color: OUTCOME_COLORS.failed },
+        { histKey: 'mixed', overviewKey: 'n_mixed', label: 'Mixed', color: OUTCOME_COLORS.mixed },
+        { histKey: 'inconclusive', overviewKey: 'n_inconclusive', label: 'Inconclusive', color: OUTCOME_COLORS.inconclusive },
+    ];
+}
+
+function renderMcCharts() {
+    const d = window._mcData && window._mcData[mcKind];
+    const insufficientEl = document.getElementById('mc-placeholder');
+    const overviewEl = document.getElementById('mc-overview');
+    const distCard = document.getElementById('mc-dist-card');
+    const gamCard = document.getElementById('mc-gam-card');
+    if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
+        const n = d && d.overview ? d.overview.n_total : 0;
+        if (insufficientEl) {
+            insufficientEl.textContent = `Not enough ${studyTypeLabel(mcKind)} with a Mean Citedness match yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
+            insufficientEl.style.display = '';
+        }
+        if (overviewEl) overviewEl.style.display = 'none';
+        if (distCard) distCard.style.display = 'none';
+        if (gamCard) gamCard.style.display = 'none';
+        return;
+    }
+    if (insufficientEl) insufficientEl.style.display = 'none';
+    if (overviewEl) overviewEl.style.display = '';
+    if (distCard) distCard.style.display = '';
+    if (gamCard) gamCard.style.display = '';
+
     const t = mcPlotlyTheme();
     const primary = getComputedStyle(document.documentElement)
         .getPropertyValue('--flora-primary').trim() || '#8b1a4a';
+    const buckets = mcBucketConfig(mcKind);
 
     // ── Overview grid ─────────────────────────────────────────────────────
     const ov = d.overview;
-    const pctS = ov.n_total ? Math.round(100 * ov.n_success / ov.n_total) : 0;
-    const pctF = ov.n_total ? Math.round(100 * ov.n_failed  / ov.n_total) : 0;
+    const statCards = buckets.map(b => {
+        const n = ov[b.overviewKey] || 0;
+        const pct = ov.n_total ? Math.round(100 * n / ov.n_total) : 0;
+        return `<div class="mc-stat"><span class="mc-stat-value" style="color:${b.color}">${n.toLocaleString()}</span><span class="mc-stat-label">${b.label} (${pct}%)</span></div>`;
+    }).join('');
     document.getElementById('mc-overview').innerHTML = `
         <div class="mc-stat"><span class="mc-stat-value">${ov.n_total.toLocaleString()}</span><span class="mc-stat-label">Studies with OMC</span></div>
-        <div class="mc-stat"><span class="mc-stat-value" style="color:#2f8f4f">${ov.n_success.toLocaleString()}</span><span class="mc-stat-label">Successful (${pctS}%)</span></div>
-        <div class="mc-stat"><span class="mc-stat-value" style="color:#b3331e">${ov.n_failed.toLocaleString()}</span><span class="mc-stat-label">Failed (${pctF}%)</span></div>
-        <div class="mc-stat"><span class="mc-stat-value" style="color:#d49b1d">${ov.n_mixed.toLocaleString()}</span><span class="mc-stat-label">Mixed</span></div>
+        ${statCards}
         <div class="mc-stat"><span class="mc-stat-value">${ov.n_journals.toLocaleString()}</span><span class="mc-stat-label">Journals matched</span></div>
         <div class="mc-stat"><span class="mc-stat-value">${ov.n_disciplines}</span><span class="mc-stat-label">Disciplines</span></div>`;
 
@@ -1055,12 +1114,10 @@ function renderMcCharts(d) {
     const bins  = d.histogram || [];
     const xMids = bins.map(b => +((b.bin_lo + b.bin_hi) / 2).toFixed(2));
     const hTpl  = 'OMC %{x:.2f}<br>%{y} studies<extra>%{fullData.name}</extra>';
-    Plotly.newPlot('mc-dist-chart', [
-        { x: xMids, y: bins.map(b => b.successful),   name: 'Successful',   type: 'bar', marker: { color: OUTCOME_COLORS.successful },   hovertemplate: hTpl },
-        { x: xMids, y: bins.map(b => b.failed),       name: 'Failed',       type: 'bar', marker: { color: OUTCOME_COLORS.failed },       hovertemplate: hTpl },
-        { x: xMids, y: bins.map(b => b.mixed),        name: 'Mixed',        type: 'bar', marker: { color: OUTCOME_COLORS.mixed },        hovertemplate: hTpl },
-        { x: xMids, y: bins.map(b => b.inconclusive), name: 'Inconclusive', type: 'bar', marker: { color: OUTCOME_COLORS.inconclusive }, hovertemplate: hTpl },
-    ], {
+    Plotly.newPlot('mc-dist-chart', buckets.map(b => ({
+        x: xMids, y: bins.map(row => row[b.histKey] || 0), name: b.label, type: 'bar',
+        marker: { color: b.color }, hovertemplate: hTpl,
+    })), {
         barmode: 'stack', bargap: 0.05,
         margin: { t: 10, r: 10, b: 50, l: 55 },
         xaxis: { title: 'OpenAlex Mean Citedness (OMC)', gridcolor: t.grid, color: t.font, tickfont: { color: t.font } },
@@ -1138,20 +1195,25 @@ function renderMcCharts(d) {
 }
 
 async function loadMeanCitedness() {
+    if (window._mcData) { renderMcCharts(); return; }
     const loadingEl  = document.getElementById('mc-loading');
-    const overviewEl = document.getElementById('mc-overview');
-    const distCard   = document.getElementById('mc-dist-card');
-    const gamCard    = document.getElementById('mc-gam-card');
     const errorEl    = document.getElementById('mc-error');
     try {
-        const res = await fetch(IMPACT_DATA_URL, { cache: 'no-cache' });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        loadingEl.style.display  = 'none';
-        overviewEl.style.display = '';
-        distCard.style.display   = '';
-        gamCard.style.display    = '';
-        renderMcCharts(data);
+        const [repRes, reproRes] = await Promise.all([
+            fetch(IMPACT_DATA_URL, { cache: 'no-cache' }),
+            fetch(IMPACT_REPRODUCTIONS_URL, { cache: 'no-cache' }),
+        ]);
+        if (!repRes.ok) throw new Error('HTTP ' + repRes.status);
+        const replicationData = await repRes.json();
+        let reproData = {};
+        if (reproRes.ok) { try { reproData = await reproRes.json(); } catch (_) {} }
+        window._mcData = {
+            replication: replicationData,
+            'reproduction-numerical': reproData['reproduction-numerical'] || null,
+            'reproduction-robustness': reproData['reproduction-robustness'] || null,
+        };
+        loadingEl.style.display = 'none';
+        renderMcCharts();
     } catch (err) {
         console.warn('Mean Citedness load failed:', err);
         loadingEl.style.display = 'none';
@@ -1175,11 +1237,29 @@ function aoPlotlyTheme() {
     };
 }
 
-function renderOverlapCharts(d) {
-    if (!d) return;
+function renderOverlapCharts() {
+    const d = window._aoData && window._aoData[aoKind];
+    const insufficientEl = document.getElementById('ao-placeholder');
+    const overviewEl = document.getElementById('ao-overview');
+    const chartCard = document.getElementById('ao-chart-card');
+    const caveatEl = document.getElementById('ao-caveat');
+    if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
+        const n = d && d.overview ? d.overview.n_total : 0;
+        if (insufficientEl) {
+            insufficientEl.textContent = `Not enough ${studyTypeLabel(aoKind)} with known authorship yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
+            insufficientEl.style.display = '';
+        }
+        if (overviewEl) overviewEl.style.display = 'none';
+        if (chartCard) chartCard.style.display = 'none';
+        if (caveatEl) caveatEl.style.display = 'none';
+        return;
+    }
+    if (insufficientEl) insufficientEl.style.display = 'none';
+
     const th = aoPlotlyTheme();
     const ov = d.overview;
     const by = d.by_outcome;
+    const kindNoun = aoKind === 'replication' ? 'Replications' : 'Reproductions';
 
     // ── Overview boxes ─────────────────────────────────────────────────────────
     const ovEl = document.getElementById('ao-overview');
@@ -1187,7 +1267,7 @@ function renderOverlapCharts(d) {
         ovEl.innerHTML =
             '<div class="mc-stat-box">' +
                 '<div class="mc-stat-value">' + (ov.n_total || 0).toLocaleString() + '</div>' +
-                '<div class="mc-stat-label">Replications included</div>' +
+                '<div class="mc-stat-label">' + kindNoun + ' included</div>' +
             '</div>' +
             '<div class="mc-stat-box">' +
                 '<div class="mc-stat-value">' + (ov.n_overlap || 0).toLocaleString() + '</div>' +
@@ -1205,17 +1285,16 @@ function renderOverlapCharts(d) {
     }
 
     // ── Grouped bar chart ──────────────────────────────────────────────────────
-    const OUTCOMES   = ['successful', 'failed', 'mixed', 'inconclusive'];
-    const OUT_LABELS = { successful: 'Successful', failed: 'Failed', mixed: 'Mixed', inconclusive: 'Inconclusive' };
+    const buckets = studyTypeOutcomeBuckets(aoKind);
     const groups     = ['overlap', 'no_overlap'];
     const GROUP_LABELS = { overlap: 'Author overlap', no_overlap: 'No author overlap' };
 
-    const traces = OUTCOMES.map(oc => ({
-        name: OUT_LABELS[oc],
+    const traces = buckets.map(b => ({
+        name: b.label,
         type: 'bar',
         x: groups.map(g => GROUP_LABELS[g]),
-        y: groups.map(g => (by[g] && by[g][oc]) || 0),
-        marker: { color: OUTCOME_COLORS[oc] || '#a0a7b4' },
+        y: groups.map(g => (by[g] && by[g][b.key]) || 0),
+        marker: { color: b.color },
     }));
 
     const layout = {
@@ -1227,7 +1306,7 @@ function renderOverlapCharts(d) {
         legend: { orientation: 'h', y: -0.18, font: { color: th.font } },
         margin: { l: 50, r: 20, t: 20, b: 80 },
         yaxis: {
-            title: 'Number of replications',
+            title: 'Number of ' + kindNoun.toLowerCase(),
             gridcolor: th.grid,
             zerolinecolor: th.grid,
             tickfont: { color: th.font },
@@ -1241,14 +1320,14 @@ function renderOverlapCharts(d) {
     const config = { responsive: true, displayModeBar: false };
     const chartEl = document.getElementById('ao-chart');
     if (chartEl) Plotly.react(chartEl, traces, layout, config);
+    chartCard.style.display = '';
 
     // ── Caveat ─────────────────────────────────────────────────────────────────
-    const caveatEl = document.getElementById('ao-caveat');
     if (caveatEl) caveatEl.style.display = '';
 }
 
 async function loadAuthorOverlap() {
-    if (window._aoData) { renderOverlapCharts(window._aoData); return; }
+    if (window._aoData) { renderOverlapCharts(); return; }
     const loadingEl  = document.getElementById('ao-loading');
     const overviewEl = document.getElementById('ao-overview');
     const chartCard  = document.getElementById('ao-chart-card');
@@ -1267,8 +1346,7 @@ async function loadAuthorOverlap() {
         window._aoData = d;
 
         if (loadingEl)  loadingEl.style.display  = 'none';
-        if (chartCard)  chartCard.style.display  = '';
-        renderOverlapCharts(d);
+        renderOverlapCharts();
     } catch (err) {
         if (loadingEl)  loadingEl.style.display  = 'none';
         if (errorEl)    errorEl.style.display    = 'block';
@@ -1281,11 +1359,31 @@ document.getElementById('overlap-tab').addEventListener('shown.bs.tab', loadAuth
 // ===== Registered Reports tab =====
 window._rrData = null;
 
-function renderRRCharts(d) {
-    if (!d) return;
+function renderRRCharts() {
+    const d = window._rrData && window._rrData[rrKind];
+    const insufficientEl = document.getElementById('rr-placeholder');
+    const overviewEl = document.getElementById('rr-overview');
+    const chartCard = document.getElementById('rr-chart-card');
+    const studiesCard = document.getElementById('rr-studies-card');
+    const caveatEl = document.getElementById('rr-caveat');
+    if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
+        const n = d && d.overview ? d.overview.n_total : 0;
+        if (insufficientEl) {
+            insufficientEl.textContent = `Not enough ${studyTypeLabel(rrKind)} checked against the RR library yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
+            insufficientEl.style.display = '';
+        }
+        if (overviewEl) overviewEl.style.display = 'none';
+        if (chartCard) chartCard.style.display = 'none';
+        if (studiesCard) studiesCard.style.display = 'none';
+        if (caveatEl) caveatEl.style.display = 'none';
+        return;
+    }
+    if (insufficientEl) insufficientEl.style.display = 'none';
+
     const th = aoPlotlyTheme();
     const ov = d.overview;
     const by = d.by_outcome;
+    const kindNoun = rrKind === 'replication' ? 'Replications' : 'Reproductions';
 
     // ── Overview boxes ─────────────────────────────────────────────────────────
     const ovEl = document.getElementById('rr-overview');
@@ -1293,7 +1391,7 @@ function renderRRCharts(d) {
         ovEl.innerHTML =
             '<div class="mc-stat">' +
                 '<div class="mc-stat-value">' + (ov.n_total || 0).toLocaleString() + '</div>' +
-                '<div class="mc-stat-label">Replications checked</div>' +
+                '<div class="mc-stat-label">' + kindNoun + ' checked</div>' +
             '</div>' +
             '<div class="mc-stat">' +
                 '<div class="mc-stat-value">' + (ov.n_rr || 0).toLocaleString() + '</div>' +
@@ -1311,17 +1409,16 @@ function renderRRCharts(d) {
     }
 
     // ── Grouped bar chart ──────────────────────────────────────────────────────
-    const OUTCOMES   = ['successful', 'failed', 'mixed', 'inconclusive'];
-    const OUT_LABELS = { successful: 'Successful', failed: 'Failed', mixed: 'Mixed', inconclusive: 'Inconclusive' };
+    const buckets = studyTypeOutcomeBuckets(rrKind);
     const groups     = ['rr', 'non_rr'];
     const GROUP_LABELS = { rr: 'Registered Report', non_rr: 'Rest' };
 
-    const traces = OUTCOMES.map(oc => ({
-        name: OUT_LABELS[oc],
+    const traces = buckets.map(b => ({
+        name: b.label,
         type: 'bar',
         x: groups.map(g => GROUP_LABELS[g]),
-        y: groups.map(g => (by[g] && by[g][oc]) || 0),
-        marker: { color: OUTCOME_COLORS[oc] || '#a0a7b4' },
+        y: groups.map(g => (by[g] && by[g][b.key]) || 0),
+        marker: { color: b.color },
     }));
 
     const layout = {
@@ -1333,7 +1430,7 @@ function renderRRCharts(d) {
         legend: { orientation: 'h', y: -0.18, font: { color: th.font } },
         margin: { l: 50, r: 20, t: 20, b: 80 },
         yaxis: {
-            title: 'Number of replications',
+            title: 'Number of ' + kindNoun.toLowerCase(),
             gridcolor: th.grid,
             zerolinecolor: th.grid,
             tickfont: { color: th.font },
@@ -1347,6 +1444,7 @@ function renderRRCharts(d) {
     const config = { responsive: true, displayModeBar: false };
     const chartEl = document.getElementById('rr-chart');
     if (chartEl) Plotly.react(chartEl, traces, layout, config);
+    chartCard.style.display = '';
 
     // ── Included-studies table ───────────────────────────────────────────────────
     const studies = Array.isArray(d.rr_studies) ? d.rr_studies : [];
@@ -1364,19 +1462,17 @@ function renderRRCharts(d) {
                 '<td>' + doiLink + '</td>' +
             '</tr>';
         }).join('');
-        const studiesCard = document.getElementById('rr-studies-card');
         if (studiesCard) studiesCard.style.display = studies.length ? '' : 'none';
         const countEl = document.getElementById('rr-studies-count');
         if (countEl) countEl.textContent = '(' + studies.length.toLocaleString() + ')';
     }
 
     // ── Caveat ─────────────────────────────────────────────────────────────────
-    const caveatEl = document.getElementById('rr-caveat');
     if (caveatEl) caveatEl.style.display = '';
 }
 
 async function loadRegisteredReports() {
-    if (window._rrData) { renderRRCharts(window._rrData); return; }
+    if (window._rrData) { renderRRCharts(); return; }
     const loadingEl  = document.getElementById('rr-loading');
     const overviewEl = document.getElementById('rr-overview');
     const chartCard  = document.getElementById('rr-chart-card');
@@ -1397,8 +1493,7 @@ async function loadRegisteredReports() {
         window._rrData = d;
 
         if (loadingEl) loadingEl.style.display = 'none';
-        if (chartCard) chartCard.style.display = '';
-        renderRRCharts(d);
+        renderRRCharts();
     } catch (err) {
         if (loadingEl) loadingEl.style.display = 'none';
         if (errorEl)   errorEl.style.display   = 'block';

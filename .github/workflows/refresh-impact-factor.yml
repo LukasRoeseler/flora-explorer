@@ -49,6 +49,7 @@ jobs:
           git add data/flora.csv data/flora_meta.json \
                   data/flora_with_omc.csv data/flora_with_omc_meta.json \
                   data/impact_factor_data.json data/impact_factor_meta.json \
+                  data/impact_factor_reproductions.json \
                   cache/openalex_venues.json || true
           if git diff --cached --quiet; then
             echo "No changes to commit."
