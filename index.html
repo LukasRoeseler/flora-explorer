@@ -110,10 +110,9 @@
                 <div class="data-stamp" data-stamp-source="flora"></div>
 
                 <div class="row mb-3">
-                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-total">-</div><div class="label">Total Studies</div></div></div>
-                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-successful" style="color: var(--flora-success);">-</div><div class="label">Successful</div></div></div>
-                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-failed" style="color: var(--flora-danger);">-</div><div class="label">Failed</div></div></div>
-                    <div class="col-6 col-md-3"><div class="stats-card"><div class="number" id="ov-mixed" style="color: var(--flora-warning);">-</div><div class="label">Mixed</div></div></div>
+                    <div class="col-6 col-md-4"><div class="stats-card"><div class="number" id="ov-total">-</div><div class="label">Total Studies</div></div></div>
+                    <div class="col-6 col-md-4"><div class="stats-card"><div class="number" id="ov-replications">-</div><div class="label">Replications</div></div></div>
+                    <div class="col-6 col-md-4"><div class="stats-card"><div class="number" id="ov-reproductions">-</div><div class="label">Reproductions</div></div></div>
                 </div>
 
                 <div class="tab-cite-block">
@@ -125,10 +124,40 @@
 
                 <div class="card">
                     <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Outcome Distribution</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about outcome distribution">
+                        <span>Computational Reproducibility</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about computational reproducibility">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Currently, this distribution covers <strong>replications only</strong>. Reproductions (computational and robustness checks) are coded along different dimensions and will be added in a future update.</span>
+                            <span class="info-tip">Covers <strong>reproductions only</strong>: were the original results obtained? Reproduction coverage is still small, so this chart will fill in as more are added.</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container-stack">
+                            <canvas id="overview-computational-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
+                        <span>Robustness</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about robustness">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span class="info-tip">Covers <strong>reproductions only</strong>: do results hold under alternative analysis choices? Not every reproduction has a robustness check yet.</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container-stack">
+                            <canvas id="overview-robustness-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
+                        <span>Replicability</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about replicability">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span class="info-tip">Currently, this distribution covers <strong>replications only</strong>. Reproductions are shown separately above, since they're coded along different dimensions.</span>
                         </span>
                     </div>
                     <div class="card-body">
@@ -334,10 +363,40 @@
 
                 <div class="card">
                     <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
-                        <span>Outcome Summary</span>
-                        <span class="info-icon" tabindex="0" aria-label="Info about outcome summary">
+                        <span>Computational Reproducibility</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about computational reproducibility">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            <span class="info-tip">Reflects the studies in the table below. Currently this breakdown covers <strong>replications only</strong>; reproductions are coded along different dimensions and will be added in a future update.</span>
+                            <span class="info-tip">Reflects the reproductions in the table below: were the original results obtained?</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container-stack">
+                            <canvas id="browse-computational-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
+                        <span>Robustness</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about robustness">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span class="info-tip">Reflects the reproductions in the table below: do results hold under alternative analysis choices?</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container-stack">
+                            <canvas id="browse-robustness-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex align-items-center" style="gap: 0.5rem;">
+                        <span>Replicability</span>
+                        <span class="info-icon" tabindex="0" aria-label="Info about replicability">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span class="info-tip">Reflects the studies in the table below. Currently this breakdown covers <strong>replications only</strong>; reproductions are shown separately above.</span>
                         </span>
                     </div>
                     <div class="card-body">
@@ -403,6 +462,11 @@
                     <span class="trend-filter-count" id="trend-filter-count"></span>
                 </div>
 
+                <div id="trends-placeholder" class="coming-soon-placeholder" style="display:none;">
+                    Select a study type above (Replications, Numerical Reproductions, or Robustness Reproductions) to see year, journal, and field breakdowns. "All studies" mixes two different outcome vocabularies, so it isn't shown here.
+                </div>
+
+                <div id="trends-charts">
                 <div class="card"><div class="card-body"><div class="trend-block">
                     <div class="trend-desc">
                         <h5>Outcomes by original study year</h5>
@@ -469,6 +533,7 @@
                     </div>
                     <div class="chart-container" id="trend-field-container"><canvas id="trend-field"></canvas></div>
                 </div></div></div>
+                </div>
 
             </div>
 
@@ -484,18 +549,26 @@
 
                 <div class="ci-intro">
                     <h2 class="ci-h2">How do replications change citation behaviour?</h2>
-                    <span class="scope-note">
-                        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
-                        Replications only: reproductions are not included in this analysis
-                    </span>
+                    <div class="chip-group study-type-select" id="ci-study-type">
+                        <button class="chip active" data-value="replication">Replications</button>
+                        <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
+                        <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
+                    </div>
+                    <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
                     <p class="ci-lede">
                         This tab combines the FLoRA dataset with citation data from
                         <a href="https://opencitations.net" target="_blank">OpenCitations</a> to
                         explore how the publication of a replication affects subsequent citations to the original study,
                         and how often the two are "co-cited" (cited together by the same later work).
                     </p>
-                    <div class="kpi-row" id="kpis"></div>
                 </div>
+
+                <div id="ci-placeholder" class="coming-soon-placeholder" style="display:none;">
+                    Not computed yet for this study type — coming soon.
+                </div>
+
+                <div id="ci-content">
+                <div class="kpi-row" id="kpis"></div>
 
                 <div class="card ci-card">
                     <div class="card-header">Aggregate impact of replications</div>
@@ -605,6 +678,7 @@
                         </p>
                     </div>
                 </div>
+                </div>
             </div>
 
             <!-- ============================ MEAN CITEDNESS ============================ -->
@@ -625,10 +699,14 @@
                             predicts replication success. OMC is a proxy for the Journal Impact Factor.
                             The analysis is rendered weekly by an R pipeline (GAM).
                         </p>
-                        <span class="scope-note">
-                            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
-                            Replications only: reproductions are not included in this analysis
-                        </span>
+                        <div class="chip-group study-type-select" id="mc-study-type">
+                            <button class="chip active" data-value="replication">Replications</button>
+                            <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
+                            <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
+                        </div>
+                        <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
+                        <div id="mc-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
+                        <div id="mc-content">
                         <div id="mc-loading" style="color: var(--flora-muted); font-size: 0.9rem; padding: 1rem 0;">Loading analysis…</div>
                         <div id="mc-overview" class="mc-overview-grid" style="display:none;"></div>
                         <div id="mc-dist-card" class="mc-chart-card" style="display:none;">
@@ -644,6 +722,7 @@
                         <div id="mc-error" style="display:none; color: var(--flora-muted); font-size: 0.9rem;">
                             Failed to load analysis data.
                             <code id="mc-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -669,11 +748,14 @@
                             This may produce <strong>false positives</strong> for common family names when two
                             unrelated researchers share a surname.
                         </p>
-                        <span class="scope-note" style="margin-bottom:1rem;display:inline-flex;">
-                            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
-                            Replications only: reproductions are not included in this analysis
-                        </span>
-
+                        <div class="chip-group study-type-select" id="ao-study-type">
+                            <button class="chip active" data-value="replication">Replications</button>
+                            <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
+                            <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
+                        </div>
+                        <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
+                        <div id="ao-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
+                        <div id="ao-content">
                         <div id="ao-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
 
                         <div id="ao-overview" class="mc-overview-grid" style="display:none;"></div>
@@ -696,6 +778,7 @@
                         <div id="ao-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
                             Failed to load authorship overlap data.
                             <code id="ao-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -727,11 +810,14 @@
                             Because the RR library is itself a work in progress, "rest" really means
                             <em>not (yet) found</em> in the library, rather than confirmed non-RR.
                         </p>
-                        <span class="scope-note" style="margin-bottom:1rem;display:inline-flex;">
-                            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V3.5h1.5V5z"/></svg>
-                            Replications only: reproductions are not included in this analysis
-                        </span>
-
+                        <div class="chip-group study-type-select" id="rr-study-type">
+                            <button class="chip active" data-value="replication">Replications</button>
+                            <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
+                            <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
+                        </div>
+                        <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
+                        <div id="rr-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
+                        <div id="rr-content">
                         <div id="rr-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
 
                         <div id="rr-overview" class="mc-overview-grid" style="display:none;"></div>
@@ -775,6 +861,7 @@
                         <div id="rr-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
                             Failed to load Registered Reports data.
                             <code id="rr-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
+                        </div>
                         </div>
                     </div>
                 </div>

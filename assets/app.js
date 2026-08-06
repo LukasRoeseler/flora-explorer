@@ -60,6 +60,8 @@ function themeAxisColors() {
 let fullRowData = [];
 let dataTable = null;
 let overviewChart = null;
+let overviewComputationalChart = null;
+let overviewRobustnessChart = null;
 let trendOrigYearChart = null;
 let trendRepYearChart = null;
 let trendJournalChart = null;
@@ -93,13 +95,39 @@ function classifyKind(row) {
     return 'unknown';
 }
 
+// Splits a reproduction row's compound outcome string (e.g. "computationally successful,
+// robustness challenges") into its two independent dimensions. Either field is null when
+// that dimension hasn't been coded yet (including plain "NA").
+function parseReproductionOutcome(outcomeStr) {
+    const s = (outcomeStr || '').toLowerCase();
+    const parts = s.split(',').map(p => p.trim());
+    let computational = null, robustness = null;
+    for (const p of parts) {
+        if (computational === null) {
+            if (p.includes('computational issue')) computational = 'issues';
+            else if (p.includes('computational') && p.includes('success')) computational = 'successful';
+        }
+        if (robustness === null) {
+            if (p.includes('robustness challenge')) robustness = 'challenges';
+            else if (p.includes('robustness not checked')) robustness = 'not_checked';
+            else if (p.includes('robust')) robustness = 'robust';
+        }
+    }
+    return { computational, robustness };
+}
+
+// Every reproduction attempts computational reproducibility by definition, so the
+// "numerical" subkind is just "is this row a reproduction". Robustness is a distinct,
+// separately-assessed dimension (see parseReproductionOutcome) - only rows with an actual
+// robust/challenges verdict count as "robustness assessed" (not_checked/uncoded excluded).
 function classifyReproductionSubkind(row) {
-    const t = (row.type || '').toLowerCase();
-    const o = (row.outcome || '').toLowerCase();
-    const blob = `${t} ${o}`;
-    if (blob.includes('robust')) return 'robustness';
-    if (blob.includes('computational') || blob.includes('numerical')) return 'numerical';
-    return 'unknown';
+    return classifyKind(row) === 'reproduction' ? 'numerical' : 'unknown';
+}
+
+function isRobustnessAssessed(row) {
+    if (classifyKind(row) !== 'reproduction') return false;
+    const { robustness } = parseReproductionOutcome(row.outcome);
+    return robustness === 'robust' || robustness === 'challenges';
 }
 
 function filterByKind(data, kind) {
@@ -110,10 +138,40 @@ function filterByKind(data, kind) {
         return data.filter(r => classifyKind(r) === 'reproduction' && classifyReproductionSubkind(r) === 'numerical');
     }
     if (kind === 'reproduction-robustness') {
-        return data.filter(r => classifyKind(r) === 'reproduction' && classifyReproductionSubkind(r) === 'robustness');
+        return data.filter(r => isRobustnessAssessed(r));
     }
     return data;
 }
+
+// Shared single-select chip-group control used by the study-type selector on Citation
+// Impact, Mean Citedness, Authorship Overlap, and Registered Reports. Unlike browseKind/
+// trendsKind there's no "all" option here - one of the 3 chips is always active.
+function setupStudyTypeSelect(containerId, onChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.querySelectorAll('.chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            container.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            onChange(btn.dataset.value);
+        });
+    });
+}
+
+// Toggles a tab's precomputed-analysis content vs. a "not computed yet" placeholder
+// based on the selected study type. All 4 analysis pipelines only ever compute
+// replication-scoped data today, so any reproduction kind falls back to the placeholder.
+function applyStudyTypeGate(contentId, placeholderId, kind) {
+    const contentEl = document.getElementById(contentId);
+    const placeholderEl = document.getElementById(placeholderId);
+    const show = kind === 'replication';
+    if (contentEl) contentEl.style.display = show ? '' : 'none';
+    if (placeholderEl) placeholderEl.style.display = show ? 'none' : '';
+}
+
+setupStudyTypeSelect('mc-study-type', kind => applyStudyTypeGate('mc-content', 'mc-placeholder', kind));
+setupStudyTypeSelect('ao-study-type', kind => applyStudyTypeGate('ao-content', 'ao-placeholder', kind));
+setupStudyTypeSelect('rr-study-type', kind => applyStudyTypeGate('rr-content', 'rr-placeholder', kind));
 
 function getOutcomeBadge(outcome) {
     if (!outcome) return '<span class="badge badge-unknown">Unknown</span>';
@@ -227,37 +285,83 @@ function shortAuthors(authorData) {
 // ===== Overview =====
 function updateOverviewStats(data) {
     const total = data.length;
-    const eligible = data.filter(r => classifyKind(r) === 'replication' && hasMatchedOutcome(r));
-    let successful = 0, failed = 0, mixed = 0;
-    eligible.forEach(row => {
-        const c = classifyOutcome(row.outcome);
-        if (c === 'successful') successful++;
-        else if (c === 'failed') failed++;
-        else if (c === 'mixed') mixed++;
-    });
+    const replications = data.filter(r => classifyKind(r) === 'replication').length;
+    const reproductions = data.filter(r => classifyKind(r) === 'reproduction').length;
     document.getElementById('ov-total').textContent = total.toLocaleString();
-    document.getElementById('ov-successful').textContent = successful.toLocaleString();
-    document.getElementById('ov-failed').textContent = failed.toLocaleString();
-    document.getElementById('ov-mixed').textContent = mixed.toLocaleString();
+    document.getElementById('ov-replications').textContent = replications.toLocaleString();
+    document.getElementById('ov-reproductions').textContent = reproductions.toLocaleString();
 }
 
-function renderOverviewChart(data) {
-    const eligible = data.filter(r => classifyKind(r) === 'replication' && hasMatchedOutcome(r));
-    const counts = { successful: 0, mixed: 0, failed: 0, inconclusive: 0 };
-    eligible.forEach(row => { counts[classifyOutcome(row.outcome)]++; });
-    const total = Object.values(counts).reduce((a, b) => a + b, 0);
-    const datasets = [
-        { label: 'Successful',   data: [counts.successful],   backgroundColor: OUTCOME_COLORS.successful },
-        { label: 'Mixed',        data: [counts.mixed],        backgroundColor: OUTCOME_COLORS.mixed },
-        { label: 'Failed',       data: [counts.failed],       backgroundColor: OUTCOME_COLORS.failed },
-        { label: 'Inconclusive', data: [counts.inconclusive], backgroundColor: OUTCOME_COLORS.inconclusive }
-    ];
-    const ctx = document.getElementById('overview-outcome-chart').getContext('2d');
-    if (overviewChart) overviewChart.destroy();
+// Muted grays for "not yet coded"/"not checked" - distinct from the successful/failed/
+// mixed palette so an unassessed reproduction never reads as an outcome.
+const REPRODUCTION_COLORS = {
+    successful:  OUTCOME_COLORS.successful,
+    issues:      OUTCOME_COLORS.failed,
+    robust:      OUTCOME_COLORS.successful,
+    challenges:  OUTCOME_COLORS.failed,
+    not_checked: '#8a8f9c',
+    not_coded:   '#c3c7ce'
+};
+
+// Builds the {datasets, total} for one of the three outcome dimensions shown on the
+// Overview and Browse Studies tabs. 'replicability' mirrors the original single-chart
+// logic (replications only); 'computational'/'robustness' bucket reproduction rows by
+// the two independent dimensions parsed out of their compound outcome string.
+function computeKindChartData(data, kind) {
+    if (kind === 'replicability') {
+        const eligible = data.filter(r => classifyKind(r) === 'replication' && hasMatchedOutcome(r));
+        const counts = { successful: 0, mixed: 0, failed: 0, inconclusive: 0 };
+        eligible.forEach(row => { counts[classifyOutcome(row.outcome)]++; });
+        return {
+            total: eligible.length,
+            datasets: [
+                { label: 'Successful',   data: [counts.successful],   backgroundColor: OUTCOME_COLORS.successful },
+                { label: 'Mixed',        data: [counts.mixed],        backgroundColor: OUTCOME_COLORS.mixed },
+                { label: 'Failed',       data: [counts.failed],       backgroundColor: OUTCOME_COLORS.failed },
+                { label: 'Inconclusive', data: [counts.inconclusive], backgroundColor: OUTCOME_COLORS.inconclusive }
+            ]
+        };
+    }
+    const repro = data.filter(r => classifyKind(r) === 'reproduction');
+    if (kind === 'computational') {
+        const counts = { successful: 0, issues: 0, not_coded: 0 };
+        repro.forEach(r => { const c = parseReproductionOutcome(r.outcome).computational; counts[c || 'not_coded']++; });
+        return {
+            total: repro.length,
+            datasets: [
+                { label: 'Successful',    data: [counts.successful], backgroundColor: REPRODUCTION_COLORS.successful },
+                { label: 'Issues',        data: [counts.issues],     backgroundColor: REPRODUCTION_COLORS.issues },
+                { label: 'Not yet coded', data: [counts.not_coded],  backgroundColor: REPRODUCTION_COLORS.not_coded }
+            ]
+        };
+    }
+    // robustness
+    const counts = { robust: 0, challenges: 0, not_checked: 0, not_coded: 0 };
+    repro.forEach(r => { const rb = parseReproductionOutcome(r.outcome).robustness; counts[rb || 'not_coded']++; });
+    return {
+        total: repro.length,
+        datasets: [
+            { label: 'Robust',               data: [counts.robust],      backgroundColor: REPRODUCTION_COLORS.robust },
+            { label: 'Robustness challenges',data: [counts.challenges],  backgroundColor: REPRODUCTION_COLORS.challenges },
+            { label: 'Not checked',          data: [counts.not_checked], backgroundColor: REPRODUCTION_COLORS.not_checked },
+            { label: 'Not yet coded',        data: [counts.not_coded],   backgroundColor: REPRODUCTION_COLORS.not_coded }
+        ]
+    };
+}
+
+// Shared horizontal-stacked-bar renderer for all 6 outcome-dimension charts (3 on
+// Overview, 3 on Browse Studies). Returns the new Chart.js instance so callers can keep
+// tracking their own module-level "existing chart" variable for destroy/rebuild.
+function renderKindStackedBar(canvasId, existingChart, data, kind, categoryLabel) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return existingChart || null;
+    const { datasets, total } = computeKindChartData(data, kind);
+    const ctx = canvas.getContext('2d');
+    if (existingChart) existingChart.destroy();
     const ac = themeAxisColors();
-    overviewChart = new Chart(ctx, {
+    return new Chart(ctx, {
         type: 'bar',
-        data: { labels: ['Replications'], datasets },
+        data: { labels: [categoryLabel], datasets },
         options: {
             responsive: true, maintainAspectRatio: false, indexAxis: 'y',
             plugins: {
@@ -268,11 +372,17 @@ function renderOverviewChart(data) {
                 }}}
             },
             scales: {
-                x: { stacked: true, min: 0, max: total, grid: { color: ac.grid }, ticks: { color: ac.tick } },
+                x: { stacked: true, min: 0, max: Math.max(total, 1), grid: { color: ac.grid }, ticks: { color: ac.tick } },
                 y: { stacked: true, display: false }
             }
         }
     });
+}
+
+function renderOverviewChart(data) {
+    overviewComputationalChart = renderKindStackedBar('overview-computational-chart', overviewComputationalChart, data, 'computational', 'Reproductions');
+    overviewRobustnessChart = renderKindStackedBar('overview-robustness-chart', overviewRobustnessChart, data, 'robustness', 'Reproductions');
+    overviewChart = renderKindStackedBar('overview-outcome-chart', overviewChart, data, 'replicability', 'Replications');
 }
 
 function studyLink(doi, url, innerHtml, extraClass = '') {
@@ -570,7 +680,7 @@ function initDataTable(data) {
         createdRow: (row, d, dataIndex) => { $(row).attr('data-index', dataIndex); }
     });
 
-    dataTable.on('search.dt', renderBrowseOutcomeChart);
+    dataTable.on('search.dt', renderBrowseOutcomeCharts);
 
     $('#flora-table tbody').on('click', 'td.details-control', function() {
         const tr = $(this).closest('tr');
@@ -658,6 +768,8 @@ function setupBrowseMobile(data) {
 // ===== Browse kind filter =====
 let browseKind = 'all';
 let browseOutcomeChart = null;
+let browseComputationalChart = null;
+let browseRobustnessChart = null;
 
 function browseFilteredData() { return filterByKind(fullRowData, browseKind); }
 function bmDataSource() { return browseFilteredData(); }
@@ -671,40 +783,11 @@ function getChartData() {
     return browseFilteredData();
 }
 
-function renderBrowseOutcomeChart() {
+function renderBrowseOutcomeCharts() {
     const data = getChartData();
-    const eligible = data.filter(r => classifyKind(r) === 'replication' && hasMatchedOutcome(r));
-    const counts = { successful: 0, mixed: 0, failed: 0, inconclusive: 0 };
-    eligible.forEach(row => { counts[classifyOutcome(row.outcome)]++; });
-    const total = Object.values(counts).reduce((a, b) => a + b, 0);
-    const datasets = [
-        { label: 'Successful',   data: [counts.successful],   backgroundColor: OUTCOME_COLORS.successful },
-        { label: 'Mixed',        data: [counts.mixed],        backgroundColor: OUTCOME_COLORS.mixed },
-        { label: 'Failed',       data: [counts.failed],       backgroundColor: OUTCOME_COLORS.failed },
-        { label: 'Inconclusive', data: [counts.inconclusive], backgroundColor: OUTCOME_COLORS.inconclusive }
-    ];
-    const canvas = document.getElementById('browse-outcome-chart'); if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (browseOutcomeChart) browseOutcomeChart.destroy();
-    const ac = themeAxisColors();
-    browseOutcomeChart = new Chart(ctx, {
-        type: 'bar',
-        data: { labels: ['Replications'], datasets },
-        options: {
-            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-            plugins: {
-                legend: { position: 'bottom', labels: { color: ac.legend, boxWidth: 14, padding: 14, font: { size: 12 } } },
-                tooltip: { callbacks: { label: ctx => {
-                    const v = ctx.parsed.x; const pct = total ? ((v / total) * 100).toFixed(1) : 0;
-                    return `${ctx.dataset.label}: ${v.toLocaleString()} (${pct}%)`;
-                }}}
-            },
-            scales: {
-                x: { stacked: true, min: 0, max: Math.max(total, 1), grid: { color: ac.grid }, ticks: { color: ac.tick } },
-                y: { stacked: true, display: false }
-            }
-        }
-    });
+    browseComputationalChart = renderKindStackedBar('browse-computational-chart', browseComputationalChart, data, 'computational', 'Reproductions');
+    browseRobustnessChart = renderKindStackedBar('browse-robustness-chart', browseRobustnessChart, data, 'robustness', 'Reproductions');
+    browseOutcomeChart = renderKindStackedBar('browse-outcome-chart', browseOutcomeChart, data, 'replicability', 'Replications');
 }
 
 function updateBrowseKindCount() {
@@ -714,7 +797,7 @@ function updateBrowseKindCount() {
 }
 
 function applyBrowseKind() {
-    updateBrowseKindCount(); renderBrowseOutcomeChart();
+    updateBrowseKindCount(); renderBrowseOutcomeCharts();
     if (dataTable) dataTable.draw();
     if (bmInitialized) {
         const input = document.getElementById('browse-mobile-input');
@@ -735,7 +818,7 @@ function setupBrowseKindFilter() {
         if (settings.nTable.id !== 'flora-table') return true;
         if (browseKind === 'all') return true;
         const row = fullRowData[dataIndex]; if (!row) return true;
-        return classifyKind(row) === browseKind;
+        return filterByKind([row], browseKind).length > 0;
     });
     applyBrowseKind();
 }
@@ -899,6 +982,12 @@ function renderTrendField() {
 }
 function renderAllTrends() {
     updateTrendsCount();
+    const chartsEl = document.getElementById('trends-charts');
+    const placeholderEl = document.getElementById('trends-placeholder');
+    const show = trendsKind !== 'all';
+    if (chartsEl) chartsEl.style.display = show ? '' : 'none';
+    if (placeholderEl) placeholderEl.style.display = show ? 'none' : '';
+    if (!show) return;
     renderTrendOrigYear(); renderTrendRepYear();
     renderTrendJournal(); renderTrendRepJournal();
     renderTrendField();
@@ -924,7 +1013,7 @@ window._rerenderAllCharts = function() {
         renderOverviewChart(fullRowData);
         if (trendsInitialized) renderAllTrends();
     }
-    renderBrowseOutcomeChart();
+    renderBrowseOutcomeCharts();
     if (window._mcData) renderMcCharts(window._mcData);
     if (window._aoData) renderOverlapCharts(window._aoData);
     if (window._rrData) renderRRCharts(window._rrData);

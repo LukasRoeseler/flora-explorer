@@ -614,6 +614,19 @@ tr.shown td.details-control::before { transform: rotate(90deg); }
 }
 .scope-note svg { width: 13px; height: 13px; flex-shrink: 0; }
 
+/* Study-type selector (Citation Impact / Mean Citedness / Authorship Overlap / Registered Reports) */
+.study-type-select { margin-bottom: 0.4rem; }
+.study-type-note {
+    color: var(--flora-muted); font-size: 0.82rem; margin: 0 0 1rem;
+}
+
+/* "Not computed yet" / "select a study type" placeholders (Trends + the 4 analysis tabs) */
+.coming-soon-placeholder {
+    text-align: center; padding: 2rem 1rem; color: var(--flora-muted);
+    background: var(--flora-subtle-bg); border: 1px solid var(--flora-border);
+    border-radius: 8px; font-size: 0.92rem;
+}
+
 /* Mean Citedness — overview grid from R fragment */
 .mc-overview-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));

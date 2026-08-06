@@ -547,6 +547,8 @@
     // Lazy-load when the user opens the tab
     document.getElementById('citation-tab').addEventListener('shown.bs.tab', ensureInit);
 
+    setupStudyTypeSelect('ci-study-type', kind => applyStudyTypeGate('ci-content', 'ci-placeholder', kind));
+
     // Open a study popup straight away if arrived via /citations/?doi=…
     handleDeepLink();
 
