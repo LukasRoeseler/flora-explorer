@@ -3774,5 +3774,25 @@
     "id": "https://openalex.org/S186282544",
     "display_name": "Toxicological Sciences",
     "impact_factor": 5.410835214446952
+  },
+  "aphasiology": {
+    "id": "https://openalex.org/S86063550",
+    "display_name": "Aphasiology",
+    "impact_factor": 1.9218241042345277
+  },
+  "ecology and evolution": {
+    "id": "https://openalex.org/S2482021738",
+    "display_name": "Ecology and Evolution",
+    "impact_factor": 2.4403578528827037
+  },
+  "social science research": {
+    "id": "https://openalex.org/S59311786",
+    "display_name": "Social Science Research",
+    "impact_factor": 1.9566666666666668
+  },
+  "the pacific sociological review": {
+    "id": "https://openalex.org/S4210184910",
+    "display_name": "The Pacific Sociological Review",
+    "impact_factor": 0.0
   }
 }
