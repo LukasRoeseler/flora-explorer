@@ -1669,6 +1669,7 @@ function renderLargeScaleCharts() {
     const insufficientEl = document.getElementById('ls-placeholder');
     const overviewEl = document.getElementById('ls-overview');
     const chartCard = document.getElementById('ls-chart-card');
+    const studiesCard = document.getElementById('ls-studies-card');
     const caveatEl = document.getElementById('ls-caveat');
     if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
         const n = d && d.overview ? d.overview.n_total : 0;
@@ -1678,6 +1679,7 @@ function renderLargeScaleCharts() {
         }
         if (overviewEl) overviewEl.style.display = 'none';
         if (chartCard) chartCard.style.display = 'none';
+        if (studiesCard) studiesCard.style.display = 'none';
         if (caveatEl) caveatEl.style.display = 'none';
         return;
     }
@@ -1743,6 +1745,36 @@ function renderLargeScaleCharts() {
     const chartEl = document.getElementById('ls-chart');
     if (chartEl) Plotly.react(chartEl, traces, layout, config);
     if (chartCard) chartCard.style.display = '';
+
+    // ── Large-scale projects table ───────────────────────────────────────────────
+    // One row per project (publication), not per target study - see
+    // compute_large_scale_result() in compute_pub_status.py. outcome_mix summarises
+    // how that project's many individual outcomes broke down.
+    const bucketLabels = {};
+    buckets.forEach(b => { bucketLabels[b.key] = b.label; });
+    const projects = Array.isArray(d.large_scale_studies) ? d.large_scale_studies : [];
+    const tbody = document.querySelector('#ls-studies-table tbody');
+    if (tbody) {
+        tbody.innerHTML = projects.map(s => {
+            const doiLink = s.doi_r
+                ? '<a href="https://doi.org/' + encodeURIComponent(s.doi_r) + '" target="_blank" class="doi-link">' + escapeHtml(s.doi_r) + '</a>'
+                : (s.url_r ? '<a href="' + escapeHtml(s.url_r) + '" target="_blank" class="doi-link">link</a>' : '');
+            const mix = Object.entries(s.outcome_mix || {})
+                .map(([k, n]) => escapeHtml(bucketLabels[k] || k) + ': ' + n)
+                .join(', ');
+            return '<tr>' +
+                '<td>' + escapeHtml(s.title_r) + '</td>' +
+                '<td>' + escapeHtml(s.journal_r) + '</td>' +
+                '<td>' + escapeHtml(s.year_r) + '</td>' +
+                '<td>' + escapeHtml(s.n_originals) + '</td>' +
+                '<td>' + mix + '</td>' +
+                '<td>' + doiLink + '</td>' +
+            '</tr>';
+        }).join('');
+        if (studiesCard) studiesCard.style.display = projects.length ? '' : 'none';
+        const countEl = document.getElementById('ls-studies-count');
+        if (countEl) countEl.textContent = '(' + projects.length.toLocaleString() + ')';
+    }
 
     // ── Caveat ─────────────────────────────────────────────────────────────────
     if (caveatEl) caveatEl.style.display = '';

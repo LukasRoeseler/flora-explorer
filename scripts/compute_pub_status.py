@@ -156,6 +156,25 @@ def compute_large_scale_result(sub: pd.DataFrame, bucket_col: str, buckets: list
         bkt = sub.loc[sub["is_large_scale"] == flag, bucket_col]
         by_outcome[grp] = {b: int((bkt == b).sum()) for b in buckets}
 
+    # One row per large-scale *publication* (doi_r), not per target study - a single
+    # project can report on dozens of originals, and listing every one of those rows
+    # individually would mostly repeat the same title/journal/DOI. outcome_mix instead
+    # summarises how that project's many individual outcomes broke down.
+    large_scale_studies = []
+    for doi_r, grp in sub.loc[sub["is_large_scale"]].groupby("doi_r"):
+        first = grp.iloc[0]
+        outcome_mix = {b: int((grp[bucket_col] == b).sum()) for b in buckets if (grp[bucket_col] == b).any()}
+        large_scale_studies.append({
+            "title_r": _clean(first.get("title_r")),
+            "journal_r": _clean(first.get("journal_r")),
+            "year_r": _clean(first.get("year_r")),
+            "doi_r": _clean(doi_r),
+            "url_r": _clean(first.get("url_r")),
+            "n_originals": int(first["n_originals_in_rep"]),
+            "outcome_mix": outcome_mix,
+        })
+    large_scale_studies.sort(key=lambda s: (s["year_r"] is None, s["year_r"]), reverse=True)
+
     return {
         "overview": {
             "n_total": n_total,
@@ -166,6 +185,7 @@ def compute_large_scale_result(sub: pd.DataFrame, bucket_col: str, buckets: list
             "pct_large_scale": round(100 * n_large_scale / n_total, 1) if n_total else 0,
         },
         "by_outcome": by_outcome,
+        "large_scale_studies": large_scale_studies,
     }
 
 
