@@ -1,12 +1,17 @@
 """
 Determine which FLoRA replications were published as Registered Reports (RR).
 
-Matches each replication's DOI/title against the FORRT Zotero group library
-"Registered Reports" (https://www.zotero.org/groups/5937153/registered_reports),
-a hand-curated catalogue of studies published in the Registered Report format.
-A replication that appears in that library is classified as an RR; every other
-replication falls into the "rest" (non-RR) group. Outcome counts are then
-compared between the two groups.
+Matches each replication's DOI/title against the Registered Reports Database
+(RRDB) - a CSV export of the FORRT Zotero "Registered Reports" group library
+(https://www.zotero.org/groups/5937153/registered_reports), maintained and
+regularly updated at https://github.com/LukasRoeseler/RRDB. This is preferred
+over querying the Zotero API directly: one small, reliable GET instead of a
+paginated/rate-limited API walk, and RRDB is itself a citable, actively
+maintained project (see RRDB_CITATION below).
+
+A replication that appears in that library is classified as an RR; every
+other replication falls into the "rest" (non-RR) group. Outcome counts are
+then compared between the two groups.
 
 Note this only tells us whether the *replication itself* was published as a
 Registered Report - not whether the original study was. Coverage of the RR
@@ -19,10 +24,9 @@ Output:
 """
 from __future__ import annotations
 
+import io
 import json
-import os
 import re
-import time
 import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
@@ -36,15 +40,13 @@ IN_CSV   = DATA_DIR / "flora.csv"
 OUT_DATA = DATA_DIR / "rr_status_data.json"
 OUT_META = DATA_DIR / "rr_status_meta.json"
 
-ZOTERO_GROUP_ID = 5937153
-ZOTERO_API      = f"https://api.zotero.org/groups/{ZOTERO_GROUP_ID}/items"
-ZOTERO_LIBRARY_URL = "https://www.zotero.org/groups/5937153/registered_reports/library"
-PAGE_SIZE = 100
-
-MY_EMAIL = os.environ.get("MY_EMAIL", "")
-HEADERS = {
-    "User-Agent": f"flora-explorer-rr-status ({MY_EMAIL})" if MY_EMAIL else "flora-explorer-rr-status",
-}
+RRDB_CSV_URL = "https://raw.githubusercontent.com/LukasRoeseler/RRDB/main/zotero_registered_reports.csv"
+RRDB_SOURCE_URL = "https://github.com/LukasRoeseler/RRDB/blob/main/zotero_registered_reports.csv"
+RRDB_CITATION = (
+    "Montoya, A. K., Krenzer, W. L. D., Buchanan, E. M., Pronizius, E., Wang, Y. A., "
+    "Morillo, D., … Armstrong, C. (2026, May 14). Database of Published "
+    "Registered Reports. https://doi.org/10.17605/OSF.IO/VUR72"
+)
 
 if not IN_CSV.exists():
     raise SystemExit(f"{IN_CSV} not found.")
@@ -70,55 +72,23 @@ def normalize_title(title) -> str:
 
 
 def fetch_rr_library() -> tuple[set[str], set[str]]:
-    """Fetch every item from the RR Zotero group library, return (dois, titles) sets."""
-    dois: set[str] = set()
-    titles: set[str] = set()
-    start = 0
-    while True:
-        for attempt in range(5):
-            try:
-                resp = requests.get(
-                    ZOTERO_API,
-                    params={"format": "json", "limit": PAGE_SIZE, "start": start},
-                    headers=HEADERS,
-                    timeout=60,
-                )
-            except requests.exceptions.RequestException as exc:
-                if attempt == 4:
-                    raise
-                wait = 2 ** attempt
-                print(f"  request error ({exc}); retrying in {wait}s …")
-                time.sleep(wait)
-                continue
-            if resp.status_code == 429 or "Backoff" in resp.headers:
-                wait = int(resp.headers.get("Backoff", resp.headers.get("Retry-After", 5)))
-                time.sleep(wait)
-                continue
-            resp.raise_for_status()
-            break
-        batch = resp.json()
-        if not batch:
-            break
-        for item in batch:
-            data = item.get("data", {})
-            if data.get("itemType") in ("attachment", "note"):
-                continue
-            doi = normalize_doi(data.get("DOI", ""))
-            title = normalize_title(data.get("title", ""))
-            if doi:
-                dois.add(doi)
-            if title:
-                titles.add(title)
-        if len(batch) < PAGE_SIZE:
-            break
-        start += PAGE_SIZE
-        time.sleep(0.2)
+    """Load the RRDB CSV (a regularly-updated export of the FORRT Zotero Registered
+    Reports group library) and return (dois, titles) sets for matching."""
+    resp = requests.get(RRDB_CSV_URL, timeout=60)
+    resp.raise_for_status()
+    df_rr = pd.read_csv(io.StringIO(resp.text), low_memory=False)
+
+    is_attachment_or_note = df_rr.get("itemType", pd.Series(dtype=str)).astype(str).str.lower().isin(["attachment", "note"])
+    df_rr = df_rr[~is_attachment_or_note]
+
+    dois = set(df_rr.get("DOI", pd.Series(dtype=str)).apply(normalize_doi)) - {""}
+    titles = set(df_rr.get("title", pd.Series(dtype=str)).apply(normalize_title)) - {""}
     return dois, titles
 
 
-print("Fetching Registered Reports library from Zotero …")
+print(f"Fetching Registered Reports Database (RRDB) from {RRDB_CSV_URL} …")
 rr_dois, rr_titles = fetch_rr_library()
-print(f"RR library: {len(rr_dois)} DOIs, {len(rr_titles)} titles")
+print(f"RRDB: {len(rr_dois)} DOIs, {len(rr_titles)} titles")
 
 
 def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
@@ -235,7 +205,8 @@ OUT_META.write_text(json.dumps({
     "n_total": {k: v["overview"]["n_total"] for k, v in result.items()},
     "n_rr_library_items": len(rr_dois | rr_titles),
     "source": "scripts/compute_rr_status.py",
-    "source_url": ZOTERO_LIBRARY_URL,
+    "source_url": RRDB_SOURCE_URL,
+    "source_citation": RRDB_CITATION,
 }, indent=2), encoding="utf-8")
 
 for kind, r in result.items():

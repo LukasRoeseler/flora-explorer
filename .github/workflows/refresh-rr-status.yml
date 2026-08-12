@@ -28,8 +28,6 @@ jobs:
         run: python scripts/refresh_flora.py
 
       - name: Compute Registered Reports status
-        env:
-          MY_EMAIL: ${{ secrets.MY_EMAIL }}
         run: python scripts/compute_rr_status.py
 
       - name: Commit refreshed data

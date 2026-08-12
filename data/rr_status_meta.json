@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-08-10T07:21:59Z",
+  "last_updated": "2026-08-12T09:42:51Z",
   "n_total": {
     "replication": 2502,
     "reproduction-numerical": 19,
@@ -7,5 +7,6 @@
   },
   "n_rr_library_items": 3051,
   "source": "scripts/compute_rr_status.py",
-  "source_url": "https://www.zotero.org/groups/5937153/registered_reports/library"
+  "source_url": "https://github.com/LukasRoeseler/RRDB/blob/main/zotero_registered_reports.csv",
+  "source_citation": "Montoya, A. K., Krenzer, W. L. D., Buchanan, E. M., Pronizius, E., Wang, Y. A., Morillo, D., \u2026 Armstrong, C. (2026, May 14). Database of Published Registered Reports. https://doi.org/10.17605/OSF.IO/VUR72"
 }
