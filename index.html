@@ -90,6 +90,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="rr-tab" data-bs-toggle="tab" data-bs-target="#registered-reports" type="button" role="tab">Registered Reports</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pub-tab" data-bs-toggle="tab" data-bs-target="#publication-status" type="button" role="tab">Publication Status</button>
+                </li>
             </ul>
         </div>
     </div>
@@ -723,7 +726,7 @@
                             <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
                             <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
                         </div>
-                        <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
+                        <div class="study-type-note">This analysis is computed for all three study types; reproduction results may show a low-data message given how few reproductions exist so far.</div>
                         <div id="mc-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
                         <div id="mc-content">
                         <div id="mc-loading" style="color: var(--flora-muted); font-size: 0.9rem; padding: 1rem 0;">Loading analysis…</div>
@@ -772,7 +775,7 @@
                             <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
                             <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
                         </div>
-                        <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
+                        <div class="study-type-note">This analysis is computed for all three study types; reproduction results may show a low-data message given how few reproductions exist so far.</div>
                         <div id="ao-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
                         <div id="ao-content">
                         <div id="ao-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
@@ -834,7 +837,7 @@
                             <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
                             <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
                         </div>
-                        <div class="study-type-note">This analysis currently covers Replications only. Numerical/Robustness Reproductions can be selected, but this pipeline doesn't compute data for them yet.</div>
+                        <div class="study-type-note">This analysis is computed for all three study types; reproduction results may show a low-data message given how few reproductions exist so far.</div>
                         <div id="rr-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
                         <div id="rr-content">
                         <div id="rr-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
@@ -880,6 +883,89 @@
                         <div id="rr-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
                             Failed to load Registered Reports data.
                             <code id="rr-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PUBLICATION STATUS ==================== -->
+            <div class="tab-pane fade" id="publication-status" role="tabpanel">
+                <div class="data-stamp" data-stamp-source="pub_status"></div>
+
+                <div class="tab-cite-block">
+                    <div class="tab-cite-block-label">How to cite</div>
+                    <div class="cite-ref">Wallrich, L., &amp; Röseler, L. (2026). <em>FLoRA Explorer</em> [Website]. <a href="https://forrt.org/flora-explorer/" target="_blank" class="doi-link">https://forrt.org/flora-explorer/</a></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Journal vs. Preprint Publication Status</div>
+                    <div class="card-body">
+                        <p style="margin-bottom:0.75rem;">
+                            This analysis checks whether each replication/reproduction's write-up appears in a
+                            <strong>peer-reviewed journal</strong> or as a <strong>preprint / working paper /
+                            registry entry</strong>, based on the venue name recorded in FLoRA's
+                            <code>journal_r</code> field. A venue is classified as a preprint if no venue was
+                            recorded at all, or if the recorded name matches a known preprint server, repository,
+                            or working-paper series (e.g. OSF, arXiv, SSRN, bioRxiv/medRxiv, Zenodo, PsychArchives,
+                            or a name containing "working paper", "preprint", "repository", or "registries").
+                            Everything else is treated as a peer-reviewed journal.
+                        </p>
+                        <div class="chip-group study-type-select" id="pub-study-type">
+                            <button class="chip active" data-value="replication">Replications</button>
+                            <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
+                            <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
+                        </div>
+                        <div class="study-type-note">This analysis is computed for all three study types, though very few reproductions exist so far.</div>
+                        <div id="pub-placeholder" class="coming-soon-placeholder" style="display:none;"></div>
+                        <div id="pub-content">
+                        <div id="pub-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
+
+                        <div id="pub-overview" class="mc-overview-grid" style="display:none;"></div>
+
+                        <div id="pub-chart-card" class="mc-chart-card" style="display:none;margin-top:1.25rem;">
+                            <div class="mc-chart-title">Outcomes by publication venue</div>
+                            <div class="mc-chart-wrap"><div id="pub-chart"></div></div>
+                        </div>
+
+                        <div id="pub-caveat" style="display:none;margin-top:1.25rem;">
+                            <div class="key-distinction">
+                                <strong>Interpretation caveat:</strong> Publication-venue status is derived from the
+                                <code>journal_r</code> field recorded in FLoRA, classified as above. Some studies
+                                currently classified as preprints may since have been formally published in a
+                                peer-reviewed journal without FLoRA yet reflecting that update. Any outcome
+                                difference between the two groups should also not be read as caused by publication
+                                venue alone: constructive peer review, a tendency for more selective journals to
+                                accept more polished work, and publication-pressure effects — for example a bias
+                                toward reporting positive or successful results in order to get published, or
+                                conversely extra editorial scrutiny catching more issues before publication — could
+                                all plausibly produce real differences independent of, or entangled with, venue
+                                itself.
+                            </div>
+                        </div>
+
+                        <details id="pub-studies-card" class="mc-chart-card rr-studies-details" style="display:none;margin-top:1.25rem;">
+                            <summary class="mc-chart-title">All studies with publication-status data <span id="pub-studies-count" class="rr-studies-count"></span></summary>
+                            <div class="table-wrap" style="margin-top:0.75rem;">
+                                <table class="table table-striped table-hover" id="pub-studies-table" style="width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Study</th>
+                                            <th>Journal</th>
+                                            <th>Status</th>
+                                            <th>Year</th>
+                                            <th>Outcome</th>
+                                            <th>DOI</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </details>
+
+                        <div id="pub-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
+                            Failed to load Publication Status data.
+                            <code id="pub-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
                         </div>
                         </div>
                     </div>

@@ -203,10 +203,12 @@ function studyTypeLabel(kind) {
 let mcKind = 'replication';
 let aoKind = 'replication';
 let rrKind = 'replication';
+let pubKind = 'replication';
 
 setupStudyTypeSelect('mc-study-type', kind => { mcKind = kind; renderMcCharts(); });
 setupStudyTypeSelect('ao-study-type', kind => { aoKind = kind; renderOverlapCharts(); });
 setupStudyTypeSelect('rr-study-type', kind => { rrKind = kind; renderRRCharts(); });
+setupStudyTypeSelect('pub-study-type', kind => { pubKind = kind; renderPubStatusCharts(); });
 
 function getOutcomeBadge(outcome) {
     if (!outcome) return '<span class="badge badge-unknown">Unknown</span>';
@@ -1027,6 +1029,7 @@ window._rerenderAllCharts = function() {
     if (window._mcData) renderMcCharts();
     if (window._aoData) renderOverlapCharts();
     if (window._rrData) renderRRCharts();
+    if (window._pubData) renderPubStatusCharts();
 };
 
 // ===== Mean Citedness tab =====
@@ -1503,25 +1506,180 @@ async function loadRegisteredReports() {
 }
 document.getElementById('rr-tab').addEventListener('shown.bs.tab', loadRegisteredReports);
 
+// ===== Publication Status tab =====
+window._pubData = null;
+
+function renderPubStatusCharts() {
+    const d = window._pubData && window._pubData[pubKind];
+    const insufficientEl = document.getElementById('pub-placeholder');
+    const overviewEl = document.getElementById('pub-overview');
+    const chartCard = document.getElementById('pub-chart-card');
+    const studiesCard = document.getElementById('pub-studies-card');
+    const caveatEl = document.getElementById('pub-caveat');
+    if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
+        const n = d && d.overview ? d.overview.n_total : 0;
+        if (insufficientEl) {
+            insufficientEl.textContent = `Not enough ${studyTypeLabel(pubKind)} with publication-status data yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
+            insufficientEl.style.display = '';
+        }
+        if (overviewEl) overviewEl.style.display = 'none';
+        if (chartCard) chartCard.style.display = 'none';
+        if (studiesCard) studiesCard.style.display = 'none';
+        if (caveatEl) caveatEl.style.display = 'none';
+        return;
+    }
+    if (insufficientEl) insufficientEl.style.display = 'none';
+
+    const th = aoPlotlyTheme();
+    const ov = d.overview;
+    const by = d.by_outcome;
+    const kindNoun = pubKind === 'replication' ? 'Replications' : 'Reproductions';
+
+    // ── Overview boxes ─────────────────────────────────────────────────────────
+    const ovEl = document.getElementById('pub-overview');
+    if (ovEl) {
+        ovEl.innerHTML =
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_total || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">' + kindNoun + ' checked</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_journal || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Journal (peer-reviewed) (' + (ov.pct_journal || 0) + '%)</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_preprint || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Preprint / working paper (' + (ov.pct_preprint || 0) + '%)</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_unknown || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Not checkable</div>' +
+            '</div>';
+        ovEl.style.display = '';
+    }
+
+    // ── Grouped bar chart ──────────────────────────────────────────────────────
+    const buckets = studyTypeOutcomeBuckets(pubKind);
+    const groups     = ['journal', 'preprint'];
+    const GROUP_LABELS = { journal: 'Journal', preprint: 'Preprint / working paper' };
+
+    const traces = buckets.map(b => ({
+        name: b.label,
+        type: 'bar',
+        x: groups.map(g => GROUP_LABELS[g]),
+        y: groups.map(g => (by[g] && by[g][b.key]) || 0),
+        marker: { color: b.color },
+    }));
+
+    const layout = {
+        barmode: 'group',
+        height: 420,
+        paper_bgcolor: th.paper,
+        plot_bgcolor:  th.plot,
+        font: { color: th.font, size: 13 },
+        legend: { orientation: 'h', y: -0.18, font: { color: th.font } },
+        margin: { l: 50, r: 20, t: 20, b: 80 },
+        yaxis: {
+            title: 'Number of ' + kindNoun.toLowerCase(),
+            gridcolor: th.grid,
+            zerolinecolor: th.grid,
+            tickfont: { color: th.font },
+            titlefont: { color: th.font },
+        },
+        xaxis: {
+            tickfont: { color: th.font },
+        },
+    };
+
+    const config = { responsive: true, displayModeBar: false };
+    const chartEl = document.getElementById('pub-chart');
+    if (chartEl) Plotly.react(chartEl, traces, layout, config);
+    chartCard.style.display = '';
+
+    // ── All-studies table ─────────────────────────────────────────────────────
+    const studies = Array.isArray(d.pub_studies) ? d.pub_studies : [];
+    const tbody = document.querySelector('#pub-studies-table tbody');
+    if (tbody) {
+        tbody.innerHTML = studies.map(s => {
+            const doiLink = s.doi_r
+                ? '<a href="https://doi.org/' + encodeURIComponent(s.doi_r) + '" target="_blank" class="doi-link">' + escapeHtml(s.doi_r) + '</a>'
+                : (s.url_r ? '<a href="' + escapeHtml(s.url_r) + '" target="_blank" class="doi-link">link</a>' : '');
+            const statusBadge = s.pub_status === 'journal'
+                ? '<span class="badge badge-successful">Journal</span>'
+                : '<span class="badge badge-unknown">Preprint</span>';
+            return '<tr>' +
+                '<td>' + escapeHtml(s.title_r) + '</td>' +
+                '<td>' + escapeHtml(s.journal_r) + '</td>' +
+                '<td>' + statusBadge + '</td>' +
+                '<td>' + escapeHtml(s.year_r) + '</td>' +
+                '<td>' + escapeHtml(s.outcome) + '</td>' +
+                '<td>' + doiLink + '</td>' +
+            '</tr>';
+        }).join('');
+        if (studiesCard) studiesCard.style.display = studies.length ? '' : 'none';
+        const countEl = document.getElementById('pub-studies-count');
+        if (countEl) countEl.textContent = '(' + studies.length.toLocaleString() + ')';
+    }
+
+    // ── Caveat ─────────────────────────────────────────────────────────────────
+    if (caveatEl) caveatEl.style.display = '';
+}
+
+async function loadPubStatus() {
+    if (window._pubData) { renderPubStatusCharts(); return; }
+    const loadingEl  = document.getElementById('pub-loading');
+    const overviewEl = document.getElementById('pub-overview');
+    const chartCard  = document.getElementById('pub-chart-card');
+    const studiesCard = document.getElementById('pub-studies-card');
+    const caveatEl   = document.getElementById('pub-caveat');
+    const errorEl    = document.getElementById('pub-error');
+    try {
+        if (loadingEl)   loadingEl.style.display   = 'block';
+        if (overviewEl)  overviewEl.style.display  = 'none';
+        if (chartCard)   chartCard.style.display   = 'none';
+        if (studiesCard) studiesCard.style.display = 'none';
+        if (caveatEl)    caveatEl.style.display    = 'none';
+        if (errorEl)     errorEl.style.display     = 'none';
+
+        const res = await fetch(PUB_STATUS_DATA_URL, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const d = await res.json();
+        window._pubData = d;
+
+        if (loadingEl) loadingEl.style.display = 'none';
+        renderPubStatusCharts();
+    } catch (err) {
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl)   errorEl.style.display   = 'block';
+        const det = document.getElementById('pub-error-detail');
+        if (det) det.textContent = String(err);
+    }
+}
+document.getElementById('pub-tab').addEventListener('shown.bs.tab', loadPubStatus);
+
 // ===== Data stamps (last updated) =====
 const OVERLAP_DATA_URL = 'data/author_overlap_data.json';
 const OVERLAP_META_URL = 'data/author_overlap_meta.json';
 const RR_DATA_URL = 'data/rr_status_data.json';
 const RR_META_URL = 'data/rr_status_meta.json';
+const PUB_STATUS_DATA_URL = 'data/pub_status_data.json';
+const PUB_STATUS_META_URL = 'data/pub_status_meta.json';
 
 const STAMP_LABELS = {
     flora: 'FLoRA data',
     citations: 'Citation data',
     impact_factor: 'Mean Citedness analysis',
     author_overlap: 'Authorship Overlap data',
-    rr_status: 'Registered Reports data'
+    rr_status: 'Registered Reports data',
+    pub_status: 'Publication Status data'
 };
 const STAMP_URLS = {
     flora: FLORA_META_URL,
     citations: CITATIONS_META_URL,
     impact_factor: IMPACT_META_URL,
     author_overlap: OVERLAP_META_URL,
-    rr_status: RR_META_URL
+    rr_status: RR_META_URL,
+    pub_status: PUB_STATUS_META_URL
 };
 
 async function loadDataStamps() {
@@ -1636,14 +1794,15 @@ const TAB_PARAM_MAP = {
     citations: 'citation-tab', 'citation-impact': 'citation-tab',
     'mean-citedness': 'mc-tab', omc: 'mc-tab',
     'authorship-overlap': 'overlap-tab', overlap: 'overlap-tab',
-    'registered-reports': 'rr-tab', rr: 'rr-tab'
+    'registered-reports': 'rr-tab', rr: 'rr-tab',
+    'publication-status': 'pub-tab', 'pub-status': 'pub-tab', pub: 'pub-tab'
 };
 
 // Canonical ?tab= value for each tab button (the reverse of TAB_PARAM_MAP).
 const TAB_ID_TO_PARAM = {
     'overview-tab': 'overview', 'browse-tab': 'browse', 'trends-tab': 'trends',
     'citation-tab': 'citations', 'mc-tab': 'mean-citedness', 'overlap-tab': 'authorship-overlap',
-    'rr-tab': 'registered-reports'
+    'rr-tab': 'registered-reports', 'pub-tab': 'publication-status'
 };
 
 // Select a tab from the ?tab= URL param (e.g. ?tab=citations). Activating the
