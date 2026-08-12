@@ -202,13 +202,18 @@ function studyTypeLabel(kind) {
 
 let mcKind = 'replication';
 let aoKind = 'replication';
-let rrKind = 'replication';
-let pubKind = 'replication';
+// Registered Reports (Publication Format), Publication Status, and the large-scale-
+// project plot live together on the merged "Publication Type" tab and share one filter.
+let pubTypeKind = 'replication';
 
 setupStudyTypeSelect('mc-study-type', kind => { mcKind = kind; renderMcCharts(); });
 setupStudyTypeSelect('ao-study-type', kind => { aoKind = kind; renderOverlapCharts(); });
-setupStudyTypeSelect('rr-study-type', kind => { rrKind = kind; renderRRCharts(); });
-setupStudyTypeSelect('pub-study-type', kind => { pubKind = kind; renderPubStatusCharts(); });
+setupStudyTypeSelect('pubtype-study-type', kind => {
+    pubTypeKind = kind;
+    renderPubStatusCharts();
+    renderRRCharts();
+    renderLargeScaleCharts();
+});
 
 function getOutcomeBadge(outcome) {
     if (!outcome) return '<span class="badge badge-unknown">Unknown</span>';
@@ -1029,7 +1034,7 @@ window._rerenderAllCharts = function() {
     if (window._mcData) renderMcCharts();
     if (window._aoData) renderOverlapCharts();
     if (window._rrData) renderRRCharts();
-    if (window._pubData) renderPubStatusCharts();
+    if (window._pubData) { renderPubStatusCharts(); renderLargeScaleCharts(); }
 };
 
 // ===== Mean Citedness tab =====
@@ -1363,7 +1368,7 @@ document.getElementById('overlap-tab').addEventListener('shown.bs.tab', loadAuth
 window._rrData = null;
 
 function renderRRCharts() {
-    const d = window._rrData && window._rrData[rrKind];
+    const d = window._rrData && window._rrData[pubTypeKind];
     const insufficientEl = document.getElementById('rr-placeholder');
     const overviewEl = document.getElementById('rr-overview');
     const chartCard = document.getElementById('rr-chart-card');
@@ -1372,7 +1377,7 @@ function renderRRCharts() {
     if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
         const n = d && d.overview ? d.overview.n_total : 0;
         if (insufficientEl) {
-            insufficientEl.textContent = `Not enough ${studyTypeLabel(rrKind)} checked against the RR library yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
+            insufficientEl.textContent = `Not enough ${studyTypeLabel(pubTypeKind)} checked against the RR library yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
             insufficientEl.style.display = '';
         }
         if (overviewEl) overviewEl.style.display = 'none';
@@ -1386,7 +1391,7 @@ function renderRRCharts() {
     const th = aoPlotlyTheme();
     const ov = d.overview;
     const by = d.by_outcome;
-    const kindNoun = rrKind === 'replication' ? 'Replications' : 'Reproductions';
+    const kindNoun = pubTypeKind === 'replication' ? 'Replications' : 'Reproductions';
 
     // ── Overview boxes ─────────────────────────────────────────────────────────
     const ovEl = document.getElementById('rr-overview');
@@ -1412,7 +1417,7 @@ function renderRRCharts() {
     }
 
     // ── Grouped bar chart ──────────────────────────────────────────────────────
-    const buckets = studyTypeOutcomeBuckets(rrKind);
+    const buckets = studyTypeOutcomeBuckets(pubTypeKind);
     const groups     = ['rr', 'non_rr'];
     const GROUP_LABELS = { rr: 'Registered Report', non_rr: 'Rest' };
 
@@ -1504,13 +1509,12 @@ async function loadRegisteredReports() {
         if (det) det.textContent = String(err);
     }
 }
-document.getElementById('rr-tab').addEventListener('shown.bs.tab', loadRegisteredReports);
 
 // ===== Publication Status tab =====
 window._pubData = null;
 
 function renderPubStatusCharts() {
-    const d = window._pubData && window._pubData[pubKind];
+    const d = window._pubData && window._pubData[pubTypeKind];
     const insufficientEl = document.getElementById('pub-placeholder');
     const overviewEl = document.getElementById('pub-overview');
     const chartCard = document.getElementById('pub-chart-card');
@@ -1519,7 +1523,7 @@ function renderPubStatusCharts() {
     if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
         const n = d && d.overview ? d.overview.n_total : 0;
         if (insufficientEl) {
-            insufficientEl.textContent = `Not enough ${studyTypeLabel(pubKind)} with publication-status data yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
+            insufficientEl.textContent = `Not enough ${studyTypeLabel(pubTypeKind)} with publication-status data yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
             insufficientEl.style.display = '';
         }
         if (overviewEl) overviewEl.style.display = 'none';
@@ -1533,7 +1537,7 @@ function renderPubStatusCharts() {
     const th = aoPlotlyTheme();
     const ov = d.overview;
     const by = d.by_outcome;
-    const kindNoun = pubKind === 'replication' ? 'Replications' : 'Reproductions';
+    const kindNoun = pubTypeKind === 'replication' ? 'Replications' : 'Reproductions';
 
     // ── Overview boxes ─────────────────────────────────────────────────────────
     const ovEl = document.getElementById('pub-overview');
@@ -1559,7 +1563,7 @@ function renderPubStatusCharts() {
     }
 
     // ── Grouped bar chart ──────────────────────────────────────────────────────
-    const buckets = studyTypeOutcomeBuckets(pubKind);
+    const buckets = studyTypeOutcomeBuckets(pubTypeKind);
     const groups     = ['journal', 'preprint'];
     const GROUP_LABELS = { journal: 'Journal', preprint: 'Preprint / working paper' };
 
@@ -1655,7 +1659,103 @@ async function loadPubStatus() {
         if (det) det.textContent = String(err);
     }
 }
-document.getElementById('pub-tab').addEventListener('shown.bs.tab', loadPubStatus);
+
+// ===== Large-scale project plot (third section of the Publication Type tab) =====
+// Reuses window._pubData - compute_pub_status.py nests a "large_scale" result inside
+// each kind alongside the journal/preprint breakdown, since both are pure flora.csv
+// transforms with no external API - no separate fetch needed here.
+function renderLargeScaleCharts() {
+    const d = window._pubData && window._pubData[pubTypeKind] && window._pubData[pubTypeKind].large_scale;
+    const insufficientEl = document.getElementById('ls-placeholder');
+    const overviewEl = document.getElementById('ls-overview');
+    const chartCard = document.getElementById('ls-chart-card');
+    const caveatEl = document.getElementById('ls-caveat');
+    if (!d || !d.overview || d.overview.n_total < ANALYSIS_MIN_N) {
+        const n = d && d.overview ? d.overview.n_total : 0;
+        if (insufficientEl) {
+            insufficientEl.textContent = `Not enough ${studyTypeLabel(pubTypeKind)} with project-scale data yet (n=${n}; need at least ${ANALYSIS_MIN_N}).`;
+            insufficientEl.style.display = '';
+        }
+        if (overviewEl) overviewEl.style.display = 'none';
+        if (chartCard) chartCard.style.display = 'none';
+        if (caveatEl) caveatEl.style.display = 'none';
+        return;
+    }
+    if (insufficientEl) insufficientEl.style.display = 'none';
+
+    const th = aoPlotlyTheme();
+    const ov = d.overview;
+    const by = d.by_outcome;
+    const kindNoun = pubTypeKind === 'replication' ? 'Replications' : 'Reproductions';
+
+    // ── Overview boxes ─────────────────────────────────────────────────────────
+    if (overviewEl) {
+        overviewEl.innerHTML =
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_total || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">' + kindNoun + ' checked</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_individual || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Individual (' + (ov.pct_individual || 0) + '%)</div>' +
+            '</div>' +
+            '<div class="mc-stat">' +
+                '<div class="mc-stat-value">' + (ov.n_large_scale || 0).toLocaleString() + '</div>' +
+                '<div class="mc-stat-label">Large-scale project (' + (ov.pct_large_scale || 0) + '%)</div>' +
+            '</div>';
+        overviewEl.style.display = '';
+    }
+
+    // ── Grouped bar chart ──────────────────────────────────────────────────────
+    const buckets = studyTypeOutcomeBuckets(pubTypeKind);
+    const groups = ['individual', 'large_scale'];
+    const GROUP_LABELS = { individual: 'Individual', large_scale: 'Large-scale project (>5 targets)' };
+
+    const traces = buckets.map(b => ({
+        name: b.label,
+        type: 'bar',
+        x: groups.map(g => GROUP_LABELS[g]),
+        y: groups.map(g => (by[g] && by[g][b.key]) || 0),
+        marker: { color: b.color },
+    }));
+
+    const layout = {
+        barmode: 'group',
+        height: 420,
+        paper_bgcolor: th.paper,
+        plot_bgcolor:  th.plot,
+        font: { color: th.font, size: 13 },
+        legend: { orientation: 'h', y: -0.18, font: { color: th.font } },
+        margin: { l: 50, r: 20, t: 20, b: 80 },
+        yaxis: {
+            title: 'Number of ' + kindNoun.toLowerCase(),
+            gridcolor: th.grid,
+            zerolinecolor: th.grid,
+            tickfont: { color: th.font },
+            titlefont: { color: th.font },
+        },
+        xaxis: {
+            tickfont: { color: th.font },
+        },
+    };
+
+    const config = { responsive: true, displayModeBar: false };
+    const chartEl = document.getElementById('ls-chart');
+    if (chartEl) Plotly.react(chartEl, traces, layout, config);
+    if (chartCard) chartCard.style.display = '';
+
+    // ── Caveat ─────────────────────────────────────────────────────────────────
+    if (caveatEl) caveatEl.style.display = '';
+}
+
+// One combined loader for the merged "Publication Type" tab: fetches both backing
+// files (Registered Reports needs its own Zotero-derived file; Publication Status +
+// the large-scale plot share pub_status_data.json) and renders all three sections.
+async function loadPublicationType() {
+    await Promise.all([loadRegisteredReports(), loadPubStatus()]);
+    renderLargeScaleCharts();
+}
+document.getElementById('pub-tab').addEventListener('shown.bs.tab', loadPublicationType);
 
 // ===== Data stamps (last updated) =====
 const OVERLAP_DATA_URL = 'data/author_overlap_data.json';
@@ -1794,15 +1894,18 @@ const TAB_PARAM_MAP = {
     citations: 'citation-tab', 'citation-impact': 'citation-tab',
     'mean-citedness': 'mc-tab', omc: 'mc-tab',
     'authorship-overlap': 'overlap-tab', overlap: 'overlap-tab',
-    'registered-reports': 'rr-tab', rr: 'rr-tab',
-    'publication-status': 'pub-tab', 'pub-status': 'pub-tab', pub: 'pub-tab'
+    // 'registered-reports'/'rr' and 'publication-status' are pre-merge aliases, kept
+    // so old links/bookmarks still land on the right (now combined) tab.
+    'registered-reports': 'pub-tab', rr: 'pub-tab',
+    'publication-status': 'pub-tab', 'pub-status': 'pub-tab', pub: 'pub-tab',
+    'publication-type': 'pub-tab'
 };
 
 // Canonical ?tab= value for each tab button (the reverse of TAB_PARAM_MAP).
 const TAB_ID_TO_PARAM = {
     'overview-tab': 'overview', 'browse-tab': 'browse', 'trends-tab': 'trends',
     'citation-tab': 'citations', 'mc-tab': 'mean-citedness', 'overlap-tab': 'authorship-overlap',
-    'rr-tab': 'registered-reports', 'pub-tab': 'publication-status'
+    'pub-tab': 'publication-type'
 };
 
 // Select a tab from the ?tab= URL param (e.g. ?tab=citations). Activating the

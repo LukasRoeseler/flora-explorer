@@ -1,14 +1,22 @@
 """
-Determine whether each FLoRA replication/reproduction's write-up was published in a
-peer-reviewed journal vs. as a preprint/working paper/registry entry, based on the
-journal_r field, and compare outcomes between the two groups.
+Two classifications of each FLoRA replication/reproduction's write-up, feeding the
+"Publication Type" tab (Publication Status + the large-scale-project plot; Publication
+Format/Registered Reports is computed separately by compute_rr_status.py, since that
+one needs the Zotero API):
 
-Classification: a row is "preprint" if journal_r is empty/NaN, or its lowercased text
-matches a known preprint-server/repository/working-paper naming pattern (OSF, arXiv,
-SSRN, bioRxiv/medRxiv, or text containing "preprint", "working paper", "repository",
-"registries") - a plain presence/absence test on journal_r is not enough, since
-several of those venues are already recorded there as text (e.g. "OSF Registries",
-"arXiv", "SSRN Electronic Journal") rather than left blank. Otherwise "journal".
+1. Publication Status - peer-reviewed journal vs. preprint/working paper/registry,
+   based on the journal_r field. A row is "preprint" if journal_r is empty/NaN, or its
+   lowercased text matches a known preprint-server/repository/working-paper naming
+   pattern (OSF, arXiv, SSRN, bioRxiv/medRxiv, or text containing "preprint",
+   "working paper", "repository", "registries") - a plain presence/absence test on
+   journal_r is not enough, since several of those venues are already recorded there
+   as text (e.g. "OSF Registries", "arXiv", "SSRN Electronic Journal") rather than
+   left blank. Otherwise "journal".
+
+2. Large-scale project - whether a row's replication/reproduction publication (doi_r)
+   reports on more than 5 distinct target/original studies (doi_o), e.g. a Registered
+   Replication Report or Many-Labs-style coordinated project, vs. an individual
+   single-target write-up.
 
 Output:
   data/pub_status_data.json
@@ -128,6 +136,39 @@ def compute_pub_status_result(sub: pd.DataFrame, bucket_col: str, buckets: list[
     }
 
 
+LARGE_SCALE_THRESHOLD = 5  # > this many distinct target studies per doi_r = "large-scale"
+
+
+def compute_large_scale_result(sub: pd.DataFrame, bucket_col: str, buckets: list[str]) -> dict:
+    sub = sub.copy()
+    n_originals_per_doi_r = sub.groupby("doi_r")["doi_o"].nunique()
+    # A row with no doi_r can't be grouped with any other row via that key, so it
+    # can't be shown to be part of a >5-target project - default to "individual".
+    sub["n_originals_in_rep"] = sub["doi_r"].map(n_originals_per_doi_r).fillna(1)
+    sub["is_large_scale"] = sub["n_originals_in_rep"] > LARGE_SCALE_THRESHOLD
+
+    n_total = len(sub)
+    n_large_scale = int(sub["is_large_scale"].sum())
+    n_individual = n_total - n_large_scale
+
+    by_outcome: dict[str, dict[str, int]] = {}
+    for grp, flag in [("individual", False), ("large_scale", True)]:
+        bkt = sub.loc[sub["is_large_scale"] == flag, bucket_col]
+        by_outcome[grp] = {b: int((bkt == b).sum()) for b in buckets}
+
+    return {
+        "overview": {
+            "n_total": n_total,
+            "n_individual": n_individual,
+            "n_large_scale": n_large_scale,
+            "n_unknown": 0,
+            "pct_individual": round(100 * n_individual / n_total, 1) if n_total else 0,
+            "pct_large_scale": round(100 * n_large_scale / n_total, 1) if n_total else 0,
+        },
+        "by_outcome": by_outcome,
+    }
+
+
 # ── Load & split by study type ─────────────────────────────────────────────────
 df = pd.read_csv(IN_CSV, low_memory=False, na_values=["", "NA"])
 df["type_lc"] = df.get("type", pd.Series(dtype=str)).astype(str).str.lower()
@@ -146,6 +187,9 @@ result = {
     "reproduction-numerical": compute_pub_status_result(repro_df, "computational_bucket", COMPUTATIONAL_BUCKETS),
     "reproduction-robustness": compute_pub_status_result(repro_df, "robustness_bucket", ROBUSTNESS_BUCKETS),
 }
+result["replication"]["large_scale"] = compute_large_scale_result(df[is_replication], "outcome_lc", REPLICATION_OUTCOMES)
+result["reproduction-numerical"]["large_scale"] = compute_large_scale_result(repro_df, "computational_bucket", COMPUTATIONAL_BUCKETS)
+result["reproduction-robustness"]["large_scale"] = compute_large_scale_result(repro_df, "robustness_bucket", ROBUSTNESS_BUCKETS)
 
 OUT_DATA.write_text(json.dumps(result), encoding="utf-8")
 OUT_META.write_text(json.dumps({
@@ -156,6 +200,9 @@ OUT_META.write_text(json.dumps({
 
 for kind, r in result.items():
     ov = r["overview"]
+    ls = r["large_scale"]["overview"]
     print(f"{kind}: n_total={ov['n_total']}, journal={ov['n_journal']} ({ov['pct_journal']}%), "
-          f"preprint={ov['n_preprint']} ({ov['pct_preprint']}%)")
+          f"preprint={ov['n_preprint']} ({ov['pct_preprint']}%); "
+          f"individual={ls['n_individual']} ({ls['pct_individual']}%), "
+          f"large_scale={ls['n_large_scale']} ({ls['pct_large_scale']}%)")
 print(f"Written: {OUT_DATA}")

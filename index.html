@@ -88,10 +88,7 @@
                     <button class="nav-link" id="overlap-tab" data-bs-toggle="tab" data-bs-target="#authorship-overlap" type="button" role="tab">Authorship Overlap</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="rr-tab" data-bs-toggle="tab" data-bs-target="#registered-reports" type="button" role="tab">Registered Reports</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pub-tab" data-bs-toggle="tab" data-bs-target="#publication-status" type="button" role="tab">Publication Status</button>
+                    <button class="nav-link" id="pub-tab" data-bs-toggle="tab" data-bs-target="#publication-type" type="button" role="tab">Publication Type</button>
                 </li>
             </ul>
         </div>
@@ -806,100 +803,24 @@
                 </div>
             </div>
 
-            <!-- ==================== REGISTERED REPORTS ==================== -->
-            <div class="tab-pane fade" id="registered-reports" role="tabpanel">
-                <div class="data-stamp" data-stamp-source="rr_status"></div>
-
+            <!-- ==================== PUBLICATION TYPE ==================== -->
+            <div class="tab-pane fade" id="publication-type" role="tabpanel">
                 <div class="tab-cite-block">
                     <div class="tab-cite-block-label">How to cite</div>
                     <div class="cite-ref">Wallrich, L., &amp; Röseler, L. (2026). <em>FLoRA Explorer</em> [Website]. <a href="https://forrt.org/flora-explorer/" target="_blank" class="doi-link">https://forrt.org/flora-explorer/</a></div>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">Registered Reports vs. Other Replications</div>
-                    <div class="card-body">
-                        <p style="margin-bottom:0.75rem;">
-                            This analysis checks whether each replication in FLoRA was itself published as a
-                            <strong>Registered Report</strong> (RR): a format in which the study design and
-                            analysis plan are peer-reviewed and provisionally accepted <em>before</em> results
-                            are known. Matching is done by DOI/title against the FORRT
-                            <a href="https://www.zotero.org/groups/5937153/registered_reports/library" target="_blank" class="doi-link">Registered Reports Zotero library</a>,
-                            a hand-curated catalogue of RR publications. Replications found in that library go
-                            into the <strong>Registered Report</strong> group; every other replication falls into
-                            the <strong>rest</strong> group.
-                        </p>
-                        <p style="margin-bottom:0.75rem;">
-                            Because the RR library is itself a work in progress, "rest" really means
-                            <em>not (yet) found</em> in the library, rather than confirmed non-RR.
-                        </p>
-                        <div class="chip-group study-type-select" id="rr-study-type">
-                            <button class="chip active" data-value="replication">Replications</button>
-                            <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
-                            <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
-                        </div>
-                        <div class="study-type-note">This analysis is computed for all three study types; reproduction results may show a low-data message given how few reproductions exist so far.</div>
-                        <div id="rr-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
-                        <div id="rr-content">
-                        <div id="rr-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
-
-                        <div id="rr-overview" class="mc-overview-grid" style="display:none;"></div>
-
-                        <div id="rr-chart-card" class="mc-chart-card" style="display:none;margin-top:1.25rem;">
-                            <div class="mc-chart-title">Replication outcomes by Registered Report status</div>
-                            <div class="mc-chart-wrap"><div id="rr-chart"></div></div>
-                        </div>
-
-                        <div id="rr-caveat" style="display:none;margin-top:1.25rem;">
-                            <div class="key-distinction">
-                                <strong>Interpretation caveat:</strong> Which studies get accepted as Registered
-                                Reports is not random — journals and reviewers may favour proposals with designs
-                                they expect to be highly powered, well-specified, or otherwise likely to replicate
-                                cleanly, regardless of format. Any difference in outcomes between RR and non-RR
-                                replications could therefore reflect the RR process itself, selection into that
-                                process, discipline/topic composition, or some mixture of all three. Coverage of
-                                the RR library is also incomplete, so the "rest" group likely still contains some
-                                unlabelled Registered Reports.
-                            </div>
-                        </div>
-
-                        <details id="rr-studies-card" class="mc-chart-card rr-studies-details" style="display:none;margin-top:1.25rem;">
-                            <summary class="mc-chart-title">Replications identified as Registered Reports <span id="rr-studies-count" class="rr-studies-count"></span></summary>
-                            <div class="table-wrap" style="margin-top:0.75rem;">
-                                <table class="table table-striped table-hover" id="rr-studies-table" style="width:100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Replication Study</th>
-                                            <th>Journal</th>
-                                            <th>Year</th>
-                                            <th>Outcome</th>
-                                            <th>DOI</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </details>
-
-                        <div id="rr-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
-                            Failed to load Registered Reports data.
-                            <code id="rr-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
-                        </div>
-                        </div>
-                    </div>
+                <div class="chip-group study-type-select" id="pubtype-study-type">
+                    <button class="chip active" data-value="replication">Replications</button>
+                    <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
+                    <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
                 </div>
-            </div>
+                <div class="study-type-note">This filter applies to all three analyses below. It is computed for all three study types; reproduction results may show a low-data message given how few reproductions exist so far.</div>
 
-            <!-- ==================== PUBLICATION STATUS ==================== -->
-            <div class="tab-pane fade" id="publication-status" role="tabpanel">
+                <!-- ---- Publication Status: journal vs. preprint ---- -->
                 <div class="data-stamp" data-stamp-source="pub_status"></div>
-
-                <div class="tab-cite-block">
-                    <div class="tab-cite-block-label">How to cite</div>
-                    <div class="cite-ref">Wallrich, L., &amp; Röseler, L. (2026). <em>FLoRA Explorer</em> [Website]. <a href="https://forrt.org/flora-explorer/" target="_blank" class="doi-link">https://forrt.org/flora-explorer/</a></div>
-                </div>
-
                 <div class="card">
-                    <div class="card-header">Journal vs. Preprint Publication Status</div>
+                    <div class="card-header">Publication Status: Journal vs. Preprint</div>
                     <div class="card-body">
                         <p style="margin-bottom:0.75rem;">
                             This analysis checks whether each replication/reproduction's write-up appears in a
@@ -911,12 +832,6 @@
                             or a name containing "working paper", "preprint", "repository", or "registries").
                             Everything else is treated as a peer-reviewed journal.
                         </p>
-                        <div class="chip-group study-type-select" id="pub-study-type">
-                            <button class="chip active" data-value="replication">Replications</button>
-                            <button class="chip" data-value="reproduction-numerical">Numerical Reproductions</button>
-                            <button class="chip" data-value="reproduction-robustness">Robustness Reproductions</button>
-                        </div>
-                        <div class="study-type-note">This analysis is computed for all three study types, though very few reproductions exist so far.</div>
                         <div id="pub-placeholder" class="coming-soon-placeholder" style="display:none;"></div>
                         <div id="pub-content">
                         <div id="pub-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
@@ -966,6 +881,118 @@
                         <div id="pub-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
                             Failed to load Publication Status data.
                             <code id="pub-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ---- Publication Format: Registered Reports ---- -->
+                <div class="data-stamp" data-stamp-source="rr_status"></div>
+                <div class="card">
+                    <div class="card-header">Publication Format: Registered Reports vs. Other Replications</div>
+                    <div class="card-body">
+                        <p style="margin-bottom:0.75rem;">
+                            This analysis checks whether each replication in FLoRA was itself published as a
+                            <strong>Registered Report</strong> (RR): a format in which the study design and
+                            analysis plan are peer-reviewed and provisionally accepted <em>before</em> results
+                            are known. Matching is done by DOI/title against the FORRT
+                            <a href="https://www.zotero.org/groups/5937153/registered_reports/library" target="_blank" class="doi-link">Registered Reports Zotero library</a>,
+                            a hand-curated catalogue of RR publications. Replications found in that library go
+                            into the <strong>Registered Report</strong> group; every other replication falls into
+                            the <strong>rest</strong> group.
+                        </p>
+                        <p style="margin-bottom:0.75rem;">
+                            Because the RR library is itself a work in progress, "rest" really means
+                            <em>not (yet) found</em> in the library, rather than confirmed non-RR.
+                        </p>
+                        <div id="rr-placeholder" class="coming-soon-placeholder" style="display:none;">Not computed yet for this study type — coming soon.</div>
+                        <div id="rr-content">
+                        <div id="rr-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
+
+                        <div id="rr-overview" class="mc-overview-grid" style="display:none;"></div>
+
+                        <div id="rr-chart-card" class="mc-chart-card" style="display:none;margin-top:1.25rem;">
+                            <div class="mc-chart-title">Replication outcomes by Registered Report status</div>
+                            <div class="mc-chart-wrap"><div id="rr-chart"></div></div>
+                        </div>
+
+                        <div id="rr-caveat" style="display:none;margin-top:1.25rem;">
+                            <div class="key-distinction">
+                                <strong>Interpretation caveat:</strong> Which studies get accepted as Registered
+                                Reports is not random — journals and reviewers may favour proposals with designs
+                                they expect to be highly powered, well-specified, or otherwise likely to replicate
+                                cleanly, regardless of format. Any difference in outcomes between RR and non-RR
+                                replications could therefore reflect the RR process itself, selection into that
+                                process, discipline/topic composition, or some mixture of all three. Coverage of
+                                the RR library is also incomplete, so the "rest" group likely still contains some
+                                unlabelled Registered Reports.
+                            </div>
+                        </div>
+
+                        <details id="rr-studies-card" class="mc-chart-card rr-studies-details" style="display:none;margin-top:1.25rem;">
+                            <summary class="mc-chart-title">Replications identified as Registered Reports <span id="rr-studies-count" class="rr-studies-count"></span></summary>
+                            <div class="table-wrap" style="margin-top:0.75rem;">
+                                <table class="table table-striped table-hover" id="rr-studies-table" style="width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Replication Study</th>
+                                            <th>Journal</th>
+                                            <th>Year</th>
+                                            <th>Outcome</th>
+                                            <th>DOI</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </details>
+
+                        <div id="rr-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
+                            Failed to load Registered Reports data.
+                            <code id="rr-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ---- Individual vs. large-scale replication projects ---- -->
+                <div class="card">
+                    <div class="card-header">Individual vs. Large-Scale Replication Projects</div>
+                    <div class="card-body">
+                        <p style="margin-bottom:0.75rem;">
+                            This analysis checks whether a replication/reproduction's write-up is part of a
+                            <strong>large-scale project</strong>: a single publication (identified by
+                            <code>doi_r</code>) that reports on more than 5 distinct target/original studies at
+                            once, such as a Registered Replication Report or a Many-Labs-style coordinated
+                            project. Everything else is treated as an <strong>individual</strong>, single-target
+                            write-up.
+                        </p>
+                        <div id="ls-placeholder" class="coming-soon-placeholder" style="display:none;"></div>
+                        <div id="ls-content">
+                        <div id="ls-loading" style="color:var(--flora-muted);font-size:0.9rem;padding:1rem 0;">Loading analysis…</div>
+
+                        <div id="ls-overview" class="mc-overview-grid" style="display:none;"></div>
+
+                        <div id="ls-chart-card" class="mc-chart-card" style="display:none;margin-top:1.25rem;">
+                            <div class="mc-chart-title">Outcomes by project scale</div>
+                            <div class="mc-chart-wrap"><div id="ls-chart"></div></div>
+                        </div>
+
+                        <div id="ls-caveat" style="display:none;margin-top:1.25rem;">
+                            <div class="key-distinction">
+                                <strong>Interpretation caveat:</strong> Outcomes reported within the same
+                                large-scale publication are not independent data points — they typically share
+                                authors, protocol, and incentives, so pooling many results from one project
+                                alongside many single-target replications can understate how clustered those
+                                outcomes really are. Large-scale projects may also differ systematically in rigor,
+                                pre-registration, or topic selection from individual replications, which could
+                                itself explain any outcome difference, independent of scale per se.
+                            </div>
+                        </div>
+
+                        <div id="ls-error" style="display:none;color:var(--flora-muted);font-size:0.9rem;">
+                            Failed to load project-scale data.
+                            <code id="ls-error-detail" style="display:block;margin-top:0.4rem;font-size:0.8rem;color:var(--flora-text);word-break:break-all;"></code>
                         </div>
                         </div>
                     </div>
