@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6b4582">
+    <meta name="theme-color" content="#2c2c2c">
     <title>FLoRA Explorer: FORRT Library of Replication Attempts</title>
     <meta name="description" content="Explore the FORRT Library of Replication Attempts (FLoRA), a comprehensive database tracking replication and reproduction studies across the sciences and humanities.">
     <meta name="keywords" content="replication, reproduction, FLoRA, FORRT, open science, metascience, reproducibility">
@@ -25,7 +25,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
     <!-- App CSS -->
     <link rel="stylesheet" href="assets/styles.css">
@@ -34,40 +34,15 @@
 
     <!-- Dark top bar (FORRT-style) -->
     <div class="top-bar">
-        <div class="container top-bar-inner">
+        <div class="top-bar-inner">
             <a class="brand-mark" href="https://forrt.org/replication-hub/" target="_blank">
-                <span>FORRT Replication Hub</span>
+                <span class="brand-icon"><img src="assets/logo.svg" alt=""></span>
+                <span class="brand-name">
+                    <strong>FLoRA</strong>
+                    <span>Replication Explorer</span>
+                </span>
             </a>
-            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-                <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-            </button>
-        </div>
-    </div>
 
-    <!-- Hero -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-inner">
-                <div class="hero-logo"><img src="assets/logo.svg" alt="FLoRA logo"></div>
-                <h1>FLoRA Explorer</h1>
-                <hr class="hero-rule">
-                <p class="hero-subtitle">Tracking reproductions and replications across the sciences and humanities.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- WIP corner ribbon -->
-    <div class="wip-ribbon" id="wip-ribbon" aria-label="Work in progress">
-        <div class="wip-ribbon-inner">Work in Progress</div>
-    </div>
-    <div class="wip-ribbon-tip" id="wip-ribbon-tip" role="tooltip">
-        <strong>Work in progress.</strong> FLoRA Explorer and the underlying dataset are actively being expanded. Some entries may be incomplete, and features marked <em>experimental</em> may change.
-    </div>
-
-    <!-- Tabs -->
-    <div class="nav-tabs-wrapper">
-        <div class="container">
             <ul class="nav nav-tabs" id="floraTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
@@ -91,9 +66,23 @@
                     <button class="nav-link" id="pub-tab" data-bs-toggle="tab" data-bs-target="#publication-type" type="button" role="tab">Publication Type</button>
                 </li>
             </ul>
+
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </button>
         </div>
     </div>
 
+    <!-- WIP corner ribbon -->
+    <div class="wip-ribbon" id="wip-ribbon" aria-label="Work in progress">
+        <div class="wip-ribbon-inner">Work in Progress</div>
+    </div>
+    <div class="wip-ribbon-tip" id="wip-ribbon-tip" role="tooltip">
+        <strong>Work in progress.</strong> FLoRA Explorer and the underlying dataset are actively being expanded. Some entries may be incomplete, and features marked <em>experimental</em> may change.
+    </div>
+
+    <main class="app-main">
     <div class="container">
         <div id="global-loading" class="loading-spinner">
             <div class="spinner-border" role="status"></div>
@@ -1024,8 +1013,13 @@
 
         </div>
 
-        <div class="footer">
-            Data source: <a href="https://github.com/forrtproject/FReD-data" target="_blank">FORRT FLoRA Project</a> ·
+    </div>
+    </main>
+
+    <div class="footer-bar">
+        <span>FLoRA &middot; Tracking reproductions and replications across the sciences and humanities</span>
+        <div>
+            <a href="https://github.com/forrtproject/FReD-data" target="_blank">FORRT FLoRA Project</a>
             <a href="https://forrt.org/replication-hub/" target="_blank">FORRT Replication Hub</a>
         </div>
     </div>
