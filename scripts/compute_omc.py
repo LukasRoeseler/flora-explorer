@@ -154,7 +154,9 @@ def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
     computational = None
     robustness = None
 
-    if "computational issue" in p0 or "technical failure" in p0 or p0 == "failed":
+    if "technical failure" in p0 or p0 == "failed":
+        computational = "technical_failure"
+    elif "computational issue" in p0:
         computational = "issues"
     elif "computationally reproducible" in p0 or ("computational" in p0 and "success" in p0):
         computational = "successful"
@@ -224,7 +226,7 @@ def compute_reproduction_impact_stats(rows: list[dict]) -> None:
         }
 
     result = {
-        "reproduction-numerical": build_dimension("computational", ["successful", "issues", "not_checked", "not_coded"]),
+        "reproduction-numerical": build_dimension("computational", ["successful", "issues", "technical_failure", "not_checked", "not_coded"]),
         "reproduction-robustness": build_dimension("robustness", ["robust", "challenges", "not_checked", "not_coded"]),
     }
     out_path = DATA_DIR / "impact_factor_reproductions.json"

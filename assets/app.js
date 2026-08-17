@@ -113,7 +113,8 @@ function parseReproductionOutcome(outcomeStr) {
     const p1 = parts[1] || '';
     let computational = null, robustness = null;
 
-    if (p0.includes('computational issue') || p0.includes('technical failure') || p0 === 'failed') computational = 'issues';
+    if (p0.includes('technical failure') || p0 === 'failed') computational = 'technical_failure';
+    else if (p0.includes('computational issue')) computational = 'issues';
     else if (p0.includes('computationally reproducible') || (p0.includes('computational') && p0.includes('success'))) computational = 'successful';
     else if (p0.includes('not checked')) computational = 'not_checked';
 
@@ -181,7 +182,8 @@ function studyTypeOutcomeBuckets(kind) {
     if (kind === 'reproduction-numerical') {
         return [
             { key: 'successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
-            { key: 'issues', label: 'Issues', color: REPRODUCTION_COLORS.issues },
+            { key: 'issues', label: 'Computational issues', color: REPRODUCTION_COLORS.issues },
+            { key: 'technical_failure', label: 'Technical failure', color: REPRODUCTION_COLORS.technical_failure },
             { key: 'not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
             { key: 'not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];
@@ -345,12 +347,13 @@ function updateOverviewStats(data) {
 // Muted grays for "not yet coded"/"not checked" - distinct from the successful/failed/
 // mixed palette so an unassessed reproduction never reads as an outcome.
 const REPRODUCTION_COLORS = {
-    successful:  OUTCOME_COLORS.successful,
-    issues:      OUTCOME_COLORS.failed,
-    robust:      OUTCOME_COLORS.successful,
-    challenges:  OUTCOME_COLORS.failed,
-    not_checked: '#8a8f9c',
-    not_coded:   '#c3c7ce'
+    successful:        OUTCOME_COLORS.successful,
+    issues:            OUTCOME_COLORS.failed,
+    technical_failure: '#7a1f1f',
+    robust:            OUTCOME_COLORS.successful,
+    challenges:        OUTCOME_COLORS.failed,
+    not_checked:       '#8a8f9c',
+    not_coded:         '#c3c7ce'
 };
 
 // Builds the {datasets, total} for one of the three outcome dimensions shown on the
@@ -374,15 +377,16 @@ function computeKindChartData(data, kind) {
     }
     const repro = data.filter(r => classifyKind(r) === 'reproduction');
     if (kind === 'computational') {
-        const counts = { successful: 0, issues: 0, not_checked: 0, not_coded: 0 };
+        const counts = { successful: 0, issues: 0, technical_failure: 0, not_checked: 0, not_coded: 0 };
         repro.forEach(r => { const c = parseReproductionOutcome(r.outcome).computational; counts[c || 'not_coded']++; });
         return {
             total: repro.length,
             datasets: [
-                { label: 'Successful',    data: [counts.successful],  backgroundColor: REPRODUCTION_COLORS.successful },
-                { label: 'Issues',        data: [counts.issues],      backgroundColor: REPRODUCTION_COLORS.issues },
-                { label: 'Not checked',   data: [counts.not_checked], backgroundColor: REPRODUCTION_COLORS.not_checked },
-                { label: 'Not yet coded', data: [counts.not_coded],   backgroundColor: REPRODUCTION_COLORS.not_coded }
+                { label: 'Successful',         data: [counts.successful],         backgroundColor: REPRODUCTION_COLORS.successful },
+                { label: 'Computational issues', data: [counts.issues],            backgroundColor: REPRODUCTION_COLORS.issues },
+                { label: 'Technical failure',   data: [counts.technical_failure],  backgroundColor: REPRODUCTION_COLORS.technical_failure },
+                { label: 'Not checked',        data: [counts.not_checked],         backgroundColor: REPRODUCTION_COLORS.not_checked },
+                { label: 'Not yet coded',       data: [counts.not_coded],          backgroundColor: REPRODUCTION_COLORS.not_coded }
             ]
         };
     }
@@ -1097,7 +1101,8 @@ function mcBucketConfig(kind) {
     if (kind === 'reproduction-numerical') {
         return [
             { histKey: 'successful', overviewKey: 'n_successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
-            { histKey: 'issues', overviewKey: 'n_issues', label: 'Issues', color: REPRODUCTION_COLORS.issues },
+            { histKey: 'issues', overviewKey: 'n_issues', label: 'Computational issues', color: REPRODUCTION_COLORS.issues },
+            { histKey: 'technical_failure', overviewKey: 'n_technical_failure', label: 'Technical failure', color: REPRODUCTION_COLORS.technical_failure },
             { histKey: 'not_checked', overviewKey: 'n_not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
             { histKey: 'not_coded', overviewKey: 'n_not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];

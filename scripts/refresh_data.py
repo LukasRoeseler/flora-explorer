@@ -303,7 +303,9 @@ def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
     computational = None
     robustness = None
 
-    if "computational issue" in p0 or "technical failure" in p0 or p0 == "failed":
+    if "technical failure" in p0 or p0 == "failed":
+        computational = "technical_failure"
+    elif "computational issue" in p0:
         computational = "issues"
     elif "computationally reproducible" in p0 or ("computational" in p0 and "success" in p0):
         computational = "successful"
@@ -820,7 +822,7 @@ def compute_reproduction_citations(repro: pd.DataFrame) -> dict:
         return out
 
     return {
-        "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "not_checked", "not_coded"]),
+        "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "technical_failure", "not_checked", "not_coded"]),
         "reproduction-robustness": bucket_stats("robustness_bucket", ["robust", "challenges", "not_checked", "not_coded"]),
     }
 

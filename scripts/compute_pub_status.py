@@ -72,7 +72,9 @@ def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
     computational = None
     robustness = None
 
-    if "computational issue" in p0 or "technical failure" in p0 or p0 == "failed":
+    if "technical failure" in p0 or p0 == "failed":
+        computational = "technical_failure"
+    elif "computational issue" in p0:
         computational = "issues"
     elif "computationally reproducible" in p0 or ("computational" in p0 and "success" in p0):
         computational = "successful"
@@ -95,7 +97,7 @@ def _clean(v):
 
 
 REPLICATION_OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
-COMPUTATIONAL_BUCKETS = ["successful", "issues", "not_checked", "not_coded"]
+COMPUTATIONAL_BUCKETS = ["successful", "issues", "technical_failure", "not_checked", "not_coded"]
 ROBUSTNESS_BUCKETS = ["robust", "challenges", "not_checked", "not_coded"]
 
 

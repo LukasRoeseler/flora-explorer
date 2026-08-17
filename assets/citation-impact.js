@@ -122,7 +122,8 @@
     const CI_REPRO_BUCKETS = {
         'reproduction-numerical': [
             { key: 'successful', label: 'Successful' },
-            { key: 'issues', label: 'Issues' },
+            { key: 'issues', label: 'Computational issues' },
+            { key: 'technical_failure', label: 'Technical failure' },
             { key: 'not_checked', label: 'Not checked' },
             { key: 'not_coded', label: 'Not yet coded' },
         ],
