@@ -1,8 +1,8 @@
 {
   "pub_status": {
     "individual": {
-      "n_originals": 1584,
-      "mean_rate": 0.1234,
+      "n_originals": 1594,
+      "mean_rate": 0.123,
       "median_rate": 0.0699,
       "grand_mean_rate": 0.0614
     },
@@ -21,20 +21,20 @@
   },
   "outcome": {
     "successful": {
-      "n_originals": 865,
-      "mean_rate": 0.1206,
-      "median_rate": 0.0519,
+      "n_originals": 866,
+      "mean_rate": 0.1205,
+      "median_rate": 0.0518,
       "grand_mean_rate": 0.0535
     },
     "failed": {
-      "n_originals": 696,
-      "mean_rate": 0.0816,
-      "median_rate": 0.0332,
+      "n_originals": 700,
+      "mean_rate": 0.0817,
+      "median_rate": 0.0333,
       "grand_mean_rate": 0.0635
     },
     "mixed": {
-      "n_originals": 498,
-      "mean_rate": 0.0942,
+      "n_originals": 502,
+      "mean_rate": 0.0939,
       "median_rate": 0.0346,
       "grand_mean_rate": 0.0454
     }
