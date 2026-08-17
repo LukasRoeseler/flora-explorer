@@ -3794,5 +3794,15 @@
     "id": "https://openalex.org/S4210184910",
     "display_name": "The Pacific Sociological Review",
     "impact_factor": 0.0
+  },
+  "group processes & intergroup relations": {
+    "id": "https://openalex.org/S81071032",
+    "display_name": "Group Processes & Intergroup Relations",
+    "impact_factor": 3.4972375690607733
+  },
+  "journal of speech and hearing disorders": {
+    "id": "https://openalex.org/S2755213894",
+    "display_name": "Journal of Speech and Hearing Disorders",
+    "impact_factor": 0.0
   }
 }
