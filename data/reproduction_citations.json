@@ -1,48 +1,54 @@
 {
   "reproduction-numerical": {
     "successful": {
-      "n_originals": 4,
-      "n_citations_to_original": 4842,
-      "n_citations_to_reproduction": 45,
-      "n_cocitations": 23
+      "n_originals": 81,
+      "n_citations_to_original": 11164,
+      "n_citations_to_reproduction": 64,
+      "n_cocitations": 26
     },
     "issues": {
-      "n_originals": 2,
-      "n_citations_to_original": 299,
-      "n_citations_to_reproduction": 24,
-      "n_cocitations": 9
+      "n_originals": 41,
+      "n_citations_to_original": 6667,
+      "n_citations_to_reproduction": 31,
+      "n_cocitations": 15
+    },
+    "not_checked": {
+      "n_originals": 3,
+      "n_citations_to_original": 183,
+      "n_citations_to_reproduction": 203,
+      "n_cocitations": 59
     },
     "not_coded": {
-      "n_originals": 119,
-      "n_citations_to_original": 12873,
-      "n_citations_to_reproduction": 229,
-      "n_cocitations": 68
+      "n_originals": 0,
+      "n_citations_to_original": 0,
+      "n_citations_to_reproduction": 0,
+      "n_cocitations": 0
     }
   },
   "reproduction-robustness": {
     "robust": {
-      "n_originals": 1,
-      "n_citations_to_original": 40,
+      "n_originals": 2,
+      "n_citations_to_original": 183,
       "n_citations_to_reproduction": 0,
       "n_cocitations": 0
     },
     "challenges": {
-      "n_originals": 3,
-      "n_citations_to_original": 115,
-      "n_citations_to_reproduction": 29,
-      "n_cocitations": 12
+      "n_originals": 11,
+      "n_citations_to_original": 1462,
+      "n_citations_to_reproduction": 258,
+      "n_cocitations": 80
     },
     "not_checked": {
-      "n_originals": 2,
-      "n_citations_to_original": 4986,
+      "n_originals": 112,
+      "n_citations_to_original": 16369,
       "n_citations_to_reproduction": 40,
       "n_cocitations": 20
     },
     "not_coded": {
-      "n_originals": 119,
-      "n_citations_to_original": 12873,
-      "n_citations_to_reproduction": 229,
-      "n_cocitations": 68
+      "n_originals": 0,
+      "n_citations_to_original": 0,
+      "n_citations_to_reproduction": 0,
+      "n_cocitations": 0
     }
   }
 }
