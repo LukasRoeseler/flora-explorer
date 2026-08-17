@@ -9,6 +9,7 @@ Optimised for GitHub Actions:
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import os
 import re
@@ -30,6 +31,10 @@ DATA_DIR.mkdir(exist_ok=True)
 CACHE_DIR.mkdir(exist_ok=True)
 
 FLORA_URL = "https://raw.githubusercontent.com/forrtproject/FReD-data/main/output/flora.csv"
+REPRODUCTIONS_GSHEET_URL = (
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0VnLyrf9GCYXtN6l1DgaoLlg6H5r-08Op9eJzSripS1QBSHL031Arc27yUDe0YY7cB4TOnYMm2Vh1"
+    "/pub?gid=984458430&single=true&output=csv"
+)
 OC_BASE = "https://opencitations.net/index/api/v2"
 OC_META = "https://opencitations.net/meta/api/v1"
 OC_KEY = os.environ.get("OC_API_KEY", "").strip()
@@ -164,6 +169,31 @@ def clean_for_json(obj):
 
 
 # ------------------------------------------------------------------ FLoRA
+def fetch_reproduction_outcomes() -> dict:
+    """Load the reproductions Google Sheet, returning normalised doi_r -> "computational,
+    robustness" combined outcome string. FReD-data's pipeline now sources reproductions
+    from this two-axis sheet but has a bug where that data never reaches flora.csv's
+    single `outcome` column (bind_rows() silently drops it - see scripts/refresh_flora.py
+    for the full rationale). Until that's fixed upstream, this backfills the same way
+    refresh_flora.py does, since this script fetches FLORA_URL directly rather than
+    reading the locally-patched data/flora.csv."""
+    r = requests.get(REPRODUCTIONS_GSHEET_URL, timeout=60)
+    r.raise_for_status()
+    gsheet = pd.read_csv(io.StringIO(r.text), low_memory=False)
+    by_doi: dict[str, str] = {}
+    for _, row in gsheet.iterrows():
+        if str(row.get("validation") or "").strip().lower() == "validated - discarded":
+            continue
+        computational = str(row.get("outcome_computational") or "").strip()
+        robustness = str(row.get("outcome_robustness") or "").strip()
+        if not computational and not robustness:
+            continue
+        doi_key = doi_clean(row.get("doi_r", ""))
+        if doi_key:
+            by_doi[doi_key] = f"{computational}, {robustness}"
+    return by_doi
+
+
 def load_flora_raw() -> pd.DataFrame:
     """Fetch + parse FLoRA into the common column shape, before any type/outcome
     filtering - so both filter_replications() and filter_reproductions() can work
@@ -196,7 +226,7 @@ def load_flora_raw() -> pd.DataFrame:
     col_year_r  = find_col(["year_r"], required=False)
     col_journal_r = find_col(["journal_r"], required=False)
 
-    return pd.DataFrame({
+    out = pd.DataFrame({
         "doi_o":     df[col_doi_o].map(doi_clean),
         "doi_r":     df[col_doi_r].map(doi_clean),
         "outcome":   df[col_outcome].astype(str).str.lower().str.strip() if col_outcome else "unknown",
@@ -210,6 +240,21 @@ def load_flora_raw() -> pd.DataFrame:
         "year_r":    df[col_year_r] if col_year_r else None,
         "journal_r": df[col_journal_r] if col_journal_r else "",
     })
+
+    is_reproduction = out["type"].str.contains("reproduc", na=False)
+    missing_outcome = out["outcome"].isna() | out["outcome"].isin(["", "na", "nan"])
+    needs_backfill = is_reproduction & missing_outcome
+    if needs_backfill.any():
+        try:
+            by_doi = fetch_reproduction_outcomes()
+            filled = out.loc[needs_backfill, "doi_r"].map(by_doi)
+            out.loc[needs_backfill, "outcome"] = filled.combine_first(out.loc[needs_backfill, "outcome"])
+            print(f"  Backfilled outcome for {filled.notna().sum()}/{needs_backfill.sum()} "
+                  f"reproduction rows from the Google Sheet")
+        except requests.exceptions.RequestException as e:
+            print(f"  ! could not fetch reproduction outcomes ({e}); leaving outcome as-is")
+
+    return out
 
 
 def filter_replications(out: pd.DataFrame) -> pd.DataFrame:
@@ -243,23 +288,35 @@ def load_flora() -> pd.DataFrame:
 
 def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
     """Split a reproduction's compound outcome string into its two independent
-    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly."""
-    s = str(outcome_raw or "").lower()
+    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly - always a
+    "computational, robustness" two-part comma-joined string, parsed positionally (part
+    0 only tested against computational keywords, part 1 only against robustness
+    keywords) so the two dimensions' text never cross-contaminate. Covers both the
+    legacy vocabulary ("computationally successful, robust") and the current one from
+    FReD-data's two-axis reproductions spreadsheet ("computationally reproducible" /
+    "computational issues" / "technical failure" / "failed" / "not checked" for the
+    computational dimension; "robust" / "robustness challenges" / "not checked" for
+    robustness)."""
+    parts = [p.strip() for p in str(outcome_raw or "").lower().split(",")]
+    p0 = parts[0] if len(parts) > 0 else ""
+    p1 = parts[1] if len(parts) > 1 else ""
     computational = None
     robustness = None
-    for part in (p.strip() for p in s.split(",")):
-        if computational is None:
-            if "computational issue" in part:
-                computational = "issues"
-            elif "computational" in part and "success" in part:
-                computational = "successful"
-        if robustness is None:
-            if "robustness challenge" in part:
-                robustness = "challenges"
-            elif "robustness not checked" in part:
-                robustness = "not_checked"
-            elif "robust" in part:
-                robustness = "robust"
+
+    if "computational issue" in p0 or "technical failure" in p0 or p0 == "failed":
+        computational = "issues"
+    elif "computationally reproducible" in p0 or ("computational" in p0 and "success" in p0):
+        computational = "successful"
+    elif "not checked" in p0:
+        computational = "not_checked"
+
+    if "robustness challenge" in p1:
+        robustness = "challenges"
+    elif "not checked" in p1:
+        robustness = "not_checked"
+    elif "robust" in p1:
+        robustness = "robust"
+
     return computational, robustness
 
 
@@ -763,7 +820,7 @@ def compute_reproduction_citations(repro: pd.DataFrame) -> dict:
         return out
 
     return {
-        "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "not_coded"]),
+        "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "not_checked", "not_coded"]),
         "reproduction-robustness": bucket_stats("robustness_bucket", ["robust", "challenges", "not_checked", "not_coded"]),
     }
 

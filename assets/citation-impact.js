@@ -123,6 +123,7 @@
         'reproduction-numerical': [
             { key: 'successful', label: 'Successful' },
             { key: 'issues', label: 'Issues' },
+            { key: 'not_checked', label: 'Not checked' },
             { key: 'not_coded', label: 'Not yet coded' },
         ],
         'reproduction-robustness': [

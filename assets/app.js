@@ -99,21 +99,28 @@ function classifyKind(row) {
 // Splits a reproduction row's compound outcome string (e.g. "computationally successful,
 // robustness challenges") into its two independent dimensions. Either field is null when
 // that dimension hasn't been coded yet (including plain "NA").
+// Reproduction outcome is a comma-joined "computational, robustness" string, always in
+// that fixed order - both the legacy vocabulary ("computationally successful, robust")
+// and the current one sourced from FReD-data's two-axis reproductions spreadsheet
+// ("computationally reproducible"/"computational issues"/"technical failure"/"failed"/
+// "not checked" for computational; "robust"/"robustness challenges"/"not checked" for
+// robustness) use this same two-part shape. Parsing positionally - part[0] only tested
+// against computational keywords, part[1] only against robustness keywords - avoids any
+// cross-contamination between the two dimensions' text.
 function parseReproductionOutcome(outcomeStr) {
-    const s = (outcomeStr || '').toLowerCase();
-    const parts = s.split(',').map(p => p.trim());
+    const parts = (outcomeStr || '').toLowerCase().split(',').map(p => p.trim());
+    const p0 = parts[0] || '';
+    const p1 = parts[1] || '';
     let computational = null, robustness = null;
-    for (const p of parts) {
-        if (computational === null) {
-            if (p.includes('computational issue')) computational = 'issues';
-            else if (p.includes('computational') && p.includes('success')) computational = 'successful';
-        }
-        if (robustness === null) {
-            if (p.includes('robustness challenge')) robustness = 'challenges';
-            else if (p.includes('robustness not checked')) robustness = 'not_checked';
-            else if (p.includes('robust')) robustness = 'robust';
-        }
-    }
+
+    if (p0.includes('computational issue') || p0.includes('technical failure') || p0 === 'failed') computational = 'issues';
+    else if (p0.includes('computationally reproducible') || (p0.includes('computational') && p0.includes('success'))) computational = 'successful';
+    else if (p0.includes('not checked')) computational = 'not_checked';
+
+    if (p1.includes('robustness challenge')) robustness = 'challenges';
+    else if (p1.includes('not checked')) robustness = 'not_checked';
+    else if (p1.includes('robust')) robustness = 'robust';
+
     return { computational, robustness };
 }
 
@@ -175,6 +182,7 @@ function studyTypeOutcomeBuckets(kind) {
         return [
             { key: 'successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
             { key: 'issues', label: 'Issues', color: REPRODUCTION_COLORS.issues },
+            { key: 'not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
             { key: 'not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];
     }
@@ -366,14 +374,15 @@ function computeKindChartData(data, kind) {
     }
     const repro = data.filter(r => classifyKind(r) === 'reproduction');
     if (kind === 'computational') {
-        const counts = { successful: 0, issues: 0, not_coded: 0 };
+        const counts = { successful: 0, issues: 0, not_checked: 0, not_coded: 0 };
         repro.forEach(r => { const c = parseReproductionOutcome(r.outcome).computational; counts[c || 'not_coded']++; });
         return {
             total: repro.length,
             datasets: [
-                { label: 'Successful',    data: [counts.successful], backgroundColor: REPRODUCTION_COLORS.successful },
-                { label: 'Issues',        data: [counts.issues],     backgroundColor: REPRODUCTION_COLORS.issues },
-                { label: 'Not yet coded', data: [counts.not_coded],  backgroundColor: REPRODUCTION_COLORS.not_coded }
+                { label: 'Successful',    data: [counts.successful],  backgroundColor: REPRODUCTION_COLORS.successful },
+                { label: 'Issues',        data: [counts.issues],      backgroundColor: REPRODUCTION_COLORS.issues },
+                { label: 'Not checked',   data: [counts.not_checked], backgroundColor: REPRODUCTION_COLORS.not_checked },
+                { label: 'Not yet coded', data: [counts.not_coded],   backgroundColor: REPRODUCTION_COLORS.not_coded }
             ]
         };
     }
@@ -1059,6 +1068,7 @@ function mcBucketConfig(kind) {
         return [
             { histKey: 'successful', overviewKey: 'n_successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
             { histKey: 'issues', overviewKey: 'n_issues', label: 'Issues', color: REPRODUCTION_COLORS.issues },
+            { histKey: 'not_checked', overviewKey: 'n_not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
             { histKey: 'not_coded', overviewKey: 'n_not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];
     }

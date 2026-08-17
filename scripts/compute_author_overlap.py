@@ -58,24 +58,35 @@ def family_names(author_json) -> set[str]:
 
 def parse_reproduction_outcome(outcome_raw) -> tuple[str | None, str | None]:
     """Split a reproduction's compound outcome string into its two independent
-    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly so the
-    frontend and this pipeline agree on how the same raw string is classified."""
-    s = str(outcome_raw or "").lower()
+    dimensions. Mirrors assets/app.js's parseReproductionOutcome() exactly - always a
+    "computational, robustness" two-part comma-joined string, parsed positionally (part
+    0 only tested against computational keywords, part 1 only against robustness
+    keywords) so the two dimensions' text never cross-contaminate. Covers both the
+    legacy vocabulary ("computationally successful, robust") and the current one from
+    FReD-data's two-axis reproductions spreadsheet ("computationally reproducible" /
+    "computational issues" / "technical failure" / "failed" / "not checked" for the
+    computational dimension; "robust" / "robustness challenges" / "not checked" for
+    robustness)."""
+    parts = [p.strip() for p in str(outcome_raw or "").lower().split(",")]
+    p0 = parts[0] if len(parts) > 0 else ""
+    p1 = parts[1] if len(parts) > 1 else ""
     computational = None
     robustness = None
-    for part in (p.strip() for p in s.split(",")):
-        if computational is None:
-            if "computational issue" in part:
-                computational = "issues"
-            elif "computational" in part and "success" in part:
-                computational = "successful"
-        if robustness is None:
-            if "robustness challenge" in part:
-                robustness = "challenges"
-            elif "robustness not checked" in part:
-                robustness = "not_checked"
-            elif "robust" in part:
-                robustness = "robust"
+
+    if "computational issue" in p0 or "technical failure" in p0 or p0 == "failed":
+        computational = "issues"
+    elif "computationally reproducible" in p0 or ("computational" in p0 and "success" in p0):
+        computational = "successful"
+    elif "not checked" in p0:
+        computational = "not_checked"
+
+    if "robustness challenge" in p1:
+        robustness = "challenges"
+    elif "not checked" in p1:
+        robustness = "not_checked"
+    elif "robust" in p1:
+        robustness = "robust"
+
     return computational, robustness
 
 
@@ -89,7 +100,7 @@ def _overlap(row) -> bool | None:
 
 
 REPLICATION_OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
-COMPUTATIONAL_BUCKETS = ["successful", "issues", "not_coded"]
+COMPUTATIONAL_BUCKETS = ["successful", "issues", "not_checked", "not_coded"]
 ROBUSTNESS_BUCKETS = ["robust", "challenges", "not_checked", "not_coded"]
 MIN_N_FOR_BREAKDOWN = 5  # below this, a per-bucket overlap breakdown is not meaningful
 
