@@ -7,10 +7,16 @@
       "n_cocitations": 26
     },
     "issues": {
-      "n_originals": 41,
-      "n_citations_to_original": 6667,
+      "n_originals": 38,
+      "n_citations_to_original": 6522,
       "n_citations_to_reproduction": 31,
       "n_cocitations": 15
+    },
+    "technical_failure": {
+      "n_originals": 3,
+      "n_citations_to_original": 145,
+      "n_citations_to_reproduction": 0,
+      "n_cocitations": 0
     },
     "not_checked": {
       "n_originals": 3,
