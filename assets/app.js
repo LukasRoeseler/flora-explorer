@@ -900,18 +900,42 @@ function updateTrendsCount() {
 // the label fell back to the row's full raw (compound) outcome string regardless of which
 // dimension was selected, so both dimensions showed up under either kind. Simple counts sidestep
 // that entirely and are also the more legible default for a "how many, by category" view.
-function aggregateCounts(data, keyFn) {
+// Which outcome bucket (per studyTypeOutcomeBuckets/trendOutcomeBuckets) a row falls
+// into, for whichever study type is currently selected in the trend filter.
+function outcomeBucketKeyForRow(row, kind) {
+    if (kind === 'reproduction-numerical') return parseReproductionOutcome(row.outcome).computational || 'not_coded';
+    if (kind === 'reproduction-robustness') return parseReproductionOutcome(row.outcome).robustness || 'not_coded';
+    return classifyOutcome(row.outcome);
+}
+
+// Reproduction bucket lists already cover every row (not_checked/not_coded catch-all);
+// replications need an explicit "other" bucket added so unmatched outcomes still count
+// toward the bar's total height instead of silently vanishing from the stack.
+function trendOutcomeBuckets(kind) {
+    if (kind === 'reproduction-numerical' || kind === 'reproduction-robustness') return studyTypeOutcomeBuckets(kind);
+    return [...studyTypeOutcomeBuckets(kind), { key: 'other', label: 'Other / not yet coded', color: OUTCOME_COLORS.other }];
+}
+
+function aggregateStackedCounts(data, keyFn, kind) {
+    const buckets = trendOutcomeBuckets(kind);
     const groups = new Map();
     data.forEach(row => {
         const k = keyFn(row);
         if (k === null || k === undefined || k === '') return;
-        if (!groups.has(k)) groups.set(k, { key: k, total: 0 });
-        groups.get(k).total++;
+        if (!groups.has(k)) {
+            const counts = {};
+            buckets.forEach(b => { counts[b.key] = 0; });
+            groups.set(k, { key: k, counts, total: 0 });
+        }
+        const g = groups.get(k);
+        const bucketKey = outcomeBucketKeyForRow(row, kind);
+        if (g.counts[bucketKey] !== undefined) g.counts[bucketKey]++;
+        g.total++;
     });
     return Array.from(groups.values());
 }
 
-function aggregateByYear(data, yearField) {
+function aggregateByYear(data, yearField, kind) {
     const yearKey = row => {
         const yRaw = row[yearField]; if (!yRaw) return null;
         const match = String(yRaw).match(/\d{4}/); if (!match) return null;
@@ -919,19 +943,19 @@ function aggregateByYear(data, yearField) {
         if (!y || y < 1800 || y > 2100) return null;
         return String(y);
     };
-    const out = aggregateCounts(data, yearKey);
+    const out = aggregateStackedCounts(data, yearKey, kind);
     out.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
     return out;
 }
 
-function aggregateByJournal(data, field, topN) {
-    const out = aggregateCounts(data, row => (row[field] || '').trim() || null);
+function aggregateByJournal(data, field, topN, kind) {
+    const out = aggregateStackedCounts(data, row => (row[field] || '').trim() || null, kind);
     out.sort((a, b) => b.total - a.total);
     return out.slice(0, topN);
 }
 
-function aggregateByField(data) {
-    const out = aggregateCounts(data, row => disciplineForJournal(row.journal_o));
+function aggregateByField(data, kind) {
+    const out = aggregateStackedCounts(data, row => disciplineForJournal(row.journal_o), kind);
     const mapped = out.filter(e => e.key !== 'Uncategorized').sort((a, b) => b.total - a.total);
     const uncat = out.filter(e => e.key === 'Uncategorized');
     return [...mapped, ...uncat];
@@ -956,55 +980,61 @@ function wrapLabel(str, maxChars = 36) {
     return lines;
 }
 
-function trendBarColor() { return currentTheme() === 'dark' ? '#e0a5c0' : '#8b1a4a'; }
-
-function renderCountChart(canvasId, agg, orientation, existing, opts = {}) {
+function renderStackedCountChart(canvasId, agg, orientation, existing, buckets, opts = {}) {
     if (existing) existing.destroy();
     const ctx = document.getElementById(canvasId).getContext('2d');
     const isHorizontal = orientation === 'horizontal';
     const ac = themeAxisColors();
     const wrapLabels = !!opts.wrapLabels;
     const labels = agg.map(r => wrapLabels ? wrapLabel(r.key, 38) : r.key);
+    const datasets = buckets.map(b => ({
+        label: b.label,
+        data: agg.map(r => r.counts[b.key] || 0),
+        backgroundColor: b.color,
+    }));
 
     return new Chart(ctx, {
         type: 'bar',
-        data: { labels, datasets: [{ label: 'Studies', data: agg.map(r => r.total), backgroundColor: trendBarColor() }] },
+        data: { labels, datasets },
         options: {
             responsive: true, maintainAspectRatio: false, indexAxis: isHorizontal ? 'y' : 'x',
             plugins: {
-                legend: { display: false },
+                legend: { display: true, position: 'bottom', labels: { color: ac.legend, boxWidth: 14, font: { size: 11 } } },
                 tooltip: { callbacks: {
-                    title: items => { const label = items[0].label; return Array.isArray(label) ? label.join(' ') : label; },
-                    label: ctx => `${ctx.parsed[isHorizontal ? 'x' : 'y'].toLocaleString()} studies`
+                    title: items => { const label = items[0].label; return Array.isArray(label) ? label.join(' ') : label; }
                 }}
             },
             scales: {
-                x: { grid: { color: ac.grid }, ticks: { color: ac.tick, autoSkip: !isHorizontal } },
-                y: { grid: { color: ac.grid, display: !isHorizontal }, ticks: { color: ac.tick, autoSkip: false, font: { size: isHorizontal ? 11 : 12 } } }
+                x: { stacked: true, grid: { color: ac.grid }, ticks: { color: ac.tick, autoSkip: !isHorizontal } },
+                y: { stacked: true, grid: { color: ac.grid, display: !isHorizontal }, ticks: { color: ac.tick, autoSkip: false, font: { size: isHorizontal ? 11 : 12 } } }
             },
             layout: isHorizontal ? { padding: { left: 6 } } : {}
         }
     });
 }
 
-function renderTrendOrigYear() { trendOrigYearChart = renderCountChart('trend-orig-year', aggregateByYear(trendsFilteredData(), 'year_o'), 'vertical', trendOrigYearChart); }
-function renderTrendRepYear() { trendRepYearChart = renderCountChart('trend-rep-year', aggregateByYear(trendsFilteredData(), 'year_r'), 'vertical', trendRepYearChart); }
+function renderTrendOrigYear() {
+    trendOrigYearChart = renderStackedCountChart('trend-orig-year', aggregateByYear(trendsFilteredData(), 'year_o', trendsKind), 'vertical', trendOrigYearChart, trendOutcomeBuckets(trendsKind));
+}
+function renderTrendRepYear() {
+    trendRepYearChart = renderStackedCountChart('trend-rep-year', aggregateByYear(trendsFilteredData(), 'year_r', trendsKind), 'vertical', trendRepYearChart, trendOutcomeBuckets(trendsKind));
+}
 function renderTrendJournal() {
     const topN = parseInt(document.getElementById('journal-top-n').value, 10) || 15;
-    const agg = aggregateByJournal(trendsFilteredData(), 'journal_o', topN);
+    const agg = aggregateByJournal(trendsFilteredData(), 'journal_o', topN, trendsKind);
     document.getElementById('trend-journal-container').style.height = Math.max(400, agg.length * 36) + 'px';
-    trendJournalChart = renderCountChart('trend-journal', agg, 'horizontal', trendJournalChart, { wrapLabels: true });
+    trendJournalChart = renderStackedCountChart('trend-journal', agg, 'horizontal', trendJournalChart, trendOutcomeBuckets(trendsKind), { wrapLabels: true });
 }
 function renderTrendRepJournal() {
     const topN = parseInt(document.getElementById('rep-journal-top-n').value, 10) || 15;
-    const agg = aggregateByJournal(trendsFilteredData(), 'journal_r', topN);
+    const agg = aggregateByJournal(trendsFilteredData(), 'journal_r', topN, trendsKind);
     document.getElementById('trend-rep-journal-container').style.height = Math.max(400, agg.length * 36) + 'px';
-    trendRepJournalChart = renderCountChart('trend-rep-journal', agg, 'horizontal', trendRepJournalChart, { wrapLabels: true });
+    trendRepJournalChart = renderStackedCountChart('trend-rep-journal', agg, 'horizontal', trendRepJournalChart, trendOutcomeBuckets(trendsKind), { wrapLabels: true });
 }
 function renderTrendField() {
-    const agg = aggregateByField(trendsFilteredData());
+    const agg = aggregateByField(trendsFilteredData(), trendsKind);
     document.getElementById('trend-field-container').style.height = Math.max(360, agg.length * 44) + 'px';
-    trendFieldChart = renderCountChart('trend-field', agg, 'horizontal', trendFieldChart, { wrapLabels: true });
+    trendFieldChart = renderStackedCountChart('trend-field', agg, 'horizontal', trendFieldChart, trendOutcomeBuckets(trendsKind), { wrapLabels: true });
 }
 function renderAllTrends() {
     updateTrendsCount();
