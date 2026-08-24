@@ -1,8 +1,8 @@
 {
   "reproduction-numerical": {
     "successful": {
-      "n_originals": 81,
-      "n_citations_to_original": 11164,
+      "n_originals": 82,
+      "n_citations_to_original": 11188,
       "n_citations_to_reproduction": 64,
       "n_cocitations": 26
     },
@@ -33,8 +33,8 @@
   },
   "reproduction-robustness": {
     "robust": {
-      "n_originals": 2,
-      "n_citations_to_original": 183,
+      "n_originals": 3,
+      "n_citations_to_original": 207,
       "n_citations_to_reproduction": 0,
       "n_cocitations": 0
     },
