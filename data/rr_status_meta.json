@@ -1,11 +1,11 @@
 {
-  "last_updated": "2026-08-17T10:39:30Z",
+  "last_updated": "2026-08-24T06:43:36Z",
   "n_total": {
-    "replication": 2512,
-    "reproduction-numerical": 130,
-    "reproduction-robustness": 130
+    "replication": 2521,
+    "reproduction-numerical": 131,
+    "reproduction-robustness": 131
   },
-  "n_rr_library_items": 3051,
+  "n_rr_library_items": 3055,
   "source": "scripts/compute_rr_status.py",
   "source_url": "https://github.com/LukasRoeseler/RRDB/blob/main/zotero_registered_reports.csv",
   "source_citation": "Montoya, A. K., Krenzer, W. L. D., Buchanan, E. M., Pronizius, E., Wang, Y. A., Morillo, D., \u2026 Armstrong, C. (2026, May 14). Database of Published Registered Reports. https://doi.org/10.17605/OSF.IO/VUR72"
