@@ -3824,5 +3824,10 @@
     "id": "https://openalex.org/S148639273",
     "display_name": "International Journal of Clinical and Experimental Hypnosis",
     "impact_factor": 1.4177215189873418
+  },
+  "the journal of mathematical behavior": {
+    "id": "https://openalex.org/S161209770",
+    "display_name": "The Journal of Mathematical Behavior",
+    "impact_factor": 2.3625
   }
 }
