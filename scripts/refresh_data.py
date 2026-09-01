@@ -795,7 +795,12 @@ def compute_reproduction_citations(repro: pd.DataFrame) -> dict:
     - far fewer once split into dimension buckets - that guard would return an empty
     result anyway. Simple counts are the honest, meaningful thing to show at this
     dataset size; this will read as a real per-dimension analysis (not "coming soon")
-    once there's enough coded reproductions to make an event-study worthwhile."""
+    once there's enough coded reproductions to make an event-study worthwhile.
+
+    Robustness "not checked" rows are excluded entirely (not just left as their own
+    bucket) - "not checked" means no robustness assessment was ever attempted, so
+    those rows carry no information about the robustness dimension and would only
+    dilute the citation stats for the studies that were actually assessed."""
     def bucket_stats(bucket_col: str, buckets: list[str]) -> dict:
         out = {}
         for b in buckets:
@@ -823,7 +828,7 @@ def compute_reproduction_citations(repro: pd.DataFrame) -> dict:
 
     return {
         "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "technical_failure", "not_checked", "not_coded"]),
-        "reproduction-robustness": bucket_stats("robustness_bucket", ["robust", "challenges", "not_checked", "not_coded"]),
+        "reproduction-robustness": bucket_stats("robustness_bucket", ["robust", "challenges", "not_coded"]),
     }
 
 

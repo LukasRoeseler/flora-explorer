@@ -130,7 +130,6 @@
         'reproduction-robustness': [
             { key: 'robust', label: 'Robust' },
             { key: 'challenges', label: 'Robustness challenges' },
-            { key: 'not_checked', label: 'Not checked' },
             { key: 'not_coded', label: 'Not yet coded' },
         ],
     };
