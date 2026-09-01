@@ -1,9 +1,9 @@
 {
-  "last_updated": "2026-09-01T08:28:36Z",
+  "last_updated": "2026-09-01T19:00:01Z",
   "n_total": {
     "replication": 2522,
-    "reproduction-numerical": 289,
-    "reproduction-robustness": 289
+    "reproduction-numerical": 230,
+    "reproduction-robustness": 162
   },
   "source": "scripts/compute_pub_status.py"
 }

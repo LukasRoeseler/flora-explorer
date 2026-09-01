@@ -1,9 +1,9 @@
 {
-  "last_updated": "2026-08-31T12:25:47Z",
+  "last_updated": "2026-09-01T19:00:04Z",
   "n_total": {
-    "replication": 2523,
-    "reproduction-numerical": 131,
-    "reproduction-robustness": 131
+    "replication": 2522,
+    "reproduction-numerical": 230,
+    "reproduction-robustness": 162
   },
   "n_rr_library_items": 3055,
   "source": "scripts/compute_rr_status.py",
