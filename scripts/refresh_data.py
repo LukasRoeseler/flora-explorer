@@ -326,8 +326,8 @@ def filter_reproductions(out: pd.DataFrame) -> pd.DataFrame:
     """Reproduction rows with both DOIs present, so their citations can be fetched
     from OpenCitations the same way as replications. Unlike filter_replications(),
     outcome is not restricted to a fixed set here - callers bucket by the parsed
-    computational/robustness dimension, which has an explicit not_coded bucket for
-    the many reproductions that don't have an outcome yet."""
+    computational/robustness dimension and drop the rows that carry no verdict on the
+    dimension they're bucketing by."""
     is_repro = out["type"].str.contains("reproduc", na=False)
     repro = (out[is_repro]
              .dropna(subset=["doi_o", "doi_r"])
@@ -797,10 +797,11 @@ def compute_reproduction_citations(repro: pd.DataFrame) -> dict:
     dataset size; this will read as a real per-dimension analysis (not "coming soon")
     once there's enough coded reproductions to make an event-study worthwhile.
 
-    Robustness "not checked" rows are excluded entirely (not just left as their own
-    bucket) - "not checked" means no robustness assessment was ever attempted, so
-    those rows carry no information about the robustness dimension and would only
-    dilute the citation stats for the studies that were actually assessed."""
+    Rows without an actual verdict on a dimension ("not checked"/uncoded) are excluded
+    entirely rather than kept as their own bucket - they carry no information about that
+    dimension and would only dilute the stats for the studies actually assessed. Applied
+    per dimension, so a reproduction whose robustness was never checked still counts
+    toward the computational breakdown."""
     def bucket_stats(bucket_col: str, buckets: list[str]) -> dict:
         out = {}
         for b in buckets:
@@ -827,8 +828,8 @@ def compute_reproduction_citations(repro: pd.DataFrame) -> dict:
         return out
 
     return {
-        "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "technical_failure", "not_checked", "not_coded"]),
-        "reproduction-robustness": bucket_stats("robustness_bucket", ["robust", "challenges", "not_coded"]),
+        "reproduction-numerical": bucket_stats("computational_bucket", ["successful", "issues", "technical_failure"]),
+        "reproduction-robustness": bucket_stats("robustness_bucket", ["robust", "challenges"]),
     }
 
 

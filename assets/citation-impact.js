@@ -124,13 +124,10 @@
             { key: 'successful', label: 'Successful' },
             { key: 'issues', label: 'Computational issues' },
             { key: 'technical_failure', label: 'Technical failure' },
-            { key: 'not_checked', label: 'Not checked' },
-            { key: 'not_coded', label: 'Not yet coded' },
         ],
         'reproduction-robustness': [
             { key: 'robust', label: 'Robust' },
             { key: 'challenges', label: 'Robustness challenges' },
-            { key: 'not_coded', label: 'Not yet coded' },
         ],
     };
     const CI_REPRO_MIN_N = 5;

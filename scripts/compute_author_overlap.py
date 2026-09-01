@@ -102,8 +102,12 @@ def _overlap(row) -> bool | None:
 
 
 REPLICATION_OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
-COMPUTATIONAL_BUCKETS = ["successful", "issues", "technical_failure", "not_checked", "not_coded"]
-ROBUSTNESS_BUCKETS = ["robust", "challenges", "not_checked", "not_coded"]
+# Rows without an actual verdict on a dimension ("not checked"/uncoded) are dropped from
+# that dimension entirely rather than kept as their own bucket - they say nothing about it.
+# Applied per dimension, so a reproduction whose robustness was never checked still counts
+# toward the computational breakdown.
+COMPUTATIONAL_BUCKETS = ["successful", "issues", "technical_failure"]
+ROBUSTNESS_BUCKETS = ["robust", "challenges"]
 MIN_N_FOR_BREAKDOWN = 5  # below this, a per-bucket overlap breakdown is not meaningful
 
 
@@ -158,10 +162,12 @@ result = {
         df[is_replication], lambda r: r["outcome_lc"], REPLICATION_OUTCOMES
     ),
     "reproduction-numerical": compute_overlap_result(
-        repro_df, lambda r: r["computational_bucket"], COMPUTATIONAL_BUCKETS
+        repro_df[repro_df["computational_bucket"].isin(COMPUTATIONAL_BUCKETS)],
+        lambda r: r["computational_bucket"], COMPUTATIONAL_BUCKETS
     ),
     "reproduction-robustness": compute_overlap_result(
-        repro_df, lambda r: r["robustness_bucket"], ROBUSTNESS_BUCKETS
+        repro_df[repro_df["robustness_bucket"].isin(ROBUSTNESS_BUCKETS)],
+        lambda r: r["robustness_bucket"], ROBUSTNESS_BUCKETS
     ),
 }
 

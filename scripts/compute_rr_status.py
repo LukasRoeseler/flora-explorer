@@ -147,8 +147,12 @@ def _clean(v):
 
 
 REPLICATION_OUTCOMES = ["successful", "failed", "mixed", "inconclusive"]
-COMPUTATIONAL_BUCKETS = ["successful", "issues", "technical_failure", "not_checked", "not_coded"]
-ROBUSTNESS_BUCKETS = ["robust", "challenges", "not_checked", "not_coded"]
+# Rows without an actual verdict on a dimension ("not checked"/uncoded) are dropped from
+# that dimension entirely rather than kept as their own bucket - they say nothing about it.
+# Applied per dimension, so a reproduction whose robustness was never checked still counts
+# toward the computational breakdown.
+COMPUTATIONAL_BUCKETS = ["successful", "issues", "technical_failure"]
+ROBUSTNESS_BUCKETS = ["robust", "challenges"]
 
 
 def compute_rr_result(sub: pd.DataFrame, bucket_col: str, buckets: list[str]) -> dict:
@@ -208,8 +212,12 @@ repro_df["robustness_bucket"] = repro_dims.apply(lambda t: t[1] or "not_coded")
 
 result = {
     "replication": compute_rr_result(df[is_replication], "outcome_lc", REPLICATION_OUTCOMES),
-    "reproduction-numerical": compute_rr_result(repro_df, "computational_bucket", COMPUTATIONAL_BUCKETS),
-    "reproduction-robustness": compute_rr_result(repro_df, "robustness_bucket", ROBUSTNESS_BUCKETS),
+    "reproduction-numerical": compute_rr_result(
+        repro_df[repro_df["computational_bucket"].isin(COMPUTATIONAL_BUCKETS)],
+        "computational_bucket", COMPUTATIONAL_BUCKETS),
+    "reproduction-robustness": compute_rr_result(
+        repro_df[repro_df["robustness_bucket"].isin(ROBUSTNESS_BUCKETS)],
+        "robustness_bucket", ROBUSTNESS_BUCKETS),
 }
 
 OUT_DATA.write_text(json.dumps(result), encoding="utf-8")

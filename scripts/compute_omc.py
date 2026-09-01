@@ -202,17 +202,22 @@ def compute_reproduction_impact_stats(rows: list[dict]) -> None:
         })
 
     def build_dimension(bucket_key: str, buckets: list[str]) -> dict:
-        journals = {r["journal"] for r in repro_rows if r["journal"]}
-        disciplines = {r["discipline"] for r in repro_rows if r["discipline"] != "Uncategorized"}
-        overview = {"n_total": len(repro_rows), "n_journals": len(journals), "n_disciplines": len(disciplines)}
+        # Rows without an actual verdict on this dimension ("not checked"/uncoded) are
+        # dropped rather than kept as their own bucket - they say nothing about it. Applied
+        # per dimension, so a reproduction whose robustness was never checked still counts
+        # toward the computational breakdown.
+        rows = [r for r in repro_rows if r[bucket_key] in buckets]
+        journals = {r["journal"] for r in rows if r["journal"]}
+        disciplines = {r["discipline"] for r in rows if r["discipline"] != "Uncategorized"}
+        overview = {"n_total": len(rows), "n_journals": len(journals), "n_disciplines": len(disciplines)}
         for b in buckets:
-            overview[f"n_{b}"] = sum(1 for r in repro_rows if r[bucket_key] == b)
+            overview[f"n_{b}"] = sum(1 for r in rows if r[bucket_key] == b)
 
         breaks = [i * 0.5 for i in range(41)]  # 0..20 in steps of 0.5, matching the R histogram
         histogram = []
         for lo, hi in zip(breaks[:-1], breaks[1:]):
             counts = {b: 0 for b in buckets}
-            for r in repro_rows:
+            for r in rows:
                 if lo <= r["impact_factor"] < hi:
                     counts[r[bucket_key]] += 1
             histogram.append({"bin_lo": lo, "bin_hi": hi, **counts})
@@ -226,8 +231,8 @@ def compute_reproduction_impact_stats(rows: list[dict]) -> None:
         }
 
     result = {
-        "reproduction-numerical": build_dimension("computational", ["successful", "issues", "technical_failure", "not_checked", "not_coded"]),
-        "reproduction-robustness": build_dimension("robustness", ["robust", "challenges", "not_checked", "not_coded"]),
+        "reproduction-numerical": build_dimension("computational", ["successful", "issues", "technical_failure"]),
+        "reproduction-robustness": build_dimension("robustness", ["robust", "challenges"]),
     }
     out_path = DATA_DIR / "impact_factor_reproductions.json"
     out_path.write_text(json.dumps(result), encoding="utf-8")

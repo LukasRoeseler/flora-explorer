@@ -125,12 +125,16 @@ function parseReproductionOutcome(outcomeStr) {
     return { computational, robustness };
 }
 
-// Every reproduction attempts computational reproducibility by definition, so the
-// "numerical" subkind is just "is this row a reproduction". Robustness is a distinct,
-// separately-assessed dimension (see parseReproductionOutcome) - only rows with an actual
-// robust/challenges verdict count as "robustness assessed" (not_checked/uncoded excluded).
-function classifyReproductionSubkind(row) {
-    return classifyKind(row) === 'reproduction' ? 'numerical' : 'unknown';
+// Computational and robustness are two independently-assessed dimensions (see
+// parseReproductionOutcome), and a reproduction can be assessed on one but not the other.
+// A row only counts toward a dimension when it carries an actual verdict there;
+// "not checked"/uncoded rows are excluded from that dimension's charts, since they say
+// nothing about it and would otherwise dominate every bar. The exclusion is per-dimension,
+// so a reproduction whose robustness was never checked still appears under computational.
+function isComputationalAssessed(row) {
+    if (classifyKind(row) !== 'reproduction') return false;
+    const { computational } = parseReproductionOutcome(row.outcome);
+    return computational === 'successful' || computational === 'issues' || computational === 'technical_failure';
 }
 
 function isRobustnessAssessed(row) {
@@ -144,7 +148,7 @@ function filterByKind(data, kind) {
     if (kind === 'replication') return data.filter(r => classifyKind(r) === 'replication');
     if (kind === 'reproduction') return data.filter(r => classifyKind(r) === 'reproduction');
     if (kind === 'reproduction-numerical') {
-        return data.filter(r => classifyKind(r) === 'reproduction' && classifyReproductionSubkind(r) === 'numerical');
+        return data.filter(r => isComputationalAssessed(r));
     }
     if (kind === 'reproduction-robustness') {
         return data.filter(r => isRobustnessAssessed(r));
@@ -184,16 +188,12 @@ function studyTypeOutcomeBuckets(kind) {
             { key: 'successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
             { key: 'issues', label: 'Computational issues', color: REPRODUCTION_COLORS.issues },
             { key: 'technical_failure', label: 'Technical failure', color: REPRODUCTION_COLORS.technical_failure },
-            { key: 'not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
-            { key: 'not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];
     }
     if (kind === 'reproduction-robustness') {
         return [
             { key: 'robust', label: 'Robust', color: REPRODUCTION_COLORS.robust },
             { key: 'challenges', label: 'Robustness challenges', color: REPRODUCTION_COLORS.challenges },
-            { key: 'not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
-            { key: 'not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];
     }
     return [
@@ -377,29 +377,25 @@ function computeKindChartData(data, kind) {
     }
     const repro = data.filter(r => classifyKind(r) === 'reproduction');
     if (kind === 'computational') {
-        const counts = { successful: 0, issues: 0, technical_failure: 0, not_checked: 0, not_coded: 0 };
-        repro.forEach(r => { const c = parseReproductionOutcome(r.outcome).computational; counts[c || 'not_coded']++; });
+        const counts = { successful: 0, issues: 0, technical_failure: 0 };
+        repro.forEach(r => { const c = parseReproductionOutcome(r.outcome).computational; if (counts[c] !== undefined) counts[c]++; });
         return {
-            total: repro.length,
+            total: counts.successful + counts.issues + counts.technical_failure,
             datasets: [
-                { label: 'Successful',         data: [counts.successful],         backgroundColor: REPRODUCTION_COLORS.successful },
+                { label: 'Successful',           data: [counts.successful],        backgroundColor: REPRODUCTION_COLORS.successful },
                 { label: 'Computational issues', data: [counts.issues],            backgroundColor: REPRODUCTION_COLORS.issues },
-                { label: 'Technical failure',   data: [counts.technical_failure],  backgroundColor: REPRODUCTION_COLORS.technical_failure },
-                { label: 'Not checked',        data: [counts.not_checked],         backgroundColor: REPRODUCTION_COLORS.not_checked },
-                { label: 'Not yet coded',       data: [counts.not_coded],          backgroundColor: REPRODUCTION_COLORS.not_coded }
+                { label: 'Technical failure',    data: [counts.technical_failure], backgroundColor: REPRODUCTION_COLORS.technical_failure }
             ]
         };
     }
     // robustness
-    const counts = { robust: 0, challenges: 0, not_checked: 0, not_coded: 0 };
-    repro.forEach(r => { const rb = parseReproductionOutcome(r.outcome).robustness; counts[rb || 'not_coded']++; });
+    const counts = { robust: 0, challenges: 0 };
+    repro.forEach(r => { const rb = parseReproductionOutcome(r.outcome).robustness; if (counts[rb] !== undefined) counts[rb]++; });
     return {
-        total: repro.length,
+        total: counts.robust + counts.challenges,
         datasets: [
-            { label: 'Robust',               data: [counts.robust],      backgroundColor: REPRODUCTION_COLORS.robust },
-            { label: 'Robustness challenges',data: [counts.challenges],  backgroundColor: REPRODUCTION_COLORS.challenges },
-            { label: 'Not checked',          data: [counts.not_checked], backgroundColor: REPRODUCTION_COLORS.not_checked },
-            { label: 'Not yet coded',        data: [counts.not_coded],   backgroundColor: REPRODUCTION_COLORS.not_coded }
+            { label: 'Robust',                data: [counts.robust],     backgroundColor: REPRODUCTION_COLORS.robust },
+            { label: 'Robustness challenges', data: [counts.challenges], backgroundColor: REPRODUCTION_COLORS.challenges }
         ]
     };
 }
@@ -1103,16 +1099,12 @@ function mcBucketConfig(kind) {
             { histKey: 'successful', overviewKey: 'n_successful', label: 'Successful', color: REPRODUCTION_COLORS.successful },
             { histKey: 'issues', overviewKey: 'n_issues', label: 'Computational issues', color: REPRODUCTION_COLORS.issues },
             { histKey: 'technical_failure', overviewKey: 'n_technical_failure', label: 'Technical failure', color: REPRODUCTION_COLORS.technical_failure },
-            { histKey: 'not_checked', overviewKey: 'n_not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
-            { histKey: 'not_coded', overviewKey: 'n_not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];
     }
     if (kind === 'reproduction-robustness') {
         return [
             { histKey: 'robust', overviewKey: 'n_robust', label: 'Robust', color: REPRODUCTION_COLORS.robust },
             { histKey: 'challenges', overviewKey: 'n_challenges', label: 'Robustness challenges', color: REPRODUCTION_COLORS.challenges },
-            { histKey: 'not_checked', overviewKey: 'n_not_checked', label: 'Not checked', color: REPRODUCTION_COLORS.not_checked },
-            { histKey: 'not_coded', overviewKey: 'n_not_coded', label: 'Not yet coded', color: REPRODUCTION_COLORS.not_coded },
         ];
     }
     return [
