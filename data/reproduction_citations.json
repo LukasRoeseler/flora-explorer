@@ -1,16 +1,16 @@
 {
   "reproduction-numerical": {
     "successful": {
-      "n_originals": 82,
-      "n_citations_to_original": 11188,
-      "n_citations_to_reproduction": 64,
-      "n_cocitations": 26
+      "n_originals": 140,
+      "n_citations_to_original": 24088,
+      "n_citations_to_reproduction": 1035,
+      "n_cocitations": 327
     },
     "issues": {
-      "n_originals": 38,
-      "n_citations_to_original": 6522,
-      "n_citations_to_reproduction": 31,
-      "n_cocitations": 15
+      "n_originals": 82,
+      "n_citations_to_original": 12696,
+      "n_citations_to_reproduction": 1216,
+      "n_cocitations": 154
     },
     "technical_failure": {
       "n_originals": 3,
@@ -19,10 +19,10 @@
       "n_cocitations": 0
     },
     "not_checked": {
-      "n_originals": 3,
-      "n_citations_to_original": 183,
-      "n_citations_to_reproduction": 203,
-      "n_cocitations": 59
+      "n_originals": 58,
+      "n_citations_to_original": 1515,
+      "n_citations_to_reproduction": 224,
+      "n_cocitations": 61
     },
     "not_coded": {
       "n_originals": 0,
@@ -33,22 +33,16 @@
   },
   "reproduction-robustness": {
     "robust": {
-      "n_originals": 3,
-      "n_citations_to_original": 207,
-      "n_citations_to_reproduction": 0,
-      "n_cocitations": 0
+      "n_originals": 50,
+      "n_citations_to_original": 16921,
+      "n_citations_to_reproduction": 553,
+      "n_cocitations": 270
     },
     "challenges": {
-      "n_originals": 11,
-      "n_citations_to_original": 1462,
-      "n_citations_to_reproduction": 258,
-      "n_cocitations": 80
-    },
-    "not_checked": {
-      "n_originals": 112,
-      "n_citations_to_original": 16369,
-      "n_citations_to_reproduction": 40,
-      "n_cocitations": 20
+      "n_originals": 111,
+      "n_citations_to_original": 15752,
+      "n_citations_to_reproduction": 1773,
+      "n_cocitations": 343
     },
     "not_coded": {
       "n_originals": 0,
