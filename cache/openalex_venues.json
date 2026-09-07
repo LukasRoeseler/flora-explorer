@@ -3950,5 +3950,15 @@
     "id": "https://openalex.org/S4210176958",
     "display_name": "The Lancet Global Health",
     "impact_factor": 10.88681204569055
+  },
+  "addictive behaviors": {
+    "id": "https://openalex.org/S186215666",
+    "display_name": "Addictive Behaviors",
+    "impact_factor": 3.6151603498542273
+  },
+  "the journal of pediatrics": {
+    "id": "https://openalex.org/S3774022",
+    "display_name": "The Journal of Pediatrics",
+    "impact_factor": 2.5348214285714286
   }
 }
