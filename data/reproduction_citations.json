@@ -2,15 +2,15 @@
   "reproduction-numerical": {
     "successful": {
       "n_originals": 140,
-      "n_citations_to_original": 32227,
+      "n_citations_to_original": 36455,
       "n_citations_to_reproduction": 1035,
-      "n_cocitations": 347
+      "n_cocitations": 369
     },
     "issues": {
       "n_originals": 82,
-      "n_citations_to_original": 24414,
+      "n_citations_to_original": 28497,
       "n_citations_to_reproduction": 1216,
-      "n_cocitations": 373
+      "n_cocitations": 408
     },
     "technical_failure": {
       "n_originals": 3,
@@ -28,9 +28,9 @@
     },
     "challenges": {
       "n_originals": 111,
-      "n_citations_to_original": 29505,
+      "n_citations_to_original": 32718,
       "n_citations_to_reproduction": 1773,
-      "n_cocitations": 478
+      "n_cocitations": 609
     }
   }
 }
